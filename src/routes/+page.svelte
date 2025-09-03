@@ -1,156 +1,196 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
+  import { invoke } from '@tauri-apps/api/core';
+  import { onMount } from 'svelte';
+  import { 
+    Play, 
+    Users, 
+    Bot, 
+    Settings, 
+    RefreshCw, 
+    AlertCircle,
+    CheckCircle,
+    Clock,
+    Gamepad2
+  } from '@lucide/svelte';
+  import StatusCard from '$lib/components/StatusCard.svelte';
+  import QuickActionCard from '$lib/components/QuickActionCard.svelte';
+  import SectionCard from '$lib/components/SectionCard.svelte';
+  import { Button } from '$lib/components/ui/button';
+  import { Alert, AlertDescription } from '$lib/components/ui/alert';
 
-  let name = $state("");
-  let greetMsg = $state("");
+  let systemInfo = $state<any>(null);
+  let gameState = $state<any>(null);
+  let isLoading = $state(true);
+  let error = $state<string | null>(null);
 
-  async function greet(event: Event) {
-    event.preventDefault();
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsg = await invoke("greet", { name });
+  onMount(async () => {
+    await loadData();
+  });
+
+  async function loadData() {
+    try {
+      isLoading = true;
+      error = null;
+      
+      const [sysInfo, game] = await Promise.all([
+        invoke('get_system_info'),
+        invoke('get_game_state')
+      ]);
+      
+      systemInfo = sysInfo;
+      gameState = game;
+    } catch (err) {
+      error = err as string;
+      console.error('Failed to load data:', err);
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  async function detectLeagueClient() {
+    try {
+      await invoke('detect_league_client');
+      await loadData(); // Refresh data
+    } catch (err) {
+      error = err as string;
+    }
+  }
+
+  function getGameStatusText() {
+    if (!gameState) return 'Unknown';
+    
+    switch (gameState.status) {
+      case 'Idle':
+        return 'Not in game';
+      case 'InChampionSelect':
+        return 'In champion select';
+      case 'InGame':
+        return 'In game';
+      case 'Loading':
+        return 'Loading game';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  function getLeagueStatus() {
+    return systemInfo?.league_running ? 'Running' : 'Not Running';
+  }
+
+  function getLeagueStatusType() {
+    return systemInfo?.league_running ? 'success' : 'error';
+  }
+
+  function getAIStatusType() {
+    return systemInfo?.ai_service_status === 'Connected' ? 'success' : 'error';
   }
 </script>
 
-<main class="container">
-  <h1>Welcome to Tauri + Svelte</h1>
-
-  <div class="row">
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank">
-      <img src="/svelte.svg" class="logo svelte-kit" alt="SvelteKit Logo" />
-    </a>
+<div class="p-6 space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-foreground">WingBot Dashboard</h1>
+      <p class="text-muted-foreground mt-1">Your AI-powered League of Legends companion</p>
+    </div>
+    <Button
+      onclick={loadData}
+      disabled={isLoading}
+      class="flex items-center gap-2"
+    >
+      <RefreshCw class="w-4 h-4 {isLoading ? 'animate-spin' : ''}" />
+      Refresh
+    </Button>
   </div>
-  <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
 
-  <form class="row" onsubmit={greet}>
-    <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
-    <button type="submit">Greet</button>
-  </form>
-  <p>{greetMsg}</p>
-</main>
+  {#if error}
+    <Alert variant="destructive">
+      <AlertCircle class="h-4 w-4" />
+      <AlertDescription>Error: {error}</AlertDescription>
+    </Alert>
+  {/if}
 
-<style>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
+  <!-- Status Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <StatusCard
+      title="League Client"
+      value={getLeagueStatus()}
+      icon={Play}
+      status={getLeagueStatusType()}
+      actionLabel="Detect Client"
+      onAction={detectLeagueClient}
+    />
 
-.logo.svelte-kit:hover {
-  filter: drop-shadow(0 0 2em #ff3e00);
-}
+    <StatusCard
+      title="AI Service"
+      value={systemInfo?.ai_service_status || 'Unknown'}
+      icon={Bot}
+      status={getAIStatusType()}
+    />
 
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
+    <StatusCard
+      title="Game Status"
+      value={getGameStatusText()}
+      icon={Gamepad2}
+      status="neutral"
+    />
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+    <StatusCard
+      title="Platform"
+      value={systemInfo?.os || 'Unknown'}
+      icon={Settings}
+      status="neutral"
+    />
+  </div>
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
+  <!-- Quick Actions -->
+  <SectionCard title="Quick Actions">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <QuickActionCard
+        title="Champion Select"
+        description="Get pick recommendations"
+        icon={Users}
+        href="/champion-select"
+        variant="blue"
+      />
 
-.container {
-  margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
+      <QuickActionCard
+        title="Live Game"
+        description="In-game assistance"
+        icon={Play}
+        href="/live-game"
+        variant="green"
+      />
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
+      <QuickActionCard
+        title="AI Chat"
+        description="Get AI advice"
+        icon={Bot}
+        href="/ai-chat"
+        variant="purple"
+      />
+    </div>
+  </SectionCard>
 
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-h1 {
-  text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
-
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
-}
-
-</style>
+  <!-- Recent Activity -->
+  <SectionCard title="Recent Activity">
+    <div class="space-y-3">
+      <div class="flex items-center text-sm text-muted-foreground">
+        <Clock class="w-4 h-4 mr-2" />
+        <span>Last updated: {new Date().toLocaleTimeString()}</span>
+      </div>
+      {#if gameState?.status === 'InChampionSelect'}
+        <div class="flex items-center text-sm text-blue-600 dark:text-blue-400">
+          <CheckCircle class="w-4 h-4 mr-2" />
+          <span>Currently in champion select phase</span>
+        </div>
+      {/if}
+      {#if gameState?.status === 'InGame'}
+        <div class="flex items-center text-sm text-green-600 dark:text-green-400">
+          <CheckCircle class="w-4 h-4 mr-2" />
+          <span>Currently in game</span>
+        </div>
+      {/if}
+    </div>
+  </SectionCard>
+</div>

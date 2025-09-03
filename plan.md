@@ -8,72 +8,121 @@ Migrate from Flutter client to a modern Tauri + Svelte desktop application while
 wingbot/
 ├── wingbot_client/          # Existing Flutter client (kept for reference)
 ├── wingbot_server/          # Existing Python server (kept)
-├── wingbot/         # NEW: Tauri + Svelte desktop app
-│   ├── src-tauri/          # Rust backend
-│   ├── src/                # Svelte frontend
-│   ├── package.json
-│   └── tailwind.config.js
+├── src/                     # NEW: Svelte frontend
+├── src-tauri/              # NEW: Rust backend
+├── package.json
+├── components.json          # shadcn/ui configuration
 └── plan.md                  # This file
 ```
 
 ## Migration Steps
 
-### Phase 1: Setup Tauri + Svelte Project
+### Phase 1: Setup Tauri + Svelte Project ✅ COMPLETED
 1. ✅ Create plan.md
 2. ✅ Initialize SvelteKit project with modern tooling
    - ✅ SvelteKit (latest) - Full-stack framework with routing and API endpoints
-   - ✅ TailwindCSS - Utility-first CSS framework for rapid UI development
-   - ✅ ESLint + Prettier - Code quality and formatting tools
-   - ✅ Vitest - Unit and component testing framework
-   - ✅ Playwright - End-to-end testing framework
-   - ✅ SQLite + better-sqlite3 - Local database for desktop app
-   - ✅ Storybook - Component development and testing environment
+   - ✅ TailwindCSS v4 - Utility-first CSS framework for rapid UI development
+   - ✅ shadcn/ui - Modern component library with Svelte support
+   - ✅ TypeScript - Type safety and better development experience
+   - ✅ Vite - Fast build tool and development server
 3. ✅ Configure latest versions:
-   - ✅ Tauri (latest) - Added and configured
-   - ✅ Svelte (latest) - Included with SvelteKit
+   - ✅ Tauri v2 - Added and configured for desktop app
+   - ✅ Svelte v5 - Latest Svelte with modern syntax
 4. ✅ Set up project structure with modular components
 
-### Phase 2: UI Component Migration
-1. Create reusable UI kit using shadcn/ui
-2. Migrate Flutter widgets to Svelte components:
-   - Dashboard screen
-   - Champion select screen
-   - Game info cards
-   - Abilities cards
-   - Player cards
-   - Settings cards
-3. Implement navigation rail (as per user preference)
-4. Ensure modular and reusable component architecture
+### Phase 2: Backend Development 🔄 IN PROGRESS
+1. ✅ Basic Tauri backend structure
+2. ✅ Implement WingBot-specific backend modules:
+   - ✅ Game state management (champion select, live game) - Basic structure with mock data
+   - ✅ AI service integration with existing Python backend - HTTP client + health check
+   - ✅ League client integration (LCU API) - Windows detection working, Unix/Linux TODO
+   - ✅ Configuration management - Basic structure, many methods unused
+3. ✅ Create Tauri commands for frontend-backend communication
 
-### Phase 3: API Integration
-1. Integrate with existing Python server
-2. Maintain API endpoint structure (/api/v1)
-3. Implement proper error handling
-4. Add loading states and user feedback
+### Phase 3: Frontend Development 🔄 IN PROGRESS
+1. ✅ shadcn/ui components configured
+2. ✅ Basic layout and navigation:
+   - ✅ Navigation rail with collapsible sidebar
+   - ✅ Dashboard page with status cards and quick actions
+   - ✅ Modular component library (StatusCard, QuickActionCard, SectionCard)
+3. 🔄 Migrate remaining Flutter widgets to Svelte components:
+   - 🔄 Champion select screen (pick/ban recommendations) - Route exists, page TODO
+   - 🔄 Game info cards (live game data) - Route exists, page TODO
+   - 🔄 Abilities cards (skill recommendations) - Route exists, page TODO
+   - 🔄 Player cards (team/enemy information) - Route exists, page TODO
+   - 🔄 Settings cards (configuration) - Route exists, page TODO
+4. ✅ Ensure modular and reusable component architecture
 
-### Phase 4: Features & Polish
-1. Implement all existing functionality
-2. Add modern desktop-specific features
-3. Ensure responsive design
-4. Add proper TypeScript types
-5. Implement proper state management
+### Phase 4: API Integration 🔄 IN PROGRESS
+1. ✅ Basic Tauri command structure
+2. 🔄 AI service health check integration - Health check implemented but not showing in UI
+3. 🔄 League client detection - Windows working, Unix/Linux TODO
+4. 📋 Integrate with existing Python server endpoints for real data
+5. 📋 Implement proper error handling and loading states
 
-## Current Progress - SvelteKit Template Setup
+### Phase 5: Features & Polish 📋 PLANNED
+1. 📋 Replace mock data with real AI-powered recommendations
+2. 📋 Add modern desktop-specific features
+3. 📋 Ensure responsive design
+4. 📋 Add proper TypeScript types
+5. 📋 Implement proper state management
 
-### What We're Getting from the Template:
-- **SvelteKit** - Modern full-stack framework perfect for Tauri integration
-- **TailwindCSS** - Rapid UI development with utility classes
-- **ESLint + Prettier** - Code quality and consistent formatting
-- **Vitest** - Testing framework for both unit and component tests
-- **Playwright** - E2E testing for comprehensive app testing
-- **SQLite + better-sqlite3** - Local database perfect for desktop apps
-- **Storybook** - Component development environment for UI consistency
+## Current Progress - Detailed Status
 
-### Next Steps After Template Setup:
-1. ✅ Add Tauri to the SvelteKit project
-2. ✅ Configure Tauri for desktop app packaging
-3. ✅ Set up the project structure for WingBot components
-4. 🔄 Begin migrating Flutter widgets to Svelte
+### ✅ **What's COMPLETED:**
+- **SvelteKit Project**: Modern full-stack framework with TailwindCSS v4
+- **Tauri Integration**: Desktop app framework configured and building successfully
+- **shadcn/ui Setup**: Component library ready for use
+- **Backend Modules**: All core modules created with basic functionality
+- **Frontend Layout**: Navigation rail with collapsible sidebar
+- **Dashboard**: Status cards, quick actions, and system information display
+- **Component Library**: Modular, reusable components (StatusCard, QuickActionCard, SectionCard)
+- **Tauri Commands**: All necessary commands registered and working
+
+### 🔄 **What's PARTIALLY IMPLEMENTED:**
+- **Game Manager**: Structure complete but returns mock data for suggestions/recommendations
+- **AI Service**: HTTP client working, health check implemented but not integrated into system info
+- **LCU API**: Windows detection working, Unix/Linux detection TODO
+- **Configuration**: Basic structure in place but many methods unused
+- **Frontend Routes**: Navigation exists but some destination pages are missing
+
+### ❌ **What's MOCKED/PLACEHOLDER:**
+1. **Game Data**: Champion suggestions and ability recommendations return hardcoded mock data
+2. **AI Service Status**: Shows "Checking..." instead of actual connection status
+3. **Champion Data**: Empty HashMap in GameManager
+4. **Missing Pages**: Champion select, live game, AI chat, settings routes exist but pages don't
+
+### 🚨 **Current Blockers:**
+1. **AI Service Health Check**: Not integrated into system info display
+2. **Mock Data**: Frontend shows placeholder data instead of real information
+3. **Missing Pages**: Navigation links to non-existent routes
+4. **Error Handling**: No proper error states or loading indicators
+
+## Next Immediate Steps
+
+### 1. **Fix AI Service Status Display** (High Priority)
+- Integrate health check into `get_system_info` Tauri command
+- Update frontend to show real connection status instead of "Checking..."
+
+### 2. **Create Missing Route Pages** (High Priority)
+- `/champion-select` - Champion pick/ban interface
+- `/live-game` - In-game assistance and data
+- `/ai-chat` - AI conversation interface
+- `/settings` - Configuration panel
+
+### 3. **Replace Mock Data** (Medium Priority)
+- Implement real champion data loading
+- Connect to Python backend for actual AI recommendations
+- Add real-time game state updates
+
+### 4. **Complete LCU API** (Medium Priority)
+- Add Unix/Linux support for cross-platform compatibility
+- Improve error handling and connection management
+
+### 5. **Add Error Handling** (Medium Priority)
+- Proper error states for failed API calls
+- Loading indicators for async operations
+- User feedback for connection issues
 
 ## Technical Requirements
 - Use CLI commands for project initialization
@@ -94,49 +143,27 @@ wingbot/
 ## Success Criteria
 - [x] SvelteKit project runs successfully with all tooling
 - [x] Tauri integration works properly
+- [x] shadcn/ui components configured
+- [x] Core backend modules implemented (structure)
+- [x] Basic frontend layout and navigation
+- [x] Modular component architecture established
+- [ ] Mock data replaced with real functionality
 - [ ] All existing Flutter functionality is replicated
 - [ ] UI is modern and responsive
-- [ ] Components are modular and reusable
 - [ ] Integration with existing server works
 - [ ] Code follows user preferences
 
 ## Template Benefits for WingBot
 - **SvelteKit routing** - Perfect for multi-screen desktop app navigation
 - **API routes** - Can build backend endpoints right in the app
-- **Component testing** - Vitest + Storybook for reliable UI development
-- **Local database** - SQLite for storing game data and user preferences
+- **Component testing** - Built-in testing capabilities
+- **Local database** - Can add SQLite for storing game data and preferences
 - **Modern tooling** - Latest versions of all dependencies
 - **Desktop-ready** - Optimized for Tauri desktop app performance
+- **shadcn/ui** - Professional component library for consistent UI
 
-## Backend Development Progress
-
-### ✅ Tauri Backend Setup Complete
-- **Rust Backend Structure**: Created modular backend with proper separation of concerns
-- **Game Management**: Implemented game state management, champion suggestions, and ability recommendations
-- **System Integration**: Added League client detection and system information gathering
-- **AI Service Integration**: Created service layer for communicating with existing Python AI backend
-- **Configuration Management**: Built comprehensive configuration system with file persistence
-- **API Commands**: Implemented 15+ Tauri commands for frontend-backend communication
-
-### 🔧 Backend Architecture
-```
-src-tauri/
-├── src/
-│   ├── lib.rs          # Main application and command handlers
-│   ├── game.rs         # Game state and champion management
-│   ├── system.rs       # System info and League client detection
-│   ├── ai_service.rs   # AI backend integration
-│   └── config.rs       # Configuration management
-├── Cargo.toml          # Dependencies and build configuration
-└── tauri.conf.json     # Tauri app configuration
-```
-
-### 🚀 Ready for Frontend Integration
-The backend now provides:
-- Game state management and updates
-- Champion selection recommendations
-- Ability usage suggestions
-- System information and League client status
-- AI service communication
-- Configuration persistence and management
-- Proper error handling and async operations
+## Current Development Status
+**Phase 2 (Backend)**: 85% Complete - Core structure done, needs real data integration
+**Phase 3 (Frontend)**: 60% Complete - Layout done, needs missing pages and real data
+**Phase 4 (API Integration)**: 40% Complete - Commands exist, needs real data flow
+**Overall Progress**: ~65% Complete - Solid foundation, needs functionality implementation
