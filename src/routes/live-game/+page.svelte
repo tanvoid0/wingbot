@@ -12,6 +12,7 @@
     isLoading, 
     isRefreshing, 
     error,
+    errorStable,
     gameTime, 
     gamePhase, 
     gameMode, 
@@ -21,6 +22,10 @@
     startListening,
     stopListening
   } from '$lib/stores/liveGameStore';
+  
+  // Local state for manual refresh
+  let isManualRefresh = $state(false);
+  let lastUpdateTime = $state(Date.now());
   // Debug Store
   import { isDebugModalOpen, openDebugModal, closeDebugModal } from '$lib/stores/debugStore';
   
@@ -35,6 +40,25 @@
   import NoLiveGameMessage from '$lib/components/live-game/NoLiveGameMessage.svelte';
   import { onMount, onDestroy } from 'svelte';
 
+  // Handle manual refresh
+  function handleManualRefresh() {
+    isManualRefresh = true;
+    lastUpdateTime = Date.now();
+    liveGameActions.refresh();
+    
+    // Reset manual refresh state after a delay
+    setTimeout(() => {
+      isManualRefresh = false;
+    }, 2000);
+  }
+  
+  // Track automatic updates
+  $effect(() => {
+    if ($gameData && !isManualRefresh) {
+      lastUpdateTime = Date.now();
+    }
+  });
+
   // Start listening when component mounts, stop when it unmounts
   onMount(() => {
     startListening();
@@ -45,58 +69,75 @@
   });
 </script>
 
-<div class="p-6 space-y-6">
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold text-foreground">Live Game</h1>
-      <p class="text-muted-foreground mt-1">Real-time game analysis and recommendations</p>
-    </div>
-    <div class="flex items-center gap-4">
-      <div class="text-right">
-        <div class="text-2xl font-mono font-bold flex items-center gap-2">
-          {$gameTime}
-          {#if liveGameActions.getSyncStatus() === 'synced'}
-            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Live timer synced with API"></div>
-          {:else if liveGameActions.getSyncStatus() === 'stale'}
-            <div class="w-2 h-2 bg-yellow-500 rounded-full" title="API sync stale, using local timer"></div>
-          {:else if liveGameActions.getSyncStatus() === 'local'}
-            <div class="w-2 h-2 bg-blue-500 rounded-full" title="Local timer (no API sync)"></div>
-          {:else}
-            <div class="w-2 h-2 bg-gray-400 rounded-full" title="No live game detected"></div>
-          {/if}
+<div class="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+  <div class="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex-1">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+          Live Game
+        </h1>
+        <p class="text-muted-foreground mt-1 text-sm sm:text-base">
+          Real-time game analysis and recommendations
+        </p>
+      </div>
+      
+      <!-- Timer and Controls -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <!-- Game Timer -->
+        <div class="flex items-center gap-3 bg-card/50 backdrop-blur-sm border rounded-xl px-4 py-3 shadow-sm">
+          <div class="text-xl sm:text-2xl font-mono font-bold flex items-center gap-2">
+            {$gameTime}
+            {#if liveGameActions.getSyncStatus() === 'synced'}
+              <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Live timer synced with API"></div>
+            {:else if liveGameActions.getSyncStatus() === 'stale'}
+              <div class="w-2 h-2 bg-yellow-500 rounded-full" title="API sync stale, using local timer"></div>
+            {:else if liveGameActions.getSyncStatus() === 'local'}
+              <div class="w-2 h-2 bg-blue-500 rounded-full" title="Local timer (no API sync)"></div>
+            {:else}
+              <div class="w-2 h-2 bg-gray-400 rounded-full" title="No live game detected"></div>
+            {/if}
+          </div>
+          <div class="text-xs sm:text-sm text-muted-foreground">
+            {liveGameActions.getSyncStatus() === 'synced' ? 'Synced' : 
+             liveGameActions.getSyncStatus() === 'stale' ? 'Stale' :
+             liveGameActions.getSyncStatus() === 'local' ? 'Local' : 'Offline'}
+          </div>
+          <!-- Subtle update indicator -->
+          <div class="flex items-center gap-1 text-xs text-muted-foreground">
+            <div class="w-1.5 h-1.5 bg-green-400 rounded-full {Date.now() - lastUpdateTime < 3000 ? 'animate-pulse' : 'opacity-50'}" title="Last updated: {new Date(lastUpdateTime).toLocaleTimeString()}"></div>
+            <span class="hidden sm:inline">Live</span>
+          </div>
         </div>
-        <div class="text-sm text-muted-foreground">
-          {liveGameActions.getSyncStatus() === 'synced' ? 'Live Timer (Synced)' : 
-           liveGameActions.getSyncStatus() === 'stale' ? 'Live Timer (Stale)' :
-           liveGameActions.getSyncStatus() === 'local' ? 'Live Timer (Local)' : 'Game Time'}
+        
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => {
+              console.log('Debug button clicked, opening modal...');
+              openDebugModal();
+            }}
+            class="flex items-center gap-2"
+          >
+            <Bug class="w-4 h-4" />
+            <span class="hidden sm:inline">Debug</span>
+          </Button>
+          <Button
+            size="sm"
+            onclick={handleManualRefresh}
+            disabled={$isLoading || isManualRefresh}
+            class="flex items-center gap-2"
+          >
+            <RefreshCw class="w-4 h-4 {isManualRefresh ? 'animate-spin' : ''}" />
+            <span class="hidden sm:inline">{isManualRefresh ? 'Refreshing...' : 'Refresh'}</span>
+          </Button>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <Button
-          variant="outline"
-          onclick={() => {
-            console.log('Debug button clicked, opening modal...');
-            openDebugModal();
-          }}
-          class="flex items-center gap-2"
-        >
-          <Bug class="w-4 h-4" />
-          Debug
-        </Button>
-        <Button
-          onclick={liveGameActions.refresh}
-          disabled={$isLoading || $isRefreshing}
-          class="flex items-center gap-2"
-        >
-          <RefreshCw class="w-4 h-4 {($isLoading || $isRefreshing) ? 'animate-spin' : ''}" />
-          {$isRefreshing ? 'Refreshing...' : 'Refresh'}
-        </Button>
-      </div>
     </div>
-  </div>
 
-  {#if $error}
+  {#if $error && !$isSpectatorMode}
     <Alert variant="destructive">
       <AlertCircle class="h-4 w-4" />
       <AlertDescription>Error: {$error}</AlertDescription>
@@ -131,12 +172,12 @@
   <!-- Show game data if we have valid game data (either live game or spectator mode) -->
   {#if ($gameData?.allPlayers && $gameData.allPlayers.length > 0) && !$error}
   
-  <!-- Refresh Loading Overlay -->
-  {#if $isRefreshing}
+  <!-- Manual Refresh Loading Overlay -->
+  {#if isManualRefresh}
     <div class="fixed top-4 right-4 z-50 bg-background/90 backdrop-blur-sm border rounded-lg px-3 py-2 shadow-lg">
       <div class="flex items-center gap-2 text-sm">
         <RefreshCw class="w-4 h-4 animate-spin text-primary" />
-        <span class="text-muted-foreground">Updating data...</span>
+        <span class="text-muted-foreground">Refreshing data...</span>
       </div>
     </div>
   {/if}
@@ -168,9 +209,10 @@
     <NoLiveGameMessage 
       error={$error}
       isLoading={$isLoading}
-      isRefreshing={$isRefreshing}
-      onRetry={liveGameActions.refresh}
+      isRefreshing={isManualRefresh}
+      onRetry={handleManualRefresh}
       onViewDebug={openDebugModal}
     />
   {/if}
+  </div>
 </div>

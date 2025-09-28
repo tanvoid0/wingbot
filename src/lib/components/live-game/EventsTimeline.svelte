@@ -16,7 +16,19 @@
   } from '@lucide/svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
+  import ImageWithFallback from '$lib/components/ui/ImageWithFallback.svelte';
+  import { 
+    getChampionImageUrl, 
+    getChampionFallback 
+  } from '$lib/services/imageService';
   import { gameData, liveGameActions } from '$lib/stores/liveGameStore';
+  import { onMount } from 'svelte';
+  
+  // Local state for stable event list
+  let displayedEvents = $state<any[]>([]);
+  let lastEventCount = $state(0);
+  let newEventIds = $state(new Set<string>());
+  let currentGameSession = $state<string | null>(null);
 
   // Event type configurations for better visual hierarchy
   const eventConfigs = {
@@ -96,35 +108,142 @@
       borderColor: 'border-gray-200 dark:border-gray-800'
     };
   }
+
+  // Helper function to get champion info from player name
+  function getChampionInfo(playerName: string) {
+    if (!$gameData?.allPlayers) return null;
+    
+    const player = $gameData.allPlayers.find(p => 
+      p.summonerName === playerName || 
+      p.riotIdGameName === playerName ||
+      p.championName === playerName
+    );
+    
+    return player ? {
+      championName: player.championName,
+      team: player.team
+    } : null;
+  }
+
+  // Function to generate a game session identifier
+  function generateGameSessionId() {
+    if (!$gameData) return null;
+    
+    // Create a session ID based on game state that changes when a new game starts
+    const gameMode = $gameData.gameData?.gameMode || 'unknown';
+    const mapName = $gameData.gameData?.mapName || 'unknown';
+    const playerCount = $gameData.allPlayers?.length || 0;
+    const firstPlayer = $gameData.allPlayers?.[0];
+    const playerNames = $gameData.allPlayers?.map(p => p.summonerName).sort().join(',') || '';
+    
+    // Use a combination of factors that would change between games
+    return `${gameMode}_${mapName}_${playerCount}_${playerNames.slice(0, 50)}`;
+  }
+
+  // Function to detect if we're in a new game session
+  function isNewGameSession() {
+    const newSessionId = generateGameSessionId();
+    return newSessionId && newSessionId !== currentGameSession;
+  }
+
+  // Function to reset events for a new game
+  function resetEventsForNewGame() {
+    displayedEvents = [];
+    lastEventCount = 0;
+    newEventIds.clear();
+    currentGameSession = generateGameSessionId();
+  }
+
+  // Function to update displayed events (only append new ones)
+  function updateDisplayedEvents() {
+    if (!$gameData?.events?.Events) return;
+    
+    // Check if we're in a new game session
+    if (isNewGameSession()) {
+      resetEventsForNewGame();
+    }
+    
+    const currentEvents = $gameData.events.Events;
+    const currentCount = currentEvents.length;
+    
+    // Only update if we have new events
+    if (currentCount > lastEventCount) {
+      const newEvents = currentEvents.slice(lastEventCount);
+      
+      // Mark new events for animation
+      newEvents.forEach(event => {
+        const eventId = `${event.EventName}_${event.EventTime}_${(event as any).KillerName || 'unknown'}`;
+        newEventIds.add(eventId);
+        
+        // Remove the "new" flag after animation
+        setTimeout(() => {
+          newEventIds.delete(eventId);
+        }, 1500);
+      });
+      
+      // Add new events to the displayed list
+      displayedEvents = [...displayedEvents, ...newEvents];
+      
+      // Keep only the last 20 events to prevent memory issues
+      if (displayedEvents.length > 20) {
+        displayedEvents = displayedEvents.slice(-20);
+      }
+      
+      lastEventCount = currentCount;
+    }
+  }
+
+  // Watch for game data changes and update events
+  $effect(() => {
+    if ($gameData?.events?.Events) {
+      updateDisplayedEvents();
+    }
+  });
+
+  // Initialize events on mount
+  onMount(() => {
+    if ($gameData?.events?.Events) {
+      displayedEvents = $gameData.events.Events.slice(-20);
+      lastEventCount = $gameData.events.Events.length;
+      currentGameSession = generateGameSessionId();
+    }
+  });
 </script>
 
 {#if $gameData && typeof $gameData === 'object' && 'events' in $gameData}
-  <Card>
-    <CardHeader>
-      <CardTitle class="flex items-center gap-2">
-        <Clock class="w-5 h-5" />
-        Game Events Timeline
-        <Badge variant="outline" class="text-xs ml-auto">
+  <Card class="bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm border-border/50 shadow-lg">
+    <CardHeader class="pb-4">
+      <CardTitle class="flex items-center gap-3 text-lg">
+        <div class="p-2 rounded-lg bg-primary/10">
+          <Clock class="w-5 h-5 text-primary" />
+        </div>
+        <div class="flex-1">
+          <div class="font-bold">Game Events Timeline</div>
+          <div class="text-sm text-muted-foreground font-normal">Real-time game events</div>
+        </div>
+        <Badge variant="outline" class="text-xs">
           Latest First
         </Badge>
       </CardTitle>
     </CardHeader>
     <CardContent>
-      {#if ($gameData as any).events?.Events && ($gameData as any).events.Events.length > 0}
-        <div class="space-y-3 max-h-96 overflow-y-auto pr-2">
-          {#each ($gameData as any).events.Events.slice(-20).reverse() as event, index}
+      {#if displayedEvents.length > 0}
+        <div class="space-y-3 max-h-80 sm:max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+          {#each displayedEvents.slice().reverse() as event, index}
             {@const config = getEventConfig(event.EventName)}
             {@const IconComponent = config.icon}
+            {@const eventId = `${event.EventName}_${event.EventTime}_${(event as any).KillerName || 'unknown'}`}
+            {@const isNewEvent = newEventIds.has(eventId)}
             <div class="relative">
               <!-- Timeline connector line -->
-              {#if index < ($gameData as any).events.Events.slice(-20).length - 1}
+              {#if index < displayedEvents.length - 1}
                 <div class="absolute left-6 top-12 w-0.5 h-6 bg-border"></div>
               {/if}
               
-              <div class="flex items-start gap-4 p-4 rounded-xl border-2 {config.borderColor} {config.bgColor} hover:shadow-md transition-all duration-300 group">
+              <div class="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 {config.borderColor} {config.bgColor} hover:shadow-md transition-all duration-300 group">
                 <!-- Timeline dot with icon -->
-                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-background border-2 {config.borderColor} flex items-center justify-center shadow-sm group-hover:scale-110 transition-all duration-300">
-                  <IconComponent class="w-5 h-5 {config.iconColor} {
+                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-background border-2 {config.borderColor} flex items-center justify-center shadow-sm group-hover:scale-110 transition-all duration-300">
+                  <IconComponent class="w-4 h-4 sm:w-5 sm:h-5 {config.iconColor} {
                     event.EventName === 'ChampionKill' ? 'animate-pulse' :
                     event.EventName === 'FirstBlood' ? 'animate-bounce animate-pulse' :
                     event.EventName === 'TurretKilled' ? 'animate-pulse' :
@@ -157,14 +276,49 @@
                   <!-- Event description -->
                   <div class="space-y-1">
                     {#if event.EventName === 'ChampionKill'}
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <span class="px-2 py-1 rounded-md text-sm font-semibold {config.killerColor} animate-pulse">
-                          {event.KillerName}
-                        </span>
-                        <span class="text-muted-foreground text-sm">eliminated</span>
-                        <span class="px-2 py-1 rounded-md text-sm font-semibold {config.victimColor}">
-                          {event.VictimName}
-                        </span>
+                      {@const killerInfo = getChampionInfo(event.KillerName)}
+                      {@const victimInfo = getChampionInfo(event.VictimName)}
+                      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-wrap">
+                        <!-- Killer -->
+                        <div class="flex items-center gap-2">
+                          {#if killerInfo}
+                            <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                              <ImageWithFallback
+                                src={getChampionImageUrl(killerInfo.championName)}
+                                alt={killerInfo.championName}
+                                fallback={getChampionFallback(killerInfo.championName)}
+                                class="w-full h-full"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          {/if}
+                          <span class="px-2 py-1 rounded-md text-xs sm:text-sm font-semibold {config.killerColor} animate-pulse">
+                            {event.KillerName}
+                          </span>
+                        </div>
+                        
+                        <span class="text-muted-foreground text-xs sm:text-sm">eliminated</span>
+                        
+                        <!-- Victim -->
+                        <div class="flex items-center gap-2">
+                          {#if victimInfo}
+                            <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                              <ImageWithFallback
+                                src={getChampionImageUrl(victimInfo.championName)}
+                                alt={victimInfo.championName}
+                                fallback={getChampionFallback(victimInfo.championName)}
+                                class="w-full h-full"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          {/if}
+                          <span class="px-2 py-1 rounded-md text-xs sm:text-sm font-semibold {config.victimColor}">
+                            {event.VictimName}
+                          </span>
+                        </div>
+                        
                         {#if event.Assisters && event.Assisters.length > 0}
                           <div class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
                             assisted by {event.Assisters.join(', ')}
@@ -172,51 +326,154 @@
                         {/if}
                       </div>
                     {:else if event.EventName === 'FirstBlood'}
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <Badge variant="destructive" class="text-xs font-bold animate-pulse animate-bounce">
+                      {@const killerInfo = getChampionInfo(event.KillerName)}
+                      {@const victimInfo = getChampionInfo(event.VictimName)}
+                      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-wrap">
+                        <Badge variant="destructive" class="text-xs font-bold animate-pulse animate-bounce w-fit">
                           FIRST BLOOD
                         </Badge>
-                        <span class="px-2 py-1 rounded-md text-sm font-semibold {config.killerColor} animate-bounce">
-                          {event.KillerName}
-                        </span>
-                        <span class="text-muted-foreground text-sm">eliminated</span>
-                        <span class="px-2 py-1 rounded-md text-sm font-semibold {config.victimColor}">
-                          {event.VictimName}
-                        </span>
+                        
+                        <!-- Killer -->
+                        <div class="flex items-center gap-2">
+                          {#if killerInfo}
+                            <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                              <ImageWithFallback
+                                src={getChampionImageUrl(killerInfo.championName)}
+                                alt={killerInfo.championName}
+                                fallback={getChampionFallback(killerInfo.championName)}
+                                class="w-full h-full"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          {/if}
+                          <span class="px-2 py-1 rounded-md text-xs sm:text-sm font-semibold {config.killerColor} animate-bounce">
+                            {event.KillerName}
+                          </span>
+                        </div>
+                        
+                        <span class="text-muted-foreground text-xs sm:text-sm">eliminated</span>
+                        
+                        <!-- Victim -->
+                        <div class="flex items-center gap-2">
+                          {#if victimInfo}
+                            <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                              <ImageWithFallback
+                                src={getChampionImageUrl(victimInfo.championName)}
+                                alt={victimInfo.championName}
+                                fallback={getChampionFallback(victimInfo.championName)}
+                                class="w-full h-full"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          {/if}
+                          <span class="px-2 py-1 rounded-md text-xs sm:text-sm font-semibold {config.victimColor}">
+                            {event.VictimName}
+                          </span>
+                        </div>
                       </div>
                     {:else if event.EventName === 'TurretKilled'}
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <span class="px-2 py-1 rounded-md text-sm font-semibold {config.killerColor} animate-pulse">
-                          {event.KillerName}
-                        </span>
-                        <span class="text-muted-foreground text-sm">destroyed</span>
-                        <span class="text-orange-600 font-semibold text-sm animate-bounce">🏰 Turret</span>
+                      {@const killerInfo = getChampionInfo(event.KillerName)}
+                      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-wrap">
+                        <!-- Killer -->
+                        <div class="flex items-center gap-2">
+                          {#if killerInfo}
+                            <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                              <ImageWithFallback
+                                src={getChampionImageUrl(killerInfo.championName)}
+                                alt={killerInfo.championName}
+                                fallback={getChampionFallback(killerInfo.championName)}
+                                class="w-full h-full"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          {/if}
+                          <span class="px-2 py-1 rounded-md text-xs sm:text-sm font-semibold {config.killerColor} animate-pulse">
+                            {event.KillerName}
+                          </span>
+                        </div>
+                        
+                        <span class="text-muted-foreground text-xs sm:text-sm">destroyed</span>
+                        <span class="text-orange-600 font-semibold text-xs sm:text-sm animate-bounce">🏰 Turret</span>
                       </div>
                     {:else if event.EventName === 'FirstBrick'}
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <Badge variant="secondary" class="text-xs font-bold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 animate-bounce">
+                      {@const killerInfo = getChampionInfo(event.KillerName)}
+                      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-wrap">
+                        <Badge variant="secondary" class="text-xs font-bold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 animate-bounce w-fit">
                           FIRST BRICK
                         </Badge>
-                        <span class="px-2 py-1 rounded-md text-sm font-semibold {config.killerColor} animate-pulse">
-                          {event.KillerName}
-                        </span>
+                        
+                        <!-- Killer -->
+                        <div class="flex items-center gap-2">
+                          {#if killerInfo}
+                            <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                              <ImageWithFallback
+                                src={getChampionImageUrl(killerInfo.championName)}
+                                alt={killerInfo.championName}
+                                fallback={getChampionFallback(killerInfo.championName)}
+                                class="w-full h-full"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          {/if}
+                          <span class="px-2 py-1 rounded-md text-xs sm:text-sm font-semibold {config.killerColor} animate-pulse">
+                            {event.KillerName}
+                          </span>
+                        </div>
                       </div>
                     {:else if event.EventName === 'Multikill'}
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <Badge variant="secondary" class="text-xs font-bold bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 animate-pulse animate-bounce">
+                      {@const killerInfo = getChampionInfo(event.KillerName)}
+                      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-wrap">
+                        <Badge variant="secondary" class="text-xs font-bold bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 animate-pulse animate-bounce w-fit">
                           {event.KillStreak} KILL STREAK
                         </Badge>
-                        <span class="px-2 py-1 rounded-md text-sm font-semibold {config.killerColor} animate-bounce">
-                          {event.KillerName}
-                        </span>
+                        
+                        <!-- Killer -->
+                        <div class="flex items-center gap-2">
+                          {#if killerInfo}
+                            <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                              <ImageWithFallback
+                                src={getChampionImageUrl(killerInfo.championName)}
+                                alt={killerInfo.championName}
+                                fallback={getChampionFallback(killerInfo.championName)}
+                                class="w-full h-full"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          {/if}
+                          <span class="px-2 py-1 rounded-md text-xs sm:text-sm font-semibold {config.killerColor} animate-bounce">
+                            {event.KillerName}
+                          </span>
+                        </div>
                       </div>
                     {:else if event.EventName === 'HordeKill'}
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <span class="px-2 py-1 rounded-md text-sm font-semibold {config.killerColor} animate-pulse">
-                          {event.KillerName}
-                        </span>
-                        <span class="text-muted-foreground text-sm">slayed</span>
-                        <span class="text-green-600 font-semibold text-sm animate-bounce">🐉 Baron Nashor</span>
+                      {@const killerInfo = getChampionInfo(event.KillerName)}
+                      <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-wrap">
+                        <!-- Killer -->
+                        <div class="flex items-center gap-2">
+                          {#if killerInfo}
+                            <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                              <ImageWithFallback
+                                src={getChampionImageUrl(killerInfo.championName)}
+                                alt={killerInfo.championName}
+                                fallback={getChampionFallback(killerInfo.championName)}
+                                class="w-full h-full"
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                          {/if}
+                          <span class="px-2 py-1 rounded-md text-xs sm:text-sm font-semibold {config.killerColor} animate-pulse">
+                            {event.KillerName}
+                          </span>
+                        </div>
+                        
+                        <span class="text-muted-foreground text-xs sm:text-sm">slayed</span>
+                        <span class="text-green-600 font-semibold text-xs sm:text-sm animate-bounce">🐉 Baron Nashor</span>
                         {#if event.Stolen}
                           <Badge variant="destructive" class="text-xs font-bold animate-pulse animate-bounce">
                             STOLEN!
@@ -243,9 +500,11 @@
           {/each}
         </div>
       {:else}
-        <div class="text-center py-8 text-muted-foreground">
-          <Clock class="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No game events available</p>
+        <div class="text-center py-12 text-muted-foreground">
+          <div class="p-4 rounded-full bg-primary/10 w-fit mx-auto mb-4">
+            <Clock class="w-8 h-8 text-primary/50" />
+          </div>
+          <p class="text-sm">No game events available</p>
         </div>
       {/if}
     </CardContent>

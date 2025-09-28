@@ -18,6 +18,8 @@ export const gameState = writable<ComprehensiveGameState | null>(null);
 export const isLoading = writable(false);
 export const isRefreshing = writable(false);
 export const error = writable<string | null>(null);
+export const lastErrorState = writable<string | null>(null);
+export const errorStable = writable(false);
 
 // Game Info
 export const gameTime = writable('00:00');
@@ -36,6 +38,30 @@ export const refreshInterval = writable(1000); // Default to 1 second
 
 // Debug state
 export const copiedStates = writable<Record<string, boolean>>({});
+
+// Stable error handling
+function setStableError(errorMessage: string | null) {
+  let currentError: string | null = null;
+  let currentLastError: string | null = null;
+  
+  const unsubscribeError = error.subscribe(e => currentError = e);
+  const unsubscribeLastError = lastErrorState.subscribe(e => currentLastError = e);
+  
+  unsubscribeError();
+  unsubscribeLastError();
+  
+  // Only update error if it's different from the last stable state
+  if (errorMessage !== currentLastError) {
+    error.set(errorMessage);
+    lastErrorState.set(errorMessage);
+    errorStable.set(true);
+    
+    // Reset stability flag after a delay to allow for future changes
+    setTimeout(() => {
+      errorStable.set(false);
+    }, 2000);
+  }
+}
 
 // Game time tracking functions
 function startGameTimeTicker() {
@@ -165,13 +191,21 @@ function formatEventTimeWithContext(seconds: number): string {
 
 // Data loading function
 async function loadLiveGameData(isRefresh = false) {
+  // Debounce rapid calls
+  const now = Date.now();
+  if (now - lastLoadTime < MIN_LOAD_INTERVAL) {
+    console.log('Skipping load - too soon since last load');
+    return;
+  }
+  lastLoadTime = now;
+  
   try {
     if (isRefresh) {
       isRefreshing.set(true);
     } else {
       isLoading.set(true);
     }
-    error.set(null);
+    setStableError(null);
     
     console.log('Loading live game data...');
     
@@ -179,6 +213,14 @@ async function loadLiveGameData(isRefresh = false) {
     const comprehensiveState = await invoke('get_comprehensive_game_state') as ComprehensiveGameState;
     console.log('Comprehensive state:', comprehensiveState);
     gameState.set(comprehensiveState);
+    
+    // Check if we're in spectator mode from comprehensive state
+    if (comprehensiveState?.game_phase === 'in_game' && !comprehensiveState?.live_client_available) {
+      console.log('Spectator mode detected from comprehensive state');
+      isSpectatorMode.set(true);
+      setStableError('Spectator mode - limited data available');
+      return;
+    }
     
     // If live client is available, get detailed data
     if (comprehensiveState?.live_client_available) {
@@ -196,6 +238,7 @@ async function loadLiveGameData(isRefresh = false) {
           scores = await invoke('get_player_scores', { riotId: 'current_player' }) as PlayerScoresData;
         } catch (scoreError) {
           console.warn('Player scores not available:', scoreError);
+          // Don't set this as an error since it's optional data
         }
         
         console.log('Game data:', game);
@@ -221,9 +264,17 @@ async function loadLiveGameData(isRefresh = false) {
         }
         
         // Check if we're in spectator mode
+        let isSpectator = false;
         if (allGameData && typeof allGameData === 'object' && 'activePlayer' in allGameData) {
           const activePlayer = (allGameData as any).activePlayer;
-          isSpectatorMode.set(activePlayer?.error === "Spectator mode doesn't currently support this feature");
+          isSpectator = activePlayer?.error === "Spectator mode doesn't currently support this feature";
+          isSpectatorMode.set(isSpectator);
+        }
+        
+        // Handle spectator mode - show limited data but don't treat as error
+        if (isSpectator) {
+          console.log('Spectator mode detected - showing limited data');
+          // Don't clear error here, let the UI handle spectator mode gracefully
         }
         
         // Check if game has ended by looking for GameEnd event
@@ -278,9 +329,9 @@ async function loadLiveGameData(isRefresh = false) {
       
       // Check if LCU is connected but no live game
       if (comprehensiveState?.lcu_connected) {
-        error.set('League client connected but not in a live game');
+        setStableError('League client connected but not in a live game');
       } else {
-        error.set('League client not detected or not connected');
+        setStableError('League client not detected or not connected');
       }
     }
     
@@ -297,11 +348,11 @@ async function loadLiveGameData(isRefresh = false) {
     const unsubscribeGameState = gameState.subscribe(gs => currentGameState = gs);
     unsubscribeGameState();
     
-    if (currentGameState && 'game_mode' in currentGameState) {
-      gameMode.set((currentGameState as any).game_mode);
+    if (currentGameState && 'gameMode' in currentGameState) {
+      gameMode.set((currentGameState as any).gameMode);
     }
   } catch (err) {
-    error.set(err as string);
+    setStableError(err as string);
     console.error('Failed to load live game data:', err);
     // Clear all data on error
     gameData.set(null);
@@ -357,10 +408,15 @@ async function copyToClipboard(data: any, key: string) {
 // Store management
 let isListening = false;
 let refreshIntervalId: number | null = null;
-let cleanup: (() => void) | null = null;
+let refreshIntervalUnsubscribe: (() => void) | null = null;
+let lastLoadTime = 0;
+const MIN_LOAD_INTERVAL = 500; // Minimum 500ms between loads
 
 export function startListening() {
-  if (isListening) return;
+  if (isListening) {
+    console.log('Live game data listening already active, skipping start');
+    return;
+  }
   isListening = true;
   
   console.log('Starting live game data listening...');
@@ -372,16 +428,23 @@ export function startListening() {
     startGameTimeTicker();
     
     // Set up auto-refresh with the configured interval
-    let currentInterval: number;
-    refreshInterval.subscribe(interval => {
-      currentInterval = interval;
+    refreshIntervalUnsubscribe = refreshInterval.subscribe(interval => {
+      // Clear existing interval
       if (refreshIntervalId) {
         clearInterval(refreshIntervalId);
+        refreshIntervalId = null;
       }
-      if (interval) {
-        refreshIntervalId = setInterval(() => loadLiveGameData(true), currentInterval);
+      
+      // Set up new interval if we have a valid interval value (minimum 1 second)
+      if (interval && interval >= 1000) {
+        console.log(`Setting up auto-refresh with interval: ${interval}ms`);
+        refreshIntervalId = setInterval(() => {
+          loadLiveGameData(true);
+        }, interval);
+      } else {
+        console.log('Skipping auto-refresh setup - interval too small or invalid:', interval);
       }
-    })();
+    });
   });
 }
 
@@ -395,6 +458,12 @@ export function stopListening() {
   if (refreshIntervalId) {
     clearInterval(refreshIntervalId);
     refreshIntervalId = null;
+  }
+  
+  // Unsubscribe from refresh interval changes
+  if (refreshIntervalUnsubscribe) {
+    refreshIntervalUnsubscribe();
+    refreshIntervalUnsubscribe = null;
   }
   
   // Stop game time ticker
