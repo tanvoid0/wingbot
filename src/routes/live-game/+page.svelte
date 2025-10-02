@@ -166,6 +166,7 @@
       copiedStates={$copiedStates}
       onClose={closeDebugModal}
       onCopyToClipboard={liveGameActions.copyToClipboard}
+      onDebugLcuConnection={liveGameActions.debugLcuConnection}
     />
   {/if}
 

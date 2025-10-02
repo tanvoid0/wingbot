@@ -1,6 +1,7 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/core';
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import { 
     Play, 
     Users, 
@@ -24,7 +25,8 @@
   let error = $state<string | null>(null);
 
   onMount(async () => {
-    await loadData();
+    // For debugging, automatically redirect to live game page
+    goto('/live-game');
   });
 
   async function loadData() {

@@ -210,8 +210,13 @@ async function loadLiveGameData(isRefresh = false) {
     console.log('Loading live game data...');
     
     // Try to get comprehensive game state first
+    console.log('Calling get_comprehensive_game_state...');
     const comprehensiveState = await invoke('get_comprehensive_game_state') as ComprehensiveGameState;
-    console.log('Comprehensive state:', comprehensiveState);
+    console.log('Comprehensive state received:', comprehensiveState);
+    console.log('Game phase:', comprehensiveState?.game_phase);
+    console.log('LCU connected:', comprehensiveState?.lcu_connected);
+    console.log('Live client available:', comprehensiveState?.live_client_available);
+    console.log('Full comprehensive state JSON:', JSON.stringify(comprehensiveState, null, 2));
     gameState.set(comprehensiveState);
     
     // Check if we're in spectator mode from comprehensive state
@@ -246,7 +251,12 @@ async function loadLiveGameData(isRefresh = false) {
         console.log('Player scores:', scores);
         console.log('All game data:', allGameData);
         
-        gameData.set(game);
+        // Use allGameData if available, otherwise fall back to game data
+        const finalGameData = allGameData && typeof allGameData === 'object' && 'allPlayers' in allGameData 
+          ? allGameData 
+          : game;
+        
+        gameData.set(finalGameData);
         liveGameStats.set(stats);
         playerScores.set(scores);
         
@@ -390,6 +400,22 @@ async function refresh() {
   await loadLiveGameData(true);
 }
 
+async function debugLcuConnection() {
+  try {
+    console.log('🔍 Calling debug_lcu_connection command...');
+    const debugInfo = await invoke('debug_lcu_connection');
+    console.log('🔍 Debug info received:', debugInfo);
+    console.log('🔍 Connection status:', debugInfo?.connection_status);
+    console.log('🔍 Live client available:', debugInfo?.live_client_available);
+    console.log('🔍 Game flow phase:', debugInfo?.game_flow_phase);
+    console.log('🔍 Errors:', debugInfo?.errors);
+    return debugInfo;
+  } catch (err) {
+    console.error('🔍 Failed to get debug info:', err);
+    throw err;
+  }
+}
+
 async function copyToClipboard(data: any, key: string) {
   try {
     const jsonString = JSON.stringify(data, null, 2);
@@ -498,6 +524,7 @@ export const gamePhaseColor = derived([gamePhase], () => getGamePhaseColor());
 // Export action functions
 export const liveGameActions = {
   refresh,
+  debugLcuConnection,
   copyToClipboard,
   getSyncStatus,
   getGameModeColor,

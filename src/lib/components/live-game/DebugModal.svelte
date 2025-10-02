@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { X, Copy, Check } from '@lucide/svelte';
+  import { X, Copy, Check, Bug, RefreshCw } from '@lucide/svelte';
   import { Button } from '$lib/components/ui/button';
   import type { 
     ComprehensiveGameState, 
@@ -18,6 +18,7 @@
     copiedStates: Record<string, boolean>;
     onClose: () => void;
     onCopyToClipboard: (data: any, key: string) => Promise<void>;
+    onDebugLcuConnection: () => Promise<any>;
   }
 
   let {
@@ -29,14 +30,36 @@
     isSpectatorMode,
     copiedStates,
     onClose,
-    onCopyToClipboard
+    onCopyToClipboard,
+    onDebugLcuConnection
   }: Props = $props();
+
+  // Debug state
+  let debugInfo = $state<any>(null);
+  let isDebugLoading = $state(false);
+  let debugError = $state<string | null>(null);
 
   // Debug logging
   $effect(() => {
     console.log('DebugModal isOpen changed to:', isOpen);
     console.log('DebugModal props:', { isOpen, gameState: !!gameState, gameData: !!gameData });
   });
+
+  // Function to run debug command
+  async function runDebugCommand() {
+    try {
+      isDebugLoading = true;
+      debugError = null;
+      console.log('Running debug command...');
+      debugInfo = await onDebugLcuConnection();
+      console.log('Debug command completed:', debugInfo);
+    } catch (err) {
+      debugError = err as string;
+      console.error('Debug command failed:', err);
+    } finally {
+      isDebugLoading = false;
+    }
+  }
 </script>
 
 {#if isOpen}
@@ -69,6 +92,64 @@
       
       <!-- Modal Content -->
       <div class="p-6 overflow-y-auto space-y-6 text-sm">
+      
+      <!-- LCU Debug Section -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <h4 class="font-semibold text-foreground">LCU Connection Debug</h4>
+          <div class="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onclick={runDebugCommand}
+              disabled={isDebugLoading}
+              class="h-7 px-3 text-xs"
+            >
+              {#if isDebugLoading}
+                <RefreshCw class="w-3 h-3 mr-1 animate-spin" />
+                Running...
+              {:else}
+                <Bug class="w-3 h-3 mr-1" />
+                Run Debug
+              {/if}
+            </Button>
+            {#if debugInfo}
+              <Button
+                variant="outline"
+                size="sm"
+                onclick={() => onCopyToClipboard(debugInfo, 'debugInfo')}
+                class="h-7 px-3 text-xs"
+              >
+                {#if copiedStates.debugInfo}
+                  <Check class="w-3 h-3 mr-1" />
+                  Copied!
+                {:else}
+                  <Copy class="w-3 h-3 mr-1" />
+                  Copy
+                {/if}
+              </Button>
+            {/if}
+          </div>
+        </div>
+        
+        {#if debugError}
+          <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+            <p class="text-red-800 text-xs font-medium">Debug Error:</p>
+            <p class="text-red-700 text-xs">{debugError}</p>
+          </div>
+        {/if}
+        
+        {#if debugInfo}
+          <div class="bg-muted/50 rounded-lg p-3 border">
+            <pre class="text-xs overflow-auto max-h-40 whitespace-pre-wrap">{JSON.stringify(debugInfo, null, 2)}</pre>
+          </div>
+        {:else if !isDebugLoading}
+          <div class="bg-muted/50 rounded-lg p-3 border text-muted-foreground text-xs">
+            Click "Run Debug" to get detailed LCU connection and game state information
+          </div>
+        {/if}
+      </div>
+
       <!-- Game State -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">

@@ -1,11 +1,13 @@
 use serde_json::Value;
 use std::sync::Mutex;
 use lazy_static::lazy_static;
-use std::time::Duration;
 
 mod game;
 mod ai_service;
 mod lcu_api;
+mod lcu_api_tests;
+mod lcu_api_integration_tests;
+mod lcu_api_mock_tests;
 mod config;
 
 use game::{GameManager, GameState, Role};
@@ -173,6 +175,173 @@ async fn get_league_status() -> Result<String, String> {
     Ok(lcu_api.get_connection_status())
 }
 
+#[tauri::command]
+async fn get_comprehensive_game_state() -> Result<Value, String> {
+    // First, try to detect and establish connection
+    {
+        let mut lcu_api = LCU_API.lock().map_err(|e| e.to_string())?;
+        
+        // If no connection exists, try to detect it
+        if !lcu_api.has_connection() {
+            println!("[LCU] No connection found, attempting to detect League client...");
+            match lcu_api.detect_connection() {
+                Ok(connection) => {
+                    println!("[LCU] Successfully detected League client connection");
+                    lcu_api.set_connection(connection);
+                }
+                Err(e) => {
+                    println!("[LCU] Failed to detect League client: {}", e);
+                    // Continue anyway to return current state
+                }
+            }
+        }
+    } // Mutex is released here
+    
+    // Clone the LCU API instance to avoid holding the mutex across await
+    let lcu_api = {
+        let api = LCU_API.lock().map_err(|e| e.to_string())?;
+        api.clone()
+    };
+    
+    let state = lcu_api.get_comprehensive_game_state().await?;
+    Ok(state)
+}
+
+#[tauri::command]
+async fn get_live_game_stats(_riot_id: String) -> Result<Value, String> {
+    // Clone the LCU API instance to avoid holding the mutex across await
+    let lcu_api = {
+        let api = LCU_API.lock().map_err(|e| e.to_string())?;
+        api.clone()
+    };
+    
+    let stats = lcu_api.get_live_game_stats().await?;
+    Ok(stats)
+}
+
+#[tauri::command]
+async fn get_player_scores(riot_id: String) -> Result<Value, String> {
+    // Clone the LCU API instance to avoid holding the mutex across await
+    let lcu_api = {
+        let api = LCU_API.lock().map_err(|e| e.to_string())?;
+        api.clone()
+    };
+    
+    let scores = lcu_api.get_player_scores(&riot_id).await?;
+    Ok(scores)
+}
+
+#[tauri::command]
+async fn get_all_game_data() -> Result<Value, String> {
+    // Clone the LCU API instance to avoid holding the mutex across await
+    let lcu_api = {
+        let api = LCU_API.lock().map_err(|e| e.to_string())?;
+        api.clone()
+    };
+    
+    let data = lcu_api.get_all_game_data().await?;
+    Ok(data)
+}
+
+#[tauri::command]
+async fn debug_lcu_connection() -> Result<Value, String> {
+    println!("[DEBUG] Starting LCU connection debug...");
+    
+    // First, try to detect and establish connection
+    {
+        let mut lcu_api = LCU_API.lock().map_err(|e| e.to_string())?;
+        
+        // If no connection exists, try to detect it
+        if !lcu_api.has_connection() {
+            println!("[DEBUG] No connection found, attempting to detect League client...");
+            match lcu_api.detect_connection() {
+                Ok(connection) => {
+                    println!("[DEBUG] Successfully detected League client connection");
+                    lcu_api.set_connection(connection);
+                }
+                Err(e) => {
+                    println!("[DEBUG] Failed to detect League client: {}", e);
+                    return Err(format!("Failed to detect League client: {}", e));
+                }
+            }
+        } else {
+            println!("[DEBUG] Connection already exists");
+        }
+    } // Mutex is released here
+    
+    // Clone the LCU API instance to avoid holding the mutex across await
+    let lcu_api = {
+        let api = LCU_API.lock().map_err(|e| e.to_string())?;
+        api.clone()
+    };
+    
+    let mut debug_info = serde_json::json!({
+        "connection_status": "connected",
+        "live_client_available": false,
+        "game_flow_phase": null,
+        "game_flow_session": null,
+        "champion_select_state": null,
+        "errors": []
+    });
+    
+    // Test live client availability
+    println!("[DEBUG] Testing live client availability...");
+    let live_client_available = lcu_api.is_live_client_available().await;
+    debug_info["live_client_available"] = serde_json::json!(live_client_available);
+    println!("[DEBUG] Live client available: {}", live_client_available);
+    
+    // Test game flow phase
+    println!("[DEBUG] Testing game flow phase...");
+    match lcu_api.get_current_game_state().await {
+        Ok(phase) => {
+            println!("[DEBUG] Game flow phase: {}", phase);
+            debug_info["game_flow_phase"] = phase;
+        }
+        Err(e) => {
+            debug_info["errors"].as_array_mut().unwrap().push(serde_json::json!({
+                "method": "get_current_game_state",
+                "error": e
+            }));
+            println!("[DEBUG] Failed to get game flow phase: {}", e);
+        }
+    }
+    
+    // Test game flow session
+    println!("[DEBUG] Testing game flow session...");
+    match lcu_api.get_game_flow_session().await {
+        Ok(session) => {
+            debug_info["game_flow_session"] = session;
+            println!("[DEBUG] Game flow session retrieved successfully");
+        }
+        Err(e) => {
+            debug_info["errors"].as_array_mut().unwrap().push(serde_json::json!({
+                "method": "get_game_flow_session",
+                "error": e
+            }));
+            println!("[DEBUG] Failed to get game flow session: {}", e);
+        }
+    }
+    
+    // Test champion select state
+    println!("[DEBUG] Testing champion select state...");
+    match lcu_api.get_champion_select_state().await {
+        Ok(champ_select) => {
+            debug_info["champion_select_state"] = serde_json::to_value(champ_select).unwrap_or(serde_json::Value::Null);
+            println!("[DEBUG] Champion select state retrieved successfully");
+        }
+        Err(e) => {
+            debug_info["errors"].as_array_mut().unwrap().push(serde_json::json!({
+                "method": "get_champion_select_state",
+                "error": e
+            }));
+            println!("[DEBUG] Failed to get champion select state: {}", e);
+        }
+    }
+    
+    println!("[DEBUG] Debug info: {}", serde_json::to_string_pretty(&debug_info).unwrap_or_default());
+    Ok(debug_info)
+}
+
 // Configuration management
 #[tauri::command]
 async fn get_config() -> Result<Value, String> {
@@ -217,7 +386,7 @@ async fn update_ui_config(config: Value) -> Result<(), String> {
 #[tauri::command]
 async fn get_system_info() -> Result<Value, String> {
     let lcu_api = LCU_API.lock().map_err(|e| e.to_string())?;
-    let ai_service = AI_SERVICE.lock().map_err(|e| e.to_string())?;
+    let _ai_service = AI_SERVICE.lock().map_err(|e| e.to_string())?;
     
     let info = serde_json::json!({
         "os": std::env::consts::OS,
@@ -250,6 +419,11 @@ pub fn run() {
             get_champion_select_state,
             get_live_game_data,
             get_league_status,
+            get_comprehensive_game_state,
+            get_live_game_stats,
+            get_player_scores,
+            get_all_game_data,
+            debug_lcu_connection,
             
             // Configuration management
             get_config,
