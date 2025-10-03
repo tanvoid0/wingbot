@@ -189,17 +189,46 @@
   <!-- Active Player Info -->
   <ActivePlayerInfo />
 
-  <!-- Team Comparison -->
-  <TeamComparison />
+  <!-- Responsive Layout: Events First on Mobile, Sidebar on Desktop -->
+  <div class="space-y-6">
+    <!-- Events Timeline - Always visible, prominent on mobile -->
+    <div class="lg:hidden">
+      <EventsTimeline />
+    </div>
 
-  <!-- Game Events Timeline -->
-  <EventsTimeline />
+    <!-- Desktop Two Column Layout -->
+    <div class="hidden lg:grid lg:grid-cols-3 gap-6">
+      <!-- Main Content Column -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Team Comparison -->
+        <TeamComparison />
 
-  <!-- Live Game Stats -->
-  <LiveStats liveGameStats={$liveGameStats} gameMode={$gameMode} />
+        <!-- Live Game Stats -->
+        <LiveStats liveGameStats={$liveGameStats} gameMode={$gameMode} />
 
-  <!-- AI Recommendations -->
-  <AIRecommendations gameMode={$gameMode} />
+        <!-- AI Recommendations -->
+        <AIRecommendations gameMode={$gameMode} />
+      </div>
+
+      <!-- Events Sidebar Column -->
+      <div class="lg:col-span-1">
+        <!-- Game Events Timeline -->
+        <EventsTimeline />
+      </div>
+    </div>
+
+    <!-- Mobile/Tablet Single Column Layout -->
+    <div class="lg:hidden space-y-6">
+      <!-- Team Comparison -->
+      <TeamComparison />
+
+      <!-- Live Game Stats -->
+      <LiveStats liveGameStats={$liveGameStats} gameMode={$gameMode} />
+
+      <!-- AI Recommendations -->
+      <AIRecommendations gameMode={$gameMode} />
+    </div>
+  </div>
 
 
   {/if}

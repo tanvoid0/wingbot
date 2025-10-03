@@ -18,7 +18,7 @@
   import { Badge } from '$lib/components/ui/badge';
   import ImageWithFallback from '$lib/components/ui/ImageWithFallback.svelte';
   import { 
-    getChampionImageUrl, 
+    getChampionImageUrlSync, 
     getChampionFallback 
   } from '$lib/services/imageService';
   import { gameData, liveGameActions } from '$lib/stores/liveGameStore';
@@ -228,7 +228,7 @@
     </CardHeader>
     <CardContent>
       {#if displayedEvents.length > 0}
-        <div class="space-y-3 max-h-80 sm:max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+        <div class="space-y-3 max-h-96 sm:max-h-[28rem] lg:max-h-[32rem] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           {#each displayedEvents.slice().reverse() as event, index}
             {@const config = getEventConfig(event.EventName)}
             {@const IconComponent = config.icon}
@@ -284,7 +284,7 @@
                           {#if killerInfo}
                             <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
                               <ImageWithFallback
-                                src={getChampionImageUrl(killerInfo.championName)}
+                                src={getChampionImageUrlSync(killerInfo.championName)}
                                 alt={killerInfo.championName}
                                 fallback={getChampionFallback(killerInfo.championName)}
                                 class="w-full h-full"
@@ -305,7 +305,7 @@
                           {#if victimInfo}
                             <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
                               <ImageWithFallback
-                                src={getChampionImageUrl(victimInfo.championName)}
+                                src={getChampionImageUrlSync(victimInfo.championName)}
                                 alt={victimInfo.championName}
                                 fallback={getChampionFallback(victimInfo.championName)}
                                 class="w-full h-full"
@@ -338,7 +338,7 @@
                           {#if killerInfo}
                             <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
                               <ImageWithFallback
-                                src={getChampionImageUrl(killerInfo.championName)}
+                                src={getChampionImageUrlSync(killerInfo.championName)}
                                 alt={killerInfo.championName}
                                 fallback={getChampionFallback(killerInfo.championName)}
                                 class="w-full h-full"
@@ -359,7 +359,7 @@
                           {#if victimInfo}
                             <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
                               <ImageWithFallback
-                                src={getChampionImageUrl(victimInfo.championName)}
+                                src={getChampionImageUrlSync(victimInfo.championName)}
                                 alt={victimInfo.championName}
                                 fallback={getChampionFallback(victimInfo.championName)}
                                 class="w-full h-full"
@@ -381,7 +381,7 @@
                           {#if killerInfo}
                             <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
                               <ImageWithFallback
-                                src={getChampionImageUrl(killerInfo.championName)}
+                                src={getChampionImageUrlSync(killerInfo.championName)}
                                 alt={killerInfo.championName}
                                 fallback={getChampionFallback(killerInfo.championName)}
                                 class="w-full h-full"
@@ -410,7 +410,7 @@
                           {#if killerInfo}
                             <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
                               <ImageWithFallback
-                                src={getChampionImageUrl(killerInfo.championName)}
+                                src={getChampionImageUrlSync(killerInfo.championName)}
                                 alt={killerInfo.championName}
                                 fallback={getChampionFallback(killerInfo.championName)}
                                 class="w-full h-full"
@@ -436,7 +436,7 @@
                           {#if killerInfo}
                             <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
                               <ImageWithFallback
-                                src={getChampionImageUrl(killerInfo.championName)}
+                                src={getChampionImageUrlSync(killerInfo.championName)}
                                 alt={killerInfo.championName}
                                 fallback={getChampionFallback(killerInfo.championName)}
                                 class="w-full h-full"
@@ -458,7 +458,7 @@
                           {#if killerInfo}
                             <div class="w-6 h-6 rounded-full overflow-hidden border-2 border-white shadow-sm">
                               <ImageWithFallback
-                                src={getChampionImageUrl(killerInfo.championName)}
+                                src={getChampionImageUrlSync(killerInfo.championName)}
                                 alt={killerInfo.championName}
                                 fallback={getChampionFallback(killerInfo.championName)}
                                 class="w-full h-full"
