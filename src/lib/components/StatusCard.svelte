@@ -6,7 +6,7 @@
 
   export let title: string;
   export let value: string;
-  export let icon: typeof SvelteComponent;
+  export let icon: any;
   export let status: 'success' | 'error' | 'warning' | 'neutral' = 'neutral';
   export let actionLabel: string | undefined = undefined;
   export let onAction: (() => void) | undefined = undefined;

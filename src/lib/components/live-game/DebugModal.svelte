@@ -38,11 +38,62 @@
   let debugInfo = $state<any>(null);
   let isDebugLoading = $state(false);
   let debugError = $state<string | null>(null);
+  let copiedAllJson = $state(false);
+  let copyAllError = $state<string | null>(null);
+
+  function buildDebugExport() {
+    const exportNotes: string[] = [];
+    if (debugInfo === null) {
+      exportNotes.push(
+        'lcuDebug is null: LCU/WebSocket debug was not loaded. Use "Run Debug" or "Copy all as JSON" (it runs debug first).'
+      );
+    }
+    if (gameState == null) exportNotes.push('gameState is null: no comprehensive game state from the app WebSocket yet.');
+    if (gameData == null) exportNotes.push('gameData is null: no live client game payload yet (often normal if not in game or LCU/2999 down).');
+    if (liveGameStats == null) exportNotes.push('liveGameStats is null.');
+    if (playerScores == null) exportNotes.push('playerScores is null.');
+
+    return {
+      wingbotDebugExportVersion: 2,
+      debugExportTag: 'wingbot-DebugModal-2026-03',
+      exportedAt: new Date().toISOString(),
+      isSpectatorMode,
+      debugError,
+      lcuDebug: debugInfo,
+      gameState,
+      gameData,
+      liveGameStats,
+      playerScores,
+      exportNotes,
+    };
+  }
+
+  async function copyAllDebugAsJson() {
+    copyAllError = null;
+    try {
+      // Always refresh for export so we never copy stale null (also avoids racing Run Debug + Copy when isDebugLoading is true).
+      debugError = null;
+      const snapshot = await onDebugLcuConnection();
+      debugInfo = snapshot ?? { _warning: 'onDebugLcuConnection returned no payload' };
+      const text = JSON.stringify(buildDebugExport(), null, 2);
+      await navigator.clipboard.writeText(text);
+      copiedAllJson = true;
+      setTimeout(() => {
+        copiedAllJson = false;
+      }, 2000);
+    } catch (e) {
+      copyAllError = e instanceof Error ? e.message : String(e);
+    }
+  }
 
   // Debug logging
   $effect(() => {
     console.log('DebugModal isOpen changed to:', isOpen);
     console.log('DebugModal props:', { isOpen, gameState: !!gameState, gameData: !!gameData });
+  });
+
+  $effect(() => {
+    if (isOpen) copyAllError = null;
   });
 
   // Function to run debug command
@@ -54,7 +105,7 @@
       debugInfo = await onDebugLcuConnection();
       console.log('Debug command completed:', debugInfo);
     } catch (err) {
-      debugError = err as string;
+      debugError = err instanceof Error ? err.message : String(err);
       console.error('Debug command failed:', err);
     } finally {
       isDebugLoading = false;
@@ -75,24 +126,50 @@
     <!-- Modal Content -->
     <div 
       class="bg-background border rounded-lg shadow-lg max-w-4xl w-full max-h-[80vh] overflow-hidden" 
-      onclick={(e) => e.stopPropagation()}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="debug-modal-title"
+      tabindex="-1"
     >
       <!-- Modal Header -->
-      <div class="flex items-center justify-between p-6 border-b">
-        <h2 class="text-lg font-semibold flex items-center gap-2">
+      <div class="flex items-center justify-between gap-3 p-6 border-b flex-wrap">
+        <h2 id="debug-modal-title" class="text-lg font-semibold flex items-center gap-2">
           <span>Debug Information</span>
           {#if isSpectatorMode}
             <span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Spectator Mode</span>
           {/if}
         </h2>
-        <Button variant="ghost" size="sm" onclick={onClose}>
-          <X class="w-4 h-4" />
-        </Button>
+        <div class="flex items-center gap-2">
+          <Button
+            variant="default"
+            size="sm"
+            onclick={copyAllDebugAsJson}
+            class="h-8 px-3 text-xs"
+            title="Copy all sections as one JSON document for sharing"
+          >
+            {#if copiedAllJson}
+              <Check class="w-3.5 h-3.5 mr-1" />
+              Copied JSON
+            {:else}
+              <Copy class="w-3.5 h-3.5 mr-1" />
+              Copy all as JSON
+            {/if}
+          </Button>
+          <Button variant="ghost" size="sm" onclick={onClose}>
+            <X class="w-4 h-4" />
+          </Button>
+        </div>
       </div>
       
       <!-- Modal Content -->
       <div class="p-6 overflow-y-auto space-y-6 text-sm">
       
+      {#if copyAllError}
+        <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-xs">
+          Could not copy to clipboard: {copyAllError}
+        </div>
+      {/if}
+
       <!-- LCU Debug Section -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">

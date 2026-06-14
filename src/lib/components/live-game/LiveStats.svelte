@@ -1,14 +1,12 @@
 <script lang="ts">
   import { TrendingUp } from '@lucide/svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { wsLiveGameStats, wsGameMode } from '$lib/stores/websocketStore';
   import type { GameStats } from '$lib/types/game';
 
-  interface Props {
-    liveGameStats: GameStats | null;
-    gameMode: string;
-  }
-
-  let { liveGameStats, gameMode }: Props = $props();
+  // Use WebSocket data instead of props
+  let liveGameStats = $wsLiveGameStats;
+  let gameMode = $wsGameMode;
 
   function isArenaMode() {
     return gameMode === 'Arena';

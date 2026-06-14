@@ -20,9 +20,21 @@
   <h2 class="text-2xl font-semibold text-foreground mb-2">No Live Game Detected</h2>
   <p class="text-muted-foreground mb-6 max-w-md">
     {#if error}
-      An error occurred while connecting to the game data. Please check the debug information below for details.
+      {#if error.includes('LCU connection unhealthy') || error.toLowerCase().includes('no lcu connection')}
+        <strong>League Client API (LCU) is not connected.</strong>
+        The app cannot talk to the client until LCU credentials are detected. Open the League client (keep it running, not only the game), then click
+        <strong>Detect LCU</strong> above. If problems persist, use <strong>View Debug Info</strong>.
+      {:else if error.includes('Spectator mode')}
+        <strong>Spectator Mode Detected</strong><br/>
+        The Live Client Data API is not available when spectating. This is a Riot Games API limitation, not a bug.<br/><br/>
+        <span class="text-sm">Note: Apps like Mobalytics use different APIs (Riot's server-side Spectator API) which require special API keys. Live data will work when you're actively playing a game.</span>
+      {:else if error.includes('Live Client Data API')}
+        {error}
+      {:else}
+        An error occurred while connecting to the game data. Please check the debug information below for details.
+      {/if}
     {:else}
-      No live game data is currently available. Make sure the League client is running and you're in a game or spectating a match.
+      No live game data is currently available. Make sure the League client is running and you're in an active game.
     {/if}
   </p>
   <div class="flex items-center gap-4">

@@ -253,7 +253,7 @@ async function loadLiveGameData(isRefresh = false) {
         
         // Use allGameData if available, otherwise fall back to game data
         const finalGameData = allGameData && typeof allGameData === 'object' && 'allPlayers' in allGameData 
-          ? allGameData 
+          ? allGameData as LiveGameData
           : game;
         
         gameData.set(finalGameData);
@@ -273,18 +273,46 @@ async function loadLiveGameData(isRefresh = false) {
           }
         }
         
-        // Check if we're in spectator mode
+        // Enhanced spectator mode detection
         let isSpectator = false;
+        
+        // Method 1: Check for activePlayer error
         if (allGameData && typeof allGameData === 'object' && 'activePlayer' in allGameData) {
           const activePlayer = (allGameData as any).activePlayer;
-          isSpectator = activePlayer?.error === "Spectator mode doesn't currently support this feature";
-          isSpectatorMode.set(isSpectator);
+          if (activePlayer?.error === "Spectator mode doesn't currently support this feature") {
+            isSpectator = true;
+            console.log('Spectator mode detected via activePlayer error');
+          }
         }
+        
+        // Method 2: Check comprehensive state for spectator mode
+        if (comprehensiveState?.game_phase === 'in_game' && !comprehensiveState?.live_client_available) {
+          isSpectator = true;
+          console.log('Spectator mode detected via comprehensive state');
+        }
+        
+        // Method 3: Check if we have allPlayers but no activePlayer (spectator mode)
+        if (allGameData && typeof allGameData === 'object' && 'allPlayers' in allGameData) {
+          const allPlayers = (allGameData as any).allPlayers;
+          const activePlayer = (allGameData as any).activePlayer;
+          if (allPlayers && Array.isArray(allPlayers) && allPlayers.length > 0 && !activePlayer) {
+            isSpectator = true;
+            console.log('Spectator mode detected - has allPlayers but no activePlayer');
+          }
+        }
+        
+        // Method 4: Check if is_spectator_mode is explicitly set in comprehensive state
+        if (comprehensiveState?.is_spectator_mode === true) {
+          isSpectator = true;
+          console.log('Spectator mode detected via is_spectator_mode flag');
+        }
+        
+        isSpectatorMode.set(isSpectator);
         
         // Handle spectator mode - show limited data but don't treat as error
         if (isSpectator) {
-          console.log('Spectator mode detected - showing limited data');
-          // Don't clear error here, let the UI handle spectator mode gracefully
+          console.log('Spectator mode confirmed - showing limited data (stats and events only)');
+          setStableError('Spectator mode - limited data available');
         }
         
         // Check if game has ended by looking for GameEnd event
@@ -403,7 +431,7 @@ async function refresh() {
 async function debugLcuConnection() {
   try {
     console.log('🔍 Calling debug_lcu_connection command...');
-    const debugInfo = await invoke('debug_lcu_connection');
+    const debugInfo = await invoke('debug_lcu_connection') as any;
     console.log('🔍 Debug info received:', debugInfo);
     console.log('🔍 Connection status:', debugInfo?.connection_status);
     console.log('🔍 Live client available:', debugInfo?.live_client_available);

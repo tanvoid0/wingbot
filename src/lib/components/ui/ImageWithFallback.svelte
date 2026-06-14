@@ -23,7 +23,7 @@
 
   let imageLoaded = $state(false);
   let imageError = $state(false);
-  let imgElement: HTMLImageElement;
+  let imgElement = $state<HTMLImageElement>();
 
   // Reset states when src changes
   $effect(() => {

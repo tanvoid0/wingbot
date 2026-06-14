@@ -16,6 +16,7 @@ pub struct AIResponse {
     pub confidence: Option<f64>,
     pub suggestions: Option<Vec<String>>,
     pub error: Option<String>,
+    pub tts_summary: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -36,6 +37,7 @@ pub struct ChampionSelectResponse {
     pub tts_summary: String,
 }
 
+#[derive(Debug, Clone)]
 pub struct AIService {
     pub base_url: String,
     pub timeout: Duration,

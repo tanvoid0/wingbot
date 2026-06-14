@@ -1,12 +1,11 @@
 <script lang="ts">
   import { Zap, Target, Sword, Shield } from '@lucide/svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { wsGameMode, wsGameData } from '$lib/stores/websocketStore';
 
-  interface Props {
-    gameMode: string;
-  }
-
-  let { gameMode }: Props = $props();
+  // Use WebSocket data instead of props
+  let gameMode = $wsGameMode;
+  let gameData = $wsGameData;
 
   function isArenaMode() {
     return gameMode === 'Arena';

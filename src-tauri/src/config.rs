@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
-use std::sync::Mutex;
-use lazy_static::lazy_static;
+use std::sync::{Mutex, OnceLock};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
@@ -257,17 +256,15 @@ impl ConfigManager {
 }
 
 // Global configuration instance
-lazy_static! {
-    static ref CONFIG_MANAGER: Mutex<ConfigManager> = Mutex::new(
-        ConfigManager::new().unwrap_or_else(|_| {
+static CONFIG_MANAGER: OnceLock<Mutex<ConfigManager>> = OnceLock::new();
+
+pub fn get_config_manager() -> &'static Mutex<ConfigManager> {
+    CONFIG_MANAGER.get_or_init(|| {
+        Mutex::new(ConfigManager::new().unwrap_or_else(|_| {
             eprintln!("Failed to load config, using defaults");
             ConfigManager::new().unwrap_or_else(|_| {
                 panic!("Failed to create config manager")
             })
-        })
-    );
-}
-
-pub fn get_config_manager() -> &'static Mutex<ConfigManager> {
-    &CONFIG_MANAGER
+        }))
+    })
 }

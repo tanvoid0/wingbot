@@ -2,14 +2,14 @@
   import { Badge } from '$lib/components/ui/badge';
   import ImageWithFallback from '$lib/components/ui/ImageWithFallback.svelte';
   import { 
-    getChampionImageUrl, 
-    getItemImageUrl, 
+    getChampionImageUrlSync, 
+    getItemImageUrlSync, 
     getChampionFallback, 
     getItemFallback,
-    getSummonerSpellImageUrl,
+    getSummonerSpellImageUrlSync,
     getSummonerSpellFallback,
     getRoleIcon,
-    getKeystoneImageUrl,
+    getKeystoneImageUrlSync,
     getKeystoneFallback
   } from '$lib/services/imageService';
   import { onMount, onDestroy } from 'svelte';
@@ -98,7 +98,7 @@
       <div class="relative">
         <div class="w-12 h-12 rounded-full overflow-hidden shadow-lg border-2 border-white/20 {player.isDead ? 'ring-2 ring-red-500/70 shadow-red-500/30 shadow-lg' : ''}">
           <ImageWithFallback
-            src={getChampionImageUrl(player.championName)}
+            src={getChampionImageUrlSync(player.championName)}
             alt={player.championName || 'Unknown Champion'}
             fallback={getChampionFallback(player.championName)}
             class="w-full h-full {player.isDead ? 'grayscale opacity-60' : ''}"
@@ -157,7 +157,7 @@
               <div class="flex gap-1">
                 <div class="w-5 h-5 rounded border overflow-hidden" title={player.summonerSpells.summonerSpellOne?.displayName || 'Unknown'}>
                   <ImageWithFallback
-                    src={getSummonerSpellImageUrl(player.summonerSpells.summonerSpellOne?.displayName)}
+                    src={getSummonerSpellImageUrlSync(player.summonerSpells.summonerSpellOne?.displayName)}
                     alt={player.summonerSpells.summonerSpellOne?.displayName || 'Unknown'}
                     fallback={getSummonerSpellFallback(player.summonerSpells.summonerSpellOne?.displayName)}
                     class="w-full h-full"
@@ -167,7 +167,7 @@
                 </div>
                 <div class="w-5 h-5 rounded border overflow-hidden" title={player.summonerSpells.summonerSpellTwo?.displayName || 'Unknown'}>
                   <ImageWithFallback
-                    src={getSummonerSpellImageUrl(player.summonerSpells.summonerSpellTwo?.displayName)}
+                    src={getSummonerSpellImageUrlSync(player.summonerSpells.summonerSpellTwo?.displayName)}
                     alt={player.summonerSpells.summonerSpellTwo?.displayName || 'Unknown'}
                     fallback={getSummonerSpellFallback(player.summonerSpells.summonerSpellTwo?.displayName)}
                     class="w-full h-full"
@@ -201,7 +201,7 @@
           <div class="relative w-6 h-6 rounded border overflow-hidden {!item.canUse ? 'opacity-60' : ''}" 
                title="{item.displayName || `Item ${item.itemID}`}{item.consumable ? ` (${item.count}x)` : ''}{!item.canUse ? ' - On Cooldown' : ''}">
             <ImageWithFallback
-              src={getItemImageUrl(item.itemID)}
+              src={getItemImageUrlSync(item.itemID)}
               alt={item.displayName || `Item ${item.itemID}`}
               fallback={getItemFallback(item.itemID)}
               class="w-full h-full"
@@ -233,7 +233,7 @@
           <div class="flex items-center gap-1">
             <div class="w-5 h-5 rounded border overflow-hidden" title={player.runes.keystone?.displayName || 'Unknown'}>
               <ImageWithFallback
-                src={getKeystoneImageUrl(player.runes.keystone?.id)}
+                src={getKeystoneImageUrlSync(player.runes.keystone?.id)}
                 alt={player.runes.keystone?.displayName || 'Unknown'}
                 fallback={getKeystoneFallback(player.runes.keystone?.displayName)}
                 class="w-full h-full"

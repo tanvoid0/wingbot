@@ -2,6 +2,10 @@
 
 @import "tw-animate-css";
 
+/* Import custom styles */
+@import "./lib/styles/themes.css";
+@import "./lib/styles/animations.css";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

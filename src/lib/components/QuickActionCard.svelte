@@ -5,7 +5,7 @@
 
   export let title: string;
   export let description: string;
-  export let icon: typeof SvelteComponent;
+  export let icon: any;
   export let href: string;
   export let variant: 'blue' | 'green' | 'purple' = 'blue';
   export let className: string = '';

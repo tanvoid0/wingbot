@@ -69,6 +69,25 @@ export interface FullRunes {
   statRunes: StatRune[];
 }
 
+// Live Client API Active Player structure (matches actual API response)
+export interface LiveClientActivePlayer {
+  abilities: Record<string, Ability>;
+  championStats: ChampionStats;
+  championName?: string;
+  currentGold: number;
+  fullRunes: FullRunes;
+  level: number;
+  riotId: string;
+  riotIdGameName: string;
+  riotIdTagLine: string;
+  summonerName: string;
+  teamRelativeColors: boolean;
+  // Live Client API specific fields
+  scores?: PlayerScores;
+  items?: Item[];
+}
+
+// Keep the original ActivePlayer for backward compatibility
 export interface ActivePlayer {
   abilities: Record<string, Ability>;
   championStats: ChampionStats;
@@ -160,6 +179,16 @@ export interface GameData {
   mapTerrain: string;
 }
 
+// Live Client API Game Data structure (matches actual API response)
+export interface LiveClientGameData {
+  activePlayer: LiveClientActivePlayer;
+  allPlayers: Player[];
+  events: GameEvents;
+  gameData: GameData;
+  recent_events?: any[];
+}
+
+// Keep the original LiveGameData for backward compatibility
 export interface LiveGameData {
   activePlayer: ActivePlayer;
   allPlayers: Player[];
@@ -176,6 +205,7 @@ export interface ComprehensiveGameState {
   live_client_available: boolean;
   live_game: null | LiveGameData;
   timestamp: number;
+  is_spectator_mode?: boolean;
 }
 
 export interface GameStats {

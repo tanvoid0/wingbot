@@ -40,8 +40,13 @@
   import WebSocketActivePlayerInfo from '$lib/components/live-game/WebSocketActivePlayerInfo.svelte';
   import LiveStats from '$lib/components/live-game/LiveStats.svelte';
   import AIRecommendations from '$lib/components/live-game/AIRecommendations.svelte';
+  import ItemTracking from '$lib/components/live-game/ItemTracking.svelte';
+import MatchHistoryAnalysis from '$lib/components/live-game/MatchHistoryAnalysis.svelte';
+import RuneAnalysis from '$lib/components/live-game/RuneAnalysis.svelte';
+import LobbyManagement from '$lib/components/live-game/LobbyManagement.svelte';
   import DebugModal from '$lib/components/live-game/DebugModal.svelte';
   import NoLiveGameMessage from '$lib/components/live-game/NoLiveGameMessage.svelte';
+  import ConnectionHealthCard from '$lib/components/live-game/ConnectionHealthCard.svelte';
   import { onMount, onDestroy } from 'svelte';
 
   // Handle manual refresh
@@ -54,6 +59,26 @@
     setTimeout(() => {
       isManualRefresh = false;
     }, 2000);
+  }
+
+  // Enhanced LCU API functions
+  async function handleDetectLeagueClient() {
+    try {
+      const result = await wsActions.detectLeagueClientWithRetry(5);
+      console.log('League client detected:', result);
+      // Optionally show a success message
+    } catch (error) {
+      console.error('Failed to detect League client:', error);
+    }
+  }
+
+  async function handleCheckConnectionHealth() {
+    try {
+      const isHealthy = await wsActions.checkConnectionHealth();
+      console.log('Connection health:', isHealthy);
+    } catch (error) {
+      console.error('Failed to check connection health:', error);
+    }
   }
   
   // Track automatic updates
@@ -107,10 +132,10 @@
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
       <div class="flex-1">
         <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-          Live Game (WebSocket)
+          Live Game
         </h1>
         <p class="text-muted-foreground mt-1 text-sm sm:text-base">
-          Real-time game analysis via WebSocket connection
+          Real-time game analysis with WebSocket connection
         </p>
       </div>
       
@@ -168,6 +193,26 @@
           <Button
             variant="outline"
             size="sm"
+            onclick={handleDetectLeagueClient}
+            class="flex items-center gap-2"
+            title="Detect League Client with Retry"
+          >
+            <Wifi class="w-4 h-4" />
+            <span class="hidden sm:inline">Detect LCU</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={handleCheckConnectionHealth}
+            class="flex items-center gap-2"
+            title="Check Connection Health"
+          >
+            <AlertCircle class="w-4 h-4" />
+            <span class="hidden sm:inline">Health</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onclick={() => {
               console.log('Debug button clicked, opening modal...');
               openDebugModal();
@@ -217,7 +262,20 @@
       <Alert class="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
         <Eye class="h-4 w-4 text-orange-600" />
         <AlertDescription class="text-orange-800 dark:text-orange-200">
-          <strong>Spectator Mode Detected:</strong> You are currently spectating a game. Some features like active player data and personal statistics are not available in spectator mode.
+          <div class="space-y-2">
+            <div class="font-semibold">Spectator Mode Detected</div>
+            <div class="text-sm">
+              You are currently spectating a game. Available features:
+            </div>
+            <ul class="text-sm list-disc list-inside space-y-1 ml-2">
+              <li>Live game statistics and events</li>
+              <li>Team comparison and player data</li>
+              <li>Real-time game timeline</li>
+            </ul>
+            <div class="text-sm text-orange-700 dark:text-orange-300">
+              Personal recommendations and utilities are not available in spectator mode.
+            </div>
+          </div>
         </AlertDescription>
       </Alert>
     {/if}
@@ -238,6 +296,9 @@
       />
     {/if}
 
+    <!-- Connection Health Card -->
+    <ConnectionHealthCard />
+
     <!-- Show game data if we have valid game data (either live game or spectator mode) -->
     {#if $wsGameData && $wsGameData.allPlayers && Array.isArray($wsGameData.allPlayers) && $wsGameData.allPlayers.length > 0 && !$wsError}
     
@@ -254,8 +315,10 @@
     <!-- Game Status -->
     <WebSocketGameStatus />
 
-    <!-- Active Player Info -->
-    <WebSocketActivePlayerInfo />
+    <!-- Active Player Info - Hidden in spectator mode -->
+    {#if !$wsIsSpectatorMode}
+      <WebSocketActivePlayerInfo />
+    {/if}
 
     <!-- Responsive Layout: Events First on Mobile, Sidebar on Desktop -->
     <div class="space-y-6">
@@ -272,10 +335,32 @@
           <WebSocketTeamComparison />
 
           <!-- Live Game Stats -->
-          <LiveStats liveGameStats={$wsLiveGameStats} gameMode={$wsGameMode} />
+          <LiveStats />
 
-          <!-- AI Recommendations -->
-          <AIRecommendations gameMode={$wsGameMode} />
+          <!-- Item Tracking - Hidden in spectator mode -->
+          {#if !$wsIsSpectatorMode}
+            <ItemTracking />
+          {/if}
+
+          <!-- Match History Analysis - Hidden in spectator mode -->
+          {#if !$wsIsSpectatorMode}
+            <MatchHistoryAnalysis />
+          {/if}
+
+          <!-- Rune Analysis - Hidden in spectator mode -->
+          {#if !$wsIsSpectatorMode}
+            <RuneAnalysis />
+          {/if}
+
+          <!-- Lobby Management - Hidden in spectator mode -->
+          {#if !$wsIsSpectatorMode}
+            <LobbyManagement />
+          {/if}
+
+          <!-- AI Recommendations - Hidden in spectator mode -->
+          {#if !$wsIsSpectatorMode}
+            <AIRecommendations />
+          {/if}
         </div>
 
         <!-- Events Sidebar Column -->
@@ -291,10 +376,17 @@
         <WebSocketTeamComparison />
 
         <!-- Live Game Stats -->
-        <LiveStats liveGameStats={$wsLiveGameStats} gameMode={$wsGameMode} />
+        <LiveStats />
 
-        <!-- AI Recommendations -->
-        <AIRecommendations gameMode={$wsGameMode} />
+        <!-- Item Tracking - Hidden in spectator mode -->
+        {#if !$wsIsSpectatorMode}
+          <ItemTracking />
+        {/if}
+
+        <!-- AI Recommendations - Hidden in spectator mode -->
+        {#if !$wsIsSpectatorMode}
+          <AIRecommendations />
+        {/if}
       </div>
     </div>
 

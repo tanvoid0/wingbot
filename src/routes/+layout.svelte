@@ -7,11 +7,13 @@
     Users, 
     Gamepad2, 
     Settings, 
-    Bot
+    Bot,
+    Play
   } from '@lucide/svelte';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
   import { Card, CardContent, CardHeader } from '$lib/components/ui/card';
+  import { initializeImageService } from '$lib/services/imageService';
   import '../app.css';
 
   // --- declare snippet prop for default children ---
@@ -24,20 +26,40 @@
 
   const navigationItems = [
     { href: '/', label: 'Dashboard', icon: Home, description: 'Overview and status' },
-    { href: '/champion-select', label: 'Champion Select', icon: Users, description: 'Pick recommendations' },
-    { href: '/live-game', label: 'Live Game', icon: Gamepad2, description: 'In-game assistance' },
+    { href: '/league-launcher', label: 'League Launcher', icon: Play, description: 'Launch League of Legends' },
+    { href: '/game', label: 'Game Assistant', icon: Gamepad2, description: 'Adaptive game interface' },
+    { href: '/overlays', label: 'Overlays', icon: Users, description: 'In-game overlay configuration' },
     { href: '/ai-chat', label: 'AI Chat', icon: Bot, description: 'AI-powered advice' },
+    { href: '/image-service-test', label: 'Image Service Test', icon: Settings, description: 'Test dynamic images' },
     { href: '/settings', label: 'Settings', icon: Settings, description: 'Configuration' },
   ];
 
-  onMount(async () => {
-    try {
-      systemInfo = await invoke('get_system_info');
-      leagueStatus = systemInfo.league_running ? 'Running' : 'Not Running';
-      aiServiceStatus = systemInfo.ai_service_status;
-    } catch (error) {
-      console.error('Failed to get system info:', error);
+  onMount(() => {
+    let poll: ReturnType<typeof setInterval> | undefined;
+
+    async function refreshSystemInfo() {
+      try {
+        systemInfo = await invoke('get_system_info');
+        leagueStatus = systemInfo.league_running ? 'Running' : 'Not Running';
+        aiServiceStatus = systemInfo.ai_service_status;
+      } catch (error) {
+        console.error('Failed to get system info:', error);
+      }
     }
+
+    void (async () => {
+      try {
+        await initializeImageService();
+        await refreshSystemInfo();
+      } catch (error) {
+        console.error('Failed to initialize:', error);
+      }
+      poll = setInterval(refreshSystemInfo, 25_000);
+    })();
+
+    return () => {
+      if (poll !== undefined) clearInterval(poll);
+    };
   });
 
   function toggleNavigation() {
@@ -88,7 +110,8 @@
             class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground {$page.url.pathname === item.href ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'}"
           >
             {#if item.icon}
-              <svelte:component this={item.icon} class="w-4 h-4 flex-shrink-0" />
+              {@const IconComponent = item.icon}
+              <IconComponent class="w-4 h-4 flex-shrink-0" />
             {/if}
             {#if isExpanded}
               <span class="ml-3">{item.label}</span>

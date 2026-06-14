@@ -2,10 +2,11 @@
   import { Clock, Zap, Sword, Shield, Target } from '@lucide/svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
-  import { wsGameData, wsActions } from '$lib/stores/websocketStore';
+  import { wsGameData, wsLiveGameData, wsActions } from '$lib/stores/websocketStore';
 
   // Process events from game data
-  $: events = ($wsGameData?.events?.Events || []) as any[];
+  $: gameData = $wsGameData || $wsLiveGameData;
+  $: events = (gameData?.events?.Events || []) as any[];
   
   // Sort events by timestamp (most recent first)
   $: sortedEvents = [...events].sort((a: any, b: any) => (b.EventTime || 0) - (a.EventTime || 0));
