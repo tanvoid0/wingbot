@@ -1,0 +1,22 @@
+{
+  "id": "443054",
+  "name": "Darksteel Talons",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>50%</attention> Attack Speed<br><attention>55</attention> Armor<br><attention>5%</attention> Move Speed</stats><br><br><passive>Gash</passive><br>Attacks apply  true damage on hit.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Armor",
+    "AttackSpeed",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatArmorMod": 55,
+    "PercentAttackSpeedMod": 0.5,
+    "PercentMovementSpeedMod": 0.05
+  }
+}

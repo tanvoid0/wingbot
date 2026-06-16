@@ -1,0 +1,19 @@
+{
+  "id": "3801",
+  "name": "Crystalline Bracer",
+  "plaintext": "Grants Health and Health Regen",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>100%</attention> Base Health Regen</stats><br><br></mainText>",
+  "gold": {
+    "base": 100,
+    "purchasable": true,
+    "total": 800,
+    "sell": 560
+  },
+  "tags": [
+    "Health",
+    "HealthRegen"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 200
+  }
+}

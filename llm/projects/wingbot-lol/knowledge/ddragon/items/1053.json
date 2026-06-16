@@ -1,0 +1,20 @@
+{
+  "id": "1053",
+  "name": "Vampiric Scepter",
+  "plaintext": "Basic attacks restore Health",
+  "description": "<mainText><stats><attention>15</attention> Attack Damage<br><attention>7%</attention> Life Steal</stats><br><br></mainText>",
+  "gold": {
+    "base": 550,
+    "purchasable": true,
+    "total": 900,
+    "sell": 630
+  },
+  "tags": [
+    "Damage",
+    "LifeSteal"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 15,
+    "PercentLifeStealMod": 0.07
+  }
+}

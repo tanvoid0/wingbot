@@ -1,0 +1,14 @@
+{
+  "id": "9180",
+  "name": "UwU Blaster",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Rapidly fires projectiles at the nearest enemy, dealing damage to the first target hit.<br><br><status>Evolve:</status> Ability Haste<br><br><rules>Damage, Ability Haste, Crit Chance, Projectile Count</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

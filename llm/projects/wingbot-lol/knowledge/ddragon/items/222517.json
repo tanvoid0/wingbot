@@ -1,0 +1,21 @@
+{
+  "id": "222517",
+  "name": "Endless Hunger",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>60</attention> Attack Damage<br><attention>5%</attention> Omnivamp<br><attention>20%</attention> Tenacity</stats><br><br><passive>Famine</passive><br>Gain Ability Haste based on your Bonus AD.<br><br><passive>Feast</passive><br>When a champion that you damaged recently dies, gain Omnivamp for a moderate duration. </mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "Damage",
+    "LifeSteal",
+    "SpellVamp",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 60
+  }
+}

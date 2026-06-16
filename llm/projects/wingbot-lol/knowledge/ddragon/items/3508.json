@@ -1,0 +1,24 @@
+{
+  "id": "3508",
+  "name": "Essence Reaver",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>50</attention> Attack Damage<br><attention>20</attention> Ability Haste<br><attention>25%</attention> Critical Strike Chance</stats><br><br><passive>Spellblade</passive><br>After using an Ability, your next Attack deals <physicalDamage>bonus physical damage</physicalDamage> and grants <scaleMana>Mana</scaleMana> <OnHit>On-Hit</OnHit>.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 3050,
+    "sell": 2135
+  },
+  "tags": [
+    "Damage",
+    "CriticalStrike",
+    "ManaRegen",
+    "CooldownReduction",
+    "OnHit",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 50
+  }
+}

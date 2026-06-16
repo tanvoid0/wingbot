@@ -1,0 +1,22 @@
+{
+  "id": "3165",
+  "name": "Morellonomicon",
+  "plaintext": "Increases magic damage",
+  "description": "<mainText><stats><attention>75</attention> Ability Power<br><attention>350</attention> Health<br><attention>15</attention> Ability Haste</stats><br><br><passive>Grievous Wounds</passive><br>Dealing <magicDamage>magic damage</magicDamage> to champions applies <keyword>40% Wounds</keyword> for 3 seconds.</mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 2850,
+    "sell": 1995
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 350,
+    "FlatMagicDamageMod": 75
+  }
+}

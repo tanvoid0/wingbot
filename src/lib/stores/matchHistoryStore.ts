@@ -1,10 +1,17 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
+import { invoke } from '@tauri-apps/api/core';
+
+export const DEFAULT_MATCH_COUNT = 20;
+export const MATCH_COUNT_STEP = 20;
+export const MAX_MATCH_COUNT = 100;
 
 // Match History State
 export const matchHistoryData = writable<Record<string, any>>({});
 export const currentPlayerStats = writable<any>(null);
 export const championPerformance = writable<Record<string, any>>({});
 export const recentMatches = writable<any[]>([]);
+export const matchHistoryMatchCount = writable(DEFAULT_MATCH_COUNT);
+export const matchHistoryLoading = writable(false);
 
 // Match History Actions
 export const matchHistoryActions = {
@@ -18,17 +25,49 @@ export const matchHistoryActions = {
     // Update current player stats if this is the current player
     if (playerId === 'current') {
       currentPlayerStats.set(analysis);
+
+      const requested =
+        analysis.requested_match_count ?? analysis.total_matches ?? DEFAULT_MATCH_COUNT;
+      matchHistoryMatchCount.set(
+        Math.min(Math.max(requested, DEFAULT_MATCH_COUNT), MAX_MATCH_COUNT),
+      );
       
       // Extract champion performance
       if (analysis.champion_performance) {
         championPerformance.set(analysis.champion_performance);
       }
       
-      // Extract recent matches (last 10)
       if (analysis.raw_matches && Array.isArray(analysis.raw_matches)) {
-        recentMatches.set(analysis.raw_matches.slice(0, 10));
+        recentMatches.set(analysis.raw_matches);
       }
     }
+  },
+
+  fetchAnalysis: async (options?: {
+    matchCount?: number;
+    forceRefresh?: boolean;
+    puuid?: string;
+  }) => {
+    const matchCount = options?.matchCount ?? get(matchHistoryMatchCount);
+    matchHistoryLoading.set(true);
+    try {
+      const analysis = await invoke('get_player_match_analysis', {
+        puuid: options?.puuid ?? null,
+        forceRefresh: options?.forceRefresh ?? false,
+        matchCount,
+      });
+      matchHistoryActions.updateMatchHistory('current', analysis);
+      return analysis;
+    } finally {
+      matchHistoryLoading.set(false);
+    }
+  },
+
+  loadMoreMatches: async () => {
+    const current = get(matchHistoryMatchCount);
+    if (current >= MAX_MATCH_COUNT) return null;
+    const next = Math.min(current + MATCH_COUNT_STEP, MAX_MATCH_COUNT);
+    return matchHistoryActions.fetchAnalysis({ matchCount: next });
   },
 
   // Get win rate color
@@ -78,34 +117,35 @@ export const matchHistoryActions = {
     return { level: 0, text: 'Beginner' };
   },
 
-  // Get top performing champions
-  getTopChampions: (championPerformance: Record<string, any>, limit: number = 5) => {
-    return Object.entries(championPerformance)
-      .map(([championId, data]) => ({
-        championId,
-        ...data,
-        winRate: data.games > 0 ? (data.wins / data.games) * 100 : 0,
-        avgKDA: data.games > 0 ? ((data.kills + data.assists) / data.games) / Math.max(data.deaths / data.games, 1) : 0
-      }))
+  // Get champions sorted by performance (optional limit for compact views)
+  getTopChampions: (championPerformance: Record<string, any>, limit?: number) => {
+    const sorted = Object.entries(championPerformance)
+      .map(([championId, data]) => {
+        const games = data.games || 0;
+        const deaths = data.deaths || 0;
+        return {
+          championId,
+          championName: data.champion_name || data.name || `Champion ${championId}`,
+          ...data,
+          winRate: games > 0 ? (data.wins / games) * 100 : 0,
+          avgKDA: games > 0 ? ((data.kills + data.assists) / games) / Math.max(deaths / games, 1) : 0,
+          avgImpact: data.avg_impact ?? (games > 0 ? (data.impact_total || 0) / games : 0),
+        };
+      })
       .sort((a, b) => {
-        // Sort by win rate first, then by games played
+        if (b.avgImpact !== a.avgImpact) return b.avgImpact - a.avgImpact;
         if (b.winRate !== a.winRate) return b.winRate - a.winRate;
         return b.games - a.games;
-      })
-      .slice(0, limit);
+      });
+    return limit != null ? sorted.slice(0, limit) : sorted;
   },
 
   // Get recent performance trend
   getPerformanceTrend: (recentMatches: any[]) => {
-    if (recentMatches.length < 5) return { trend: 'insufficient', color: 'text-gray-600' };
+    if (recentMatches.length < 3) return { trend: 'insufficient', color: 'text-gray-600' };
     
     const last5 = recentMatches.slice(0, 5);
-    const wins = last5.filter(match => {
-      // Find player in participants and check if they won
-      const participants = match.participants || [];
-      const player = participants.find((p: any) => p.puuid);
-      return player && player.stats && player.stats.win;
-    }).length;
+    const wins = last5.filter(match => match.stats?.win).length;
     
     const winRate = (wins / 5) * 100;
     
@@ -125,9 +165,17 @@ export const matchHistorySummary = derived(
         totalMatches: 0,
         winRate: 0,
         avgKDA: 0,
+        avgCS: 0,
+        avgDamage: 0,
+        avgImpact: 0,
+        avgVision: 0,
         performanceGrade: { grade: 'N/A', color: 'text-gray-600' },
         topChampions: [],
-        recentTrend: { trend: 'insufficient', color: 'text-gray-600' }
+        allChampions: [],
+        recentTrend: { trend: 'insufficient', color: 'text-gray-600' },
+        roleStats: {},
+        hasMoreMatches: false,
+        matchCountLoaded: DEFAULT_MATCH_COUNT,
       };
     }
 
@@ -135,23 +183,37 @@ export const matchHistorySummary = derived(
     const winRate = stats.win_rate || 0;
     const avgKDA = totalMatches > 0 ? 
       ((stats.avg_kills + stats.avg_assists) / Math.max(stats.avg_deaths, 1)) : 0;
+
+    const allChampions = matchHistoryActions.getTopChampions(champions);
     
     return {
       totalMatches,
       winRate: Math.round(winRate),
       avgKDA: Math.round(avgKDA * 100) / 100,
+      avgCS: Math.round((stats.avg_cs || 0) * 10) / 10,
+      avgDamage: Math.round(stats.avg_damage || 0),
+      avgImpact: Math.round((stats.avg_impact || 0) * 10) / 10,
+      avgVision: Math.round((stats.avg_vision || 0) * 10) / 10,
       performanceGrade: matchHistoryActions.getPerformanceGrade(winRate, avgKDA),
       topChampions: matchHistoryActions.getTopChampions(champions, 5),
-      recentTrend: matchHistoryActions.getPerformanceTrend(matches)
+      allChampions,
+      recentTrend: matchHistoryActions.getPerformanceTrend(matches),
+      roleStats: stats.role_stats || {},
+      hasMoreMatches: stats.has_more_matches ?? false,
+      matchCountLoaded: stats.requested_match_count ?? totalMatches,
     };
   }
 );
 
-// Current player performance insights
+// Current player performance insights (backend insights + legacy fallbacks)
 export const playerInsights = derived(
   [currentPlayerStats, championPerformance],
   ([stats, champions]) => {
     if (!stats) return [];
+
+    if (Array.isArray(stats.insights) && stats.insights.length > 0) {
+      return stats.insights;
+    }
 
     const insights = [];
     

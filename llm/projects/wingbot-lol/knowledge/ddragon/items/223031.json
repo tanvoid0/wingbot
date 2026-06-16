@@ -1,0 +1,20 @@
+{
+  "id": "223031",
+  "name": "Infinity Edge",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>75</attention> Attack Damage<br><attention>25%</attention> Critical Strike Chance<br><attention>30%</attention> Critical Strike Damage</stats><br><br></mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "CriticalStrike",
+    "Damage"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 75
+  }
+}

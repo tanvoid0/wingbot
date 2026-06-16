@@ -1,0 +1,20 @@
+{
+  "id": "3031",
+  "name": "Infinity Edge",
+  "plaintext": "Massively enhances critical strikes",
+  "description": "<mainText><stats><attention>75</attention> Attack Damage<br><attention>25%</attention> Critical Strike Chance<br><attention>30%</attention> Critical Strike Damage</stats><br><br></mainText>",
+  "gold": {
+    "base": 725,
+    "purchasable": true,
+    "total": 3500,
+    "sell": 2450
+  },
+  "tags": [
+    "CriticalStrike",
+    "Damage"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 75
+  }
+}

@@ -1,23 +1,24 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/core';
   import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
   import { 
     Play, 
-    Users, 
-    Bot, 
     Settings, 
     RefreshCw, 
     AlertCircle,
     CheckCircle,
     Clock,
-    Gamepad2
+    Gamepad2,
+    Layers,
+    Trophy
   } from '@lucide/svelte';
   import StatusCard from '$lib/components/StatusCard.svelte';
   import QuickActionCard from '$lib/components/QuickActionCard.svelte';
   import SectionCard from '$lib/components/SectionCard.svelte';
   import { Button } from '$lib/components/ui/button';
   import { Alert, AlertDescription } from '$lib/components/ui/alert';
+  import { openLauncherModal, openOverlaysModal } from '$lib/stores/appModalsStore';
+  import { formatTimestamp } from '$lib/utils/timestamp';
 
   let systemInfo = $state<any>(null);
   let gameState = $state<any>(null);
@@ -25,8 +26,7 @@
   let error = $state<string | null>(null);
 
   onMount(async () => {
-    // For debugging, automatically redirect to live game page
-    goto('/live-game');
+    await loadData();
   });
 
   async function loadData() {
@@ -82,25 +82,18 @@
   function getLeagueStatusType() {
     return systemInfo?.league_running ? 'success' : 'error';
   }
-
-  function getAIStatusType() {
-    return systemInfo?.ai_service_status === 'Connected' ? 'success' : 'error';
-  }
 </script>
 
-<div class="p-6 space-y-6">
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold text-foreground">WingBot Dashboard</h1>
-      <p class="text-muted-foreground mt-1">Your AI-powered League of Legends companion</p>
-    </div>
+<div class="p-4 space-y-4">
+  <div class="flex items-center justify-end">
     <Button
       onclick={loadData}
       disabled={isLoading}
-      class="flex items-center gap-2"
+      size="sm"
+      variant="outline"
+      class="flex items-center gap-1.5"
     >
-      <RefreshCw class="w-4 h-4 {isLoading ? 'animate-spin' : ''}" />
+      <RefreshCw class="w-3.5 h-3.5 {isLoading ? 'animate-spin' : ''}" />
       Refresh
     </Button>
   </div>
@@ -113,7 +106,7 @@
   {/if}
 
   <!-- Status Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
     <StatusCard
       title="League Client"
       value={getLeagueStatus()}
@@ -124,17 +117,10 @@
     />
 
     <StatusCard
-      title="AI Service"
-      value={systemInfo?.ai_service_status || 'Unknown'}
-      icon={Bot}
-      status={getAIStatusType()}
-    />
-
-    <StatusCard
-      title="Game Status"
-      value={getGameStatusText()}
+      title="LCU Connection"
+      value={systemInfo?.lcu_connected ? 'Connected' : 'Disconnected'}
       icon={Gamepad2}
-      status="neutral"
+      status={systemInfo?.lcu_connected ? 'success' : 'error'}
     />
 
     <StatusCard
@@ -147,39 +133,47 @@
 
   <!-- Quick Actions -->
   <SectionCard title="Quick Actions">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
       <QuickActionCard
-        title="Champion Select"
-        description="Get pick recommendations"
-        icon={Users}
-        href="/champion-select"
-        variant="blue"
-      />
-
-      <QuickActionCard
-        title="Live Game"
-        description="In-game assistance"
-        icon={Play}
-        href="/live-game"
+        title="Game Session"
+        description="Queue, champion select, and live game"
+        icon={Gamepad2}
+        href="/game"
         variant="green"
       />
 
       <QuickActionCard
-        title="AI Chat"
-        description="Get AI advice"
-        icon={Bot}
-        href="/ai-chat"
+        title="Match History"
+        description="Stats, champions, and recent games"
+        icon={Trophy}
+        href="/match-history"
         variant="purple"
+      />
+
+      <QuickActionCard
+        title="Launch League"
+        description="Start the League client"
+        icon={Play}
+        onclick={openLauncherModal}
+        variant="blue"
+      />
+
+      <QuickActionCard
+        title="Overlay Config"
+        description="Configure in-game HUD overlays"
+        icon={Layers}
+        onclick={openOverlaysModal}
+        variant="blue"
       />
     </div>
   </SectionCard>
 
   <!-- Recent Activity -->
-  <SectionCard title="Recent Activity">
-    <div class="space-y-3">
+  <SectionCard title="Activity">
+    <div class="space-y-2 text-sm">
       <div class="flex items-center text-sm text-muted-foreground">
         <Clock class="w-4 h-4 mr-2" />
-        <span>Last updated: {new Date().toLocaleTimeString()}</span>
+        <span>Last updated: {formatTimestamp(Date.now())}</span>
       </div>
       {#if gameState?.status === 'InChampionSelect'}
         <div class="flex items-center text-sm text-blue-600 dark:text-blue-400">

@@ -1,0 +1,17 @@
+{
+  "id": "2142",
+  "name": "Juice of Power",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><br><br><rules>Juices do not stack with themselves, but you can have multiple different ones active.</rules><active>Active - Consume:</active> Automatically activates on Combat Start. Drink to gain <scaleAP>30+ 10% bonus Ability Power</scaleAP> or <scaleAD>18+ 10% bonus Attack Damage</scaleAD> for the next round.<br><br><flavorText>Made with 100% real cherries. Warning: May cause imbiber to deal tons of damage.</flavorText></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 500
+  },
+  "tags": [
+    "SpellDamage",
+    "Consumable"
+  ],
+  "stats": {}
+}

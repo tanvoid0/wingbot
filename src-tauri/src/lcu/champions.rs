@@ -5,7 +5,9 @@ impl LCUAPI {
     pub async fn get_champions_structured(&self) -> Result<Vec<Champion>, String> {
         println!("[LCU] Fetching champions data...");
         
-        let url = format!("{}{}", LCU_BASE_URL, LCU_CHAMPIONS_ENDPOINT);
+        let connection = self.connection.as_ref()
+            .ok_or("No LCU connection established")?;
+        let url = format!("{}:{}{}", LCU_BASE_URL, connection.port, LCU_CHAMPIONS_ENDPOINT);
         let response = self.make_request(&url, "GET", None).await?;
         
         if !response.status().is_success() {

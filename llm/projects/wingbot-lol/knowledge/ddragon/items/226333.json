@@ -1,0 +1,21 @@
+{
+  "id": "226333",
+  "name": "Death's Dance",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>60</attention> Attack Damage<br><attention>10</attention> Ability Haste<br><attention>45</attention> Armor</stats><br><br><passive>Ignore Pain</passive><br>Damage taken is dealt to you over time instead.<br><br><passive>Defy</passive><br>Champion takedowns cleanse <passive>Ignore Pain's</passive> remaining damage pool and restore Health over time.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Armor",
+    "Damage",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatArmorMod": 45,
+    "FlatPhysicalDamageMod": 60
+  }
+}

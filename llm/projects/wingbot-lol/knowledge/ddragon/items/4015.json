@@ -1,0 +1,24 @@
+{
+  "id": "4015",
+  "name": "Perplexity",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>60</attention> Ability Power<br><attention>5%</attention> Move Speed<br><attention>22%</attention> Armor Penetration<br><attention>30%</attention> Magic Penetration</stats><br><br><passive>Giant Slayer</passive><br>Deal up to 15% bonus damage against champions with greater max Health than you.<br><br><rules>Max damage increase reached when Health difference is greater than 2500.</rules></mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "SpellDamage",
+    "CooldownReduction",
+    "NonbootsMovement",
+    "MagicPenetration",
+    "ArmorPenetration",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 60,
+    "PercentMovementSpeedMod": 0.05
+  }
+}

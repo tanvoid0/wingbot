@@ -1,0 +1,22 @@
+{
+  "id": "3865",
+  "name": "World Atlas",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 400,
+    "sell": 160
+  },
+  "tags": [
+    "Health",
+    "ManaRegen",
+    "Vision",
+    "GoldPer",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 30
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3143",
+  "name": "Randuin's Omen",
+  "plaintext": "Greatly increases defenses, activate to slow nearby enemies",
+  "description": "<mainText><stats><attention>350</attention> Health<br><attention>75</attention> Armor</stats><br><br><passive>Resilience</passive><br>Receive 30% less damage from Critical Strikes.<br><active>Humility</active><br><keyword>Slow</keyword> nearby enemies by 70% for 2 seconds.</mainText>",
+  "gold": {
+    "base": 800,
+    "purchasable": true,
+    "total": 2700,
+    "sell": 1890
+  },
+  "tags": [
+    "Health",
+    "Armor",
+    "Active",
+    "Slow"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 350,
+    "FlatArmorMod": 75
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "220009",
+  "name": "Gold Stat Anvil Voucher",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Redeem during a Shopping Phase to gain a Stat Anvil!</mainText>",
+  "gold": {
+    "base": 750,
+    "purchasable": false,
+    "total": 750,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

@@ -1,0 +1,14 @@
+{
+  "id": "2008",
+  "name": "",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 60,
+    "purchasable": false,
+    "total": 60,
+    "sell": 42
+  },
+  "tags": [],
+  "stats": {}
+}

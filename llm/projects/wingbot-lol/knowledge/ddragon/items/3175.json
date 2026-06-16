@@ -1,0 +1,19 @@
+{
+  "id": "3175",
+  "name": "Spellslinger's Shoes",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>18</attention> Magic Penetration<br><attention>8%</attention> Magic Penetration<br><attention>45</attention> Move Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "Boots",
+    "MagicPenetration"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 45
+  }
+}

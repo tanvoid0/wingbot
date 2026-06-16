@@ -1,0 +1,20 @@
+{
+  "id": "4632",
+  "name": "Verdant Barrier",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>40</attention> Ability Power<br><attention>25</attention> Magic Resist</stats><br><br><passive>Annul</passive><br>Grants a Spell Shield that blocks the next enemy Ability.</mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 1600,
+    "sell": 1120
+  },
+  "tags": [
+    "SpellBlock",
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 25,
+    "FlatMagicDamageMod": 40
+  }
+}

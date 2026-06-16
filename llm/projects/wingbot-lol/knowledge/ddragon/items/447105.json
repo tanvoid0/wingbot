@@ -1,0 +1,20 @@
+{
+  "id": "447105",
+  "name": "Empyrean Promise",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>70</attention> Ability Power<br><attention>18%</attention> Heal and Shield Power<br><attention>30</attention> Ability Haste<br><attention>125%</attention> Base Mana Regen</stats><br><br><active>ACTIVE</active> (0s)<br><active>Vigilance</active><br>Teleport to your ally and grant <shield> shield</shield> for 5s when landing. Can be used when Ally is downed.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "SpellDamage",
+    "ManaRegen",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 70
+  }
+}

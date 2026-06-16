@@ -1,0 +1,20 @@
+{
+  "id": "3348",
+  "name": "Arcane Sweeper",
+  "plaintext": "Activate to reveal a nearby area of the map",
+  "description": "<mainText><stats></stats><br><br><mainText><active>UNIQUE Active - Hunter's Sight:</active> An arcane mist grants vision in the target area for 5 seconds, revealing enemy champions and granting <font color='#ee91d7'>True Sight</font> of traps in the area for 3 seconds (30 second cooldown).</mainText></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Active",
+    "Jungle",
+    "Lane",
+    "Trinket",
+    "Vision"
+  ],
+  "stats": {}
+}

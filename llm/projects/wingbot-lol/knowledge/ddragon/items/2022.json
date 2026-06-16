@@ -1,0 +1,16 @@
+{
+  "id": "2022",
+  "name": "Glowing Mote",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>5</attention> Ability Haste</stats><br><br></mainText>",
+  "gold": {
+    "base": 250,
+    "purchasable": true,
+    "total": 250,
+    "sell": 175
+  },
+  "tags": [
+    "CooldownReduction"
+  ],
+  "stats": {}
+}

@@ -1,0 +1,19 @@
+{
+  "id": "2015",
+  "name": "Kircheis Shard",
+  "plaintext": "Attack speed and a chargable magic hit",
+  "description": "<mainText><stats><attention>15</attention> Attack Damage</stats><br><br><passive>Jolt</passive><br><keyword>Energized Attacks</keyword> deal an additional <magicDamage>50 magic damage</magicDamage>.</mainText>",
+  "gold": {
+    "base": 350,
+    "purchasable": false,
+    "total": 700,
+    "sell": 490
+  },
+  "tags": [
+    "Damage",
+    "OnHit"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 15
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "2138",
+  "name": "Elixir of Iron",
+  "plaintext": "Temporarily increases defenses. Leaves a trail for allies to follow.",
+  "description": "<mainText><stats></stats><br><br><active>Consume</active><br>Grants <scaleHealth>300 Health</scaleHealth>, 25% Tenacity and increased size for 3 minutes. While active, you leave a path behind that boosts allied champions' <speed>Move Speed by 15%</speed>.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 200
+  },
+  "tags": [
+    "Health",
+    "Consumable",
+    "NonbootsMovement",
+    "Tenacity"
+  ],
+  "stats": {}
+}

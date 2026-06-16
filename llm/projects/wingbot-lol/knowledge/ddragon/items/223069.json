@@ -1,0 +1,27 @@
+{
+  "id": "223069",
+  "name": "Void Immolation",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>1000</attention> Health<br><attention>100</attention> Armor<br><attention>80</attention> Magic Resist<br><attention>25</attention> Ability Haste<br><attention>200%</attention> Base Health Regen</stats><br><br><passive>Immolate</passive><br>After taking or dealing damage, deal <magicDamage> magic damage</magicDamage> per second to nearby enemies for 5 seconds. </mainText>",
+  "gold": {
+    "base": 6000,
+    "purchasable": true,
+    "total": 6000,
+    "sell": 4200
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "HealthRegen",
+    "Armor",
+    "Aura",
+    "CooldownReduction",
+    "MagicResist",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 80,
+    "FlatHPPoolMod": 1000,
+    "FlatArmorMod": 100
+  }
+}

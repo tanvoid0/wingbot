@@ -1,0 +1,23 @@
+{
+  "id": "222502",
+  "name": "Unending Despair",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>350</attention> Health<br><attention>50</attention> Armor<br><attention>10</attention> Ability Haste</stats><br><br><passive>Anguish</passive><br>Every 4 seconds while in combat with champions, deal <magicDamage>magic damage</magicDamage> to nearby enemy champions and <healing>heal for 250%</healing> of the damage dealt.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "Health",
+    "Armor",
+    "CooldownReduction",
+    "MagicResist",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 350,
+    "FlatArmorMod": 50
+  }
+}

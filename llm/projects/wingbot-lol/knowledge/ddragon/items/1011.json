@@ -1,0 +1,18 @@
+{
+  "id": "1011",
+  "name": "Giant's Belt",
+  "plaintext": "Greatly increases Health",
+  "description": "<mainText><stats><attention>350</attention> Health</stats><br><br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 900,
+    "sell": 630
+  },
+  "tags": [
+    "Health"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 350
+  }
+}

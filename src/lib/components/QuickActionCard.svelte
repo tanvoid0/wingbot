@@ -6,7 +6,8 @@
   export let title: string;
   export let description: string;
   export let icon: any;
-  export let href: string;
+  export let href: string | undefined = undefined;
+  export let onclick: (() => void) | undefined = undefined;
   export let variant: 'blue' | 'green' | 'purple' = 'blue';
   export let className: string = '';
 
@@ -38,24 +39,42 @@
   };
 
   const config = variantConfig[variant];
-</script>
 
-<a href={href} class="block">
-  <Card class={cn(
-    'border transition-colors cursor-pointer',
+  const cardClass = cn(
+    'border transition-colors cursor-pointer w-full text-left',
     config.bgColor,
     config.borderColor,
     config.hoverBgColor,
     className
-  )}>
-    <CardContent class="p-4">
+  );
+</script>
+
+{#if href}
+<a href={href} class="block">
+  <Card class={cardClass}>
+    <CardContent class="p-3">
       <div class="flex items-center">
-        <svelte:component this={icon} class={cn('w-6 h-6 mr-3', config.iconColor)} />
-        <div>
-          <p class={cn('font-medium', config.titleColor)}>{title}</p>
-          <p class={cn('text-sm', config.descriptionColor)}>{description}</p>
+        <svelte:component this={icon} class={cn('w-5 h-5 mr-2.5 shrink-0', config.iconColor)} />
+        <div class="min-w-0">
+          <p class={cn('font-medium text-sm', config.titleColor)}>{title}</p>
+          <p class={cn('text-xs', config.descriptionColor)}>{description}</p>
         </div>
       </div>
     </CardContent>
   </Card>
 </a>
+{:else}
+<button type="button" class="block w-full" onclick={onclick}>
+  <Card class={cardClass}>
+    <CardContent class="p-3">
+      <div class="flex items-center">
+        <svelte:component this={icon} class={cn('w-5 h-5 mr-2.5 shrink-0', config.iconColor)} />
+        <div class="min-w-0">
+          <p class={cn('font-medium text-sm', config.titleColor)}>{title}</p>
+          <p class={cn('text-xs', config.descriptionColor)}>{description}</p>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+</button>
+{/if}

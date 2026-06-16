@@ -1,0 +1,18 @@
+{
+  "id": "1040",
+  "name": "Obsidian Edge",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><passive>8%</passive> Omnivamp against jungle monsters<br><li><passive>Sear:</passive> Damaging jungle monsters burns them for <magicDamage> magic damage</magicDamage> over 5 seconds.<li><passive>Auto Path:</passive> Smiting 5 times <status>consumes</status> this item and upgrades your Attack-Smite, increasing its damage to monsters to <trueDamage>900</trueDamage>.<li><passive>Huntsman:</passive> Killing large jungle monsters grants bonus experience.<li><passive>Recoup:</passive> Regen up to <scaleMana> Mana</scaleMana> (based on missing mana) per second when in the jungle or river. <br><br><rules><status>Consuming</status> this item grants all item effects permanently and increases Smite damage to monsters. If you have gained more gold from minions than ju",
+  "gold": {
+    "base": 350,
+    "purchasable": true,
+    "total": 350,
+    "sell": 140
+  },
+  "tags": [
+    "LifeSteal",
+    "SpellVamp",
+    "Jungle"
+  ],
+  "stats": {}
+}

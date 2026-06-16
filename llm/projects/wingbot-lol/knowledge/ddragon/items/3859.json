@@ -1,0 +1,22 @@
+{
+  "id": "3859",
+  "name": "Targon's Buckler",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>10</attention> Ability Power<br><attention>100</attention> Health<br><attention>75%</attention> Base Health Regen<br><attention>3</attention> Gold Per 10 Seconds</stats><br><br><br><li><passive>Spoils of War:</passive> While nearby an allied champion, Attacks execute minions below 0% of their max Health. Killing a minion grants the same kill gold to the nearest allied champion. These effects recharge every 0 seconds (Max 0 charges).<li><passive>Quest:</passive> Earn 1000 gold from this item to transform it into <rarityLegendary>Bulwark of the Mountain</rarityLegendary>. <br><br><rules>This item grants reduced gold from minions if anyone on your team with this item kill excessive numbers of them.</rules><br><br><br><br><active>ACTIVE</active><br><active>Ward</act",
+  "gold": {
+    "base": 400,
+    "purchasable": false,
+    "total": 400,
+    "sell": 160
+  },
+  "tags": [
+    "Health",
+    "HealthRegen",
+    "GoldPer",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 100,
+    "FlatMagicDamageMod": 10
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "3051",
+  "name": "Hearthbound Axe",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>20</attention> Attack Damage<br><attention>20%</attention> Attack Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 250,
+    "purchasable": true,
+    "total": 1200,
+    "sell": 840
+  },
+  "tags": [
+    "Damage",
+    "AttackSpeed"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 20,
+    "PercentAttackSpeedMod": 0.2
+  }
+}

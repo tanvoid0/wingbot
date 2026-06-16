@@ -182,27 +182,25 @@
 
 <style>
   .league-launcher {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: inherit;
   }
 
   .header {
-    text-align: center;
-    margin-bottom: 30px;
+    text-align: left;
+    margin-bottom: 12px;
   }
 
   .header h2 {
-    margin: 0 0 10px 0;
-    color: #2c3e50;
-    font-size: 28px;
+    margin: 0 0 4px 0;
+    color: inherit;
+    font-size: 1rem;
   }
 
   .header p {
-    margin: 0;
-    color: #7f8c8d;
-    font-size: 16px;
+    display: none;
   }
 
   .error-message {
@@ -214,14 +212,14 @@
   }
 
   .content {
-    background: white;
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
   }
 
   .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
   }
 
   .form-group label {

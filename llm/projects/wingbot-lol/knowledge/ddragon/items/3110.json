@@ -1,0 +1,23 @@
+{
+  "id": "3110",
+  "name": "Frozen Heart",
+  "plaintext": "Massively increases Armor and slows enemy basic attacks",
+  "description": "<mainText><stats><attention>75</attention> Armor<br><attention>400</attention> Mana<br><attention>20</attention> Ability Haste</stats><br><br><passive>Winter's Caress</passive><br>Reduce the <attackSpeed>Attack Speed</attackSpeed> of nearby champions by <attackSpeed>20%</attackSpeed>.</mainText>",
+  "gold": {
+    "base": 600,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "Armor",
+    "Mana",
+    "Aura",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 400,
+    "FlatArmorMod": 75
+  }
+}

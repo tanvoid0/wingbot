@@ -1,0 +1,16 @@
+{
+  "id": "1106",
+  "name": "Gustwalker Hatchling",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><passive>Jungle Companions</passive><br>Summon a <font color='#38A8E8'>Gustwalker</font> that assists you against monsters.<br><br>The companion grows as you hunt monsters, empowering your <spellName>Smite</spellName>. When fully grown, it completes your Jungle Quest and grants <speed>Move Speed</speed> upon entering brush, increased when killing large monsters.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 450,
+    "sell": 180
+  },
+  "tags": [
+    "Jungle"
+  ],
+  "stats": {}
+}

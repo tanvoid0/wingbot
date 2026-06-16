@@ -1,0 +1,17 @@
+{
+  "id": "3398",
+  "name": "Small Party Favor",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><titleRight>Obtained from a Cat Shaco Box</titleRight>. <mainText><spellPassive>Click to Consume:</spellPassive> <gold>Gain gold</gold>.</mainText><br></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Consumable",
+    "GoldPer"
+  ],
+  "stats": {}
+}

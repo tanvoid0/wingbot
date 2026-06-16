@@ -1,0 +1,26 @@
+{
+  "id": "223078",
+  "name": "Trinity Force",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>40</attention> Attack Damage<br><attention>25%</attention> Attack Speed<br><attention>375</attention> Health<br><attention>20</attention> Ability Haste</stats><br><br><passive>Spellblade</passive><br>After using an Ability, your next Attack is enhanced with additional physical damage.<br><br><passive>Quicken</passive><br>Basic attacks grant Move Speed.<br><br></mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "AttackSpeed",
+    "CooldownReduction",
+    "OnHit",
+    "NonbootsMovement",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 375,
+    "FlatPhysicalDamageMod": 40,
+    "PercentAttackSpeedMod": 0.25
+  }
+}

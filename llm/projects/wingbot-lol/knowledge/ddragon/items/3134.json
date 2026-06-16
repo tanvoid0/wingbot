@@ -1,0 +1,19 @@
+{
+  "id": "3134",
+  "name": "Serrated Dirk",
+  "plaintext": "Increases Attack Damage and Lethality",
+  "description": "<mainText><stats><attention>20</attention> Attack Damage<br><attention>10</attention> Lethality</stats><br><br></mainText>",
+  "gold": {
+    "base": 300,
+    "purchasable": true,
+    "total": 1000,
+    "sell": 700
+  },
+  "tags": [
+    "Damage",
+    "ArmorPenetration"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 20
+  }
+}

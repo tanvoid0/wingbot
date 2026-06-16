@@ -1,0 +1,18 @@
+{
+  "id": "3089",
+  "name": "Rabadon's Deathcap",
+  "plaintext": "Massively increases Ability Power",
+  "description": "<mainText><stats><attention>130</attention> Ability Power</stats><br><br><passive>Magical Opus</passive><br>Increases your total <scaleAP>Ability Power by 30%</scaleAP>.</mainText>",
+  "gold": {
+    "base": 1100,
+    "purchasable": true,
+    "total": 3500,
+    "sell": 2450
+  },
+  "tags": [
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 130
+  }
+}

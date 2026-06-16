@@ -1,0 +1,20 @@
+{
+  "id": "223047",
+  "name": "Plated Steelcaps",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>25</attention> Armor<br><attention>30</attention> Move Speed</stats><br><br>Reduces incoming damage from Attacks by 14%.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 350
+  },
+  "tags": [
+    "Armor",
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 30,
+    "FlatArmorMod": 25
+  }
+}

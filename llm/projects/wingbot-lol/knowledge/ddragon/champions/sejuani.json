@@ -1,0 +1,38 @@
+{
+  "id": "113",
+  "name": "Sejuani",
+  "title": "Fury of the North",
+  "tags": [
+    "Tank"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 5,
+    "defense": 7,
+    "magic": 6,
+    "difficulty": 4
+  },
+  "stats": {
+    "hp": 630,
+    "hpperlevel": 114,
+    "mp": 400,
+    "mpperlevel": 40,
+    "movespeed": 340,
+    "armor": 34,
+    "armorperlevel": 5.45,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 150,
+    "hpregen": 8.5,
+    "hpregenperlevel": 1,
+    "mpregen": 7,
+    "mpregenperlevel": 0.7,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 66,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 3.5,
+    "attackspeed": 0.688
+  },
+  "blurb": "Sejuani is the brutal, unforgiving Iceborn warmother of the Winter's Claw, one of the most feared tribes of the Freljord. Her people's survival is a constant, desperate battle against the elements, forcing them to raid Noxians, Demacians, and Avarosans..."
+}

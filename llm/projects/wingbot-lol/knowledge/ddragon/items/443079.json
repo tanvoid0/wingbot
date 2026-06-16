@@ -1,0 +1,20 @@
+{
+  "id": "443079",
+  "name": "Turbo Chemtank",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>600</attention> Health<br><attention>80</attention> Adaptive Force</stats><br><br>Ignore the next time you are <status>Immobilized</status>, instead dropping a chemical cannister nearby (s Cooldown). Picking up the cannister reduces the Cooldown by 15 seconds and restores <scaleHealth>4% max Health</scaleHealth>. Enemies stepping on the cannister destroy it.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "Active",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 600
+  }
+}

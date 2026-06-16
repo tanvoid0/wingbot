@@ -1,0 +1,25 @@
+{
+  "id": "223071",
+  "name": "Black Cleaver",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>40</attention> Attack Damage<br><attention>350</attention> Health<br><attention>20</attention> Ability Haste</stats><br><br><passive>Carve</passive><br>Dealing <physicalDamage>physical damage</physicalDamage> to champions reduces the target's <scaleArmor>Armor by 6%</scaleArmor> for 6 seconds. (Stacks 5 times).<br><br><passive>Fervor</passive><br>Dealing <physicalDamage>physical damage</physicalDamage> grants <speed>20 Move Speed</speed> for 2 seconds.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "CooldownReduction",
+    "OnHit",
+    "NonbootsMovement",
+    "ArmorPenetration",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 350,
+    "FlatPhysicalDamageMod": 40
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "4645",
+  "name": "Shadowflame",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>110</attention> Ability Power<br><attention>15</attention> Magic Penetration</stats><br><br><passive>Cinderbloom</passive><br><magicDamage>Magic</magicDamage> and <trueDamage>true damage</trueDamage> <attention>Critically Strike</attention> enemies below 40% Health, dealing 20% increased damage. </mainText>",
+  "gold": {
+    "base": 900,
+    "purchasable": true,
+    "total": 3200,
+    "sell": 2240
+  },
+  "tags": [
+    "SpellDamage",
+    "MagicPenetration"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 110
+  }
+}

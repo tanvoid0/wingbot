@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+"""Generate curated matchups.jsonl corpus (100+ lane matchup rows)."""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+OUT = Path(__file__).resolve().parent.parent / "knowledge" / "matchups" / "matchups.jsonl"
+
+# Curated matchup knowledge: (your_champ, enemy_champ, role, lane_plan, items, playstyle, win_condition)
+MATCHUPS = [
+    ("Diana", "Yasuo", "mid", "Trade after Wind Wall is on cooldown. Poke with Q between minions.", ["Seeker's Armguard", "Dark Seal"], "aggressive_after_6", "All-in at 6 with Ignite if he has no Flash."),
+    ("Yasuo", "Malphite", "mid", "Respect level 6 all-in. Farm safely and scale.", ["Plated Steelcaps", "Phantom Dancer"], "defensive_scale", "Scale to two items before fighting; avoid extended trades pre-6."),
+    ("Zed", "Lissandra", "mid", "She hard-counters your all-in with R self-cast. Bait cooldowns first.", ["Hexdrinker", "Edge of Night"], "poke_roam", "Roam after pushing; avoid solo kills until she uses R."),
+    ("Syndra", "Zed", "mid", "Stay near minions for E stun. Save E for his W-R engage.", ["Seeker's Armguard", "Zhonya's Hourglass"], "defensive_burst", "Poke with Q-W; all-in only after he uses W."),
+    ("Ahri", "Kassadin", "mid", "Punish pre-6 hard. Ward river and deny farm.", ["Lost Chapter", "Dark Seal"], "aggressive_pre_6", "Snowball before level 6; end lane before he scales."),
+    ("Kassadin", "Ahri", "mid", "Survive until 6 and 16. Give up CS if needed.", ["Rod of Ages", "Catalyst"], "defensive_scale", "Farm safely; become unkillable after 16 with Roaming."),
+    ("Orianna", "Syndra", "mid", "Match poke range. Hide ball for surprise Q-W.", ["Lost Chapter", "Merc Treads"], "control_poke", "Win teamfights with R on assassin dives."),
+    ("LeBlanc", "Galio", "mid", "Cannot kill him easily. Roam side lanes.", ["Dark Seal", "Sorcerer's Shoes"], "roam_burst", "Push and roam bot after 6."),
+    ("Viktor", "Fizz", "mid", "Respect level 3 all-in. Control wave near tower.", ["Seeker's Armguard", "Lost Chapter"], "defensive_scale", "Scale to Hex Core upgrades; fight after E upgrade."),
+    ("Fizz", "Viktor", "mid", "All-in at 3 with E. Zone with W.", ["Dark Seal", "Lich Bane"], "aggressive_all_in", "Snowball early kills before he outranges you."),
+    ("Cassiopeia", "Yasuo", "mid", "Kite with Q speed. Don't fight in minion wave.", ["Seraph's Embrace", "Rylai's"], "kite_dps", "Win extended fights after Tear stacked."),
+    ("Yone", "Pantheon", "mid", "Respect level 2-3 W stun combo. Short trades only.", ["Plated Steelcaps", "Noonquiver"], "short_trades", "Outscale at two items; fight with E up."),
+    ("Pantheon", "Yone", "mid", "Bully levels 1-5. Roam with R.", ["Serrated Dirk", "Plated Steelcaps"], "aggressive_roam", "Convert lead to roams before he scales."),
+    ("Akali", "Galio", "mid", "Cannot kill through W. Split push instead.", ["Hextech Alternator", "Sorcerer's Shoes"], "split_push", "Avoid sidelane duels; group for picks."),
+    ("Galio", "Akali", "mid", "Match shove and roam. W negates her burst.", ["Lost Chapter", "Plated Steelcaps"], "roam_peel", "R to counter her roams."),
+    ("Lux", "Zed", "mid", "Respect 6. Stay under tower and poke.", ["Seeker's Armguard", "Luden's Companion"], "defensive_poke", "Group early; never facecheck alone."),
+    ("Xerath", "Fizz", "mid", "Max range poke. Flash defensive at 6.", ["Lost Chapter", "Shadowflame"], "defensive_poke", "Stay far; win by poking before objectives."),
+    ("Annie", "Zed", "mid", "Hold stun for his R. All-in at 6 with Tibbers.", ["Seeker's Armguard", "Stormsurge"], "burst_all_in", "One-shot with full combo when he missteps."),
+    ("Malzahar", "Katarina", "mid", "Press R when she jumps in. Push constantly.", ["Liandry's Torment", "Rylai's"], "push_suppress", "Shut down resets in teamfights with R."),
+    ("Katarina", "Malzahar", "mid", "Cannot fight into suppress. Roam and farm.", ["Hextech Alternator", "Sorcerer's Shoes"], "roam_reset", "Get kills elsewhere; avoid solo lane."),
+    ("Aurelion Sol", "Katarina", "mid", "Push and scale. R to peel in fights.", ["Rylai's Crystal Scepter", "Liandry's"], "scale_control", "Win at 2+ items with zone control."),
+    ("Hwei", "Yasuo", "mid", "Poke from max range. Don't stand in minions.", ["Luden's Companion", "Seraph's"], "poke_kite", "Chunk before fights; avoid Wind Wall angles."),
+    ("Taliyah", "Yasuo", "mid", "Shove and roam. W to slow his dashes.", ["Liandry's", "Shadowflame"], "roam_pick", "Roam with jungler; match his roams."),
+    ("Sylas", "Malphite", "mid", "Steal useful ults in fights. Farm to scale.", ["Rod of Ages", "Ionian Boots"], "scale_teamfight", "Win teamfights stealing key ults."),
+    ("Ryze", "Irelia", "mid", "Respect level 2. Root with W and farm.", ["Rod of Ages", "Seraph's"], "defensive_scale", "Scale to late; sidelane teleport plays."),
+    ("Irelia", "Ryze", "mid", "All-in at 2 with passive stacked.", ["Blade of the Ruined King", "Wit's End"], "aggressive_all_in", "Dive when he uses W on minions."),
+    ("Jayce", "Malphite", "top", "Poke in cannon; respect all-in at 6.", ["Manamune", "Muramana"], "poke_split", "Win through poke and split before he stacks armor."),
+    ("Malphite", "Jayce", "top", "Survive poke. All-in at 6 with R.", ["Sunfire Aegis", "Plated Steelcaps"], "tank_all_in", "TP bot for R knockups after Bramble."),
+    ("Darius", "Teemo", "top", "Ghost Flash at 6. Pull after blind.", ["Stridebreaker", "Plated Steelcaps"], "aggressive_all_in", "All-in with Ghost when blind ends."),
+    ("Teemo", "Darius", "top", "Kite with W. Punish hook attempts.", ["Nashor's Tooth", "Liandry's"], "kite_poke", "Deny farm and scale; never let him stack."),
+    ("Garen", "Quinn", "top", "Hide in bush. Flash Q silence kill.", ["Stridebreaker", "Plated Steelcaps"], "burst_short", "Repeat bush trades; all-in with R."),
+    ("Quinn", "Garen", "top", "Kite with Vault. Ward bushes.", ["Youmuu's Ghostblade", "Collector"], "kite_roam", "Roam mid after shove; deny bush plays."),
+    ("Renekton", "Jax", "top", "Dominate levels 1-3. Dive with fury W.", ["Black Cleaver", "Plated Steelcaps"], "aggressive_early", "Snowball before he hits level 6 Trinity."),
+    ("Jax", "Renekton", "top", "Give up CS early. Scale to Trinity.", ["Trinity Force", "Plated Steelcaps"], "defensive_scale", "Fight after Sheen and level 6."),
+    ("Fiora", "Malphite", "top", "W his E slow. Short trades on vitals.", ["Ravenous Hydra", "Plated Steelcaps"], "split_push", "Outscale and split; parry key CC."),
+    ("Camille", "Darius", "top", "Hookshot over his Q edge. Short trades.", ["Trinity Force", "Plated Steelcaps"], "skirmish_split", "Trade when his Q is down."),
+    ("Aatrox", "Jax", "top", "Poke with Q1. All-in when he misses E.", ["Black Cleaver", "Plated Steelcaps"], "poke_all_in", "Win extended fights with passive healing."),
+    ("Gnar", "Darius", "top", "Kite in mini form. Mega stun near wall.", ["Black Cleaver", "Wit's End"], "kite_poke", "Transform for all-in when he overextends."),
+    ("K'Sante", "Fiora", "top", "Trade in form swaps. W her vitals.", ["Sunfire Aegis", "Iceborn Gauntlet"], "short_trades", "Win long fights with All Out form."),
+    ("Sett", "Vayne", "top", "Bully early. W true damage in extended fight.", ["Stridebreaker", "Plated Steelcaps"], "aggressive_bully", "All-in level 3 with E stun."),
+    ("Vayne", "Sett", "top", "Kite with Q. Condemn into wall.", ["Guinsoo's Rageblade", "Wit's End"], "kite_scale", "Scale to two items; never short trade."),
+    ("Gangplank", "Irelia", "top", "Poke with Q barrels. Respect all-in.", ["Trinity Force", "Plated Steelcaps"], "poke_scale", "Scale to Sheen; group for barrels."),
+    ("Riven", "Malphite", "top", "Short combos. Respect armor stacks.", ["Black Cleaver", "Plated Steelcaps"], "combo_burst", "Snowball early before he stacks armor."),
+    ("Ornn", "Fiora", "top", "Trade with W brittle. Scale for team.", ["Sunfire Aegis", "Iceborn Gauntlet"], "tank_trade", "Win teamfights with R upgrade items."),
+    ("Lee Sin", "Kha'Zix", "jungle", "Invade early with team. Win 2v2.", ["Eclipse", "Plated Steelcaps"], "aggressive_invade", "Kick carry in teamfights."),
+    ("Kha'Zix", "Lee Sin", "jungle", "Avoid early fights. Farm to 6.", ["Youmuu's Ghostblade", "Opportunity"], "farm_isolate", "Pick isolated targets after evolutions."),
+    ("Graves", "Karthus", "jungle", "Invade and duel. Stack armor.", ["Youmuu's Ghostblade", "Collector"], "aggressive_invade", "Control enemy jungle camps."),
+    ("Elise", "Amumu", "jungle", "Dive at 3. Match cocoons with team.", ["Shadowflame", "Sorcerer's Shoes"], "early_dive", "End game before 25 min."),
+    ("Hecarim", "Rammus", "jungle", "Avoid early ganks into W. Farm and scale.", ["Trinity Force", "Plated Steelcaps"], "farm_scale", "Engage after two items."),
+    ("Vi", "Morgana", "jungle", "Bait black shield before R.", ["Trinity Force", "Plated Steelcaps"], "engage_pick", "Lock down carry after shield down."),
+    ("Jarvan IV", "Poppy", "jungle", "Don't R into her W. Fight in river.", ["Sundered Sky", "Plated Steelcaps"], "teamfight_engage", "EQ flash on backline when Poppy away."),
+    ("Amumu", "Olaf", "jungle", "Avoid early duels. Farm to 6.", ["Sunfire Aegis", "Abyssal Mask"], "farm_engage", "Win with R flash engage teamfights."),
+    ("Nidalee", "Xin Zhao", "jungle", "Poke and kite. Avoid melee.", ["Luden's Companion", "Shadowflame"], "poke_kite", "Chip before objectives; don't get jumped."),
+    ("Kindred", "Graves", "jungle", "Kite with W. Stack marks safely.", ["Kraken Slayer", "Wit's End"], "kite_farm", "Scale marks; win late teamfights."),
+    ("Lillia", "Hecarim", "jungle", "Speed kite. Sleep carry in fights.", ["Liandry's", "Rylai's"], "kite_sleep", "Stack passive on multiple enemies before R."),
+    ("Jinx", "Draven", "adc", "Farm safely. Scale to 3 items.", ["Kraken Slayer", "Runaan's Hurricane"], "defensive_scale", "Win teamfights with passive resets."),
+    ("Draven", "Jinx", "adc", "All-in level 2 with support.", ["Bloodthirster", "Lord Dominik's"], "aggressive_all_in", "Snowball lane before she outscales."),
+    ("Caitlyn", "Lucian", "adc", "Poke with range. Trap on dash path.", ["Kraken Slayer", "Rapid Firecannon"], "poke_trap", "Win lane with range; siege objectives."),
+    ("Lucian", "Caitlyn", "adc", "Short burst trades. E out of net.", ["The Collector", "Plated Steelcaps"], "burst_short", "All-in after support CC."),
+    ("Kai'Sa", "Caitlyn", "adc", "Farm under tower. Scale Q evolve.", ["Kraken Slayer", "Nashor's Tooth"], "defensive_scale", "R on isolated target in fights."),
+    ("Vayne", "Caitlyn", "adc", "Concede early. Scale Guinsoo.", ["Guinsoo's Rageblade", "Wit's End"], "defensive_scale", "Peel for yourself; shred tanks late."),
+    ("Ezreal", "Draven", "adc", "Poke with Q. Give up CS if needed.", ["Trinity Force", "Manamune"], "poke_safe", "Win by poking before objectives."),
+    ("Samira", "Caitlyn", "adc", "All-in when she steps for poke.", ["Bloodthirster", "Lord Dominik's"], "aggressive_all_in", "Style S in teamfights on CC chain."),
+    ("Jhin", "Yasuo", "adc", "Root on dash. Fourth shot on engage.", ["The Collector", "Rapid Firecannon"], "poke_burst", "Catch with W when he dashes minions."),
+    ("Tristana", "Draven", "adc", "Farm to E bomb stacks. All-in at 6.", ["Kraken Slayer", "Rapid Firecannon"], "scale_all_in", "Jump after support CC."),
+    ("Varus", "Sivir", "adc", "Poke with Q. Chain CC in fights.", ["Youmuu's Ghostblade", "Opportunity"], "poke_cc", "Land R on carry before fight."),
+    ("Ashe", "Yasuo", "adc", "Arrow on tornado setup. Kite with Q.", ["Kraken Slayer", "Terminus"], "poke_engage", "Initiate with R on grouped enemies."),
+    ("Miss Fortune", "Draven", "adc", "Poke with Q bounce. R in teamfights.", ["Youmuu's Ghostblade", "Opportunity"], "poke_teamfight", "Win fights with R during enemy CC."),
+    ("Thresh", "Morgana", "support", "Bait black shield before hook.", ["Locket of the Iron Solari", "Boots of Mobility"], "engage_peel", "Flay after shield down."),
+    ("Morgana", "Thresh", "support", "Black shield carry on hook path.", ["Shurelya's Battlesong", "Zhonya's Hourglass"], "defensive_peel", "Q pick when they overextend."),
+    ("Leona", "Ezreal", "support", "All-in when he uses E.", ["Sunfire Aegis", "Plated Steelcaps"], "aggressive_all_in", "R flash engage on immobile carries."),
+    ("Nautilus", "Morgana", "support", "Hook through minions when shield down.", ["Sunfire Aegis", "Plated Steelcaps"], "engage_cc", "Chain CC on immobile targets."),
+    ("Lulu", "Leona", "support", "Polymorph on engage. Save W for carry.", ["Moonstone Renewer", "Ardent Censer"], "peel_enhance", "Win by keeping carry alive."),
+    ("Janna", "Nautilus", "support", "Tornado interrupt hook. Peel with R.", ["Moonstone Renewer", "Redemption"], "disengage_peel", "Win by denying engages."),
+    ("Blitzcrank", "Morgana", "support", "Bush hook when shield on cooldown.", ["Sunfire Aegis", "Plated Steelcaps"], "pick_engage", "One pick wins game."),
+    ("Pyke", "Pantheon", "support", "Dodge W stun. Roam after 6.", ["Youmuu's Ghostblade", "Opportunity"], "roam_execute", "Execute resets in skirmishes."),
+    ("Braum", "Caitlyn", "support", "Shield poke. Stack passive on tower.", ["Locket", "Plated Steelcaps"], "defensive_peel", "Win lane with passive stacks."),
+    ("Rakan", "Morgana", "support", "W when shield down. Engage with R.", ["Shurelya's", "Redemption"], "engage_peel", "Charm-flash-R backline."),
+    ("Senna", "Draven", "support", "Poke and scale souls. Stay at range.", ["Black Cleaver", "Rapid Firecannon"], "poke_scale", "Scale souls; global R picks."),
+    ("Yuumi", "Leona", "support", "Attach when Leona commits. Heal through burst.", ["Moonstone Renewer", "Staff of Flowing Water"], "heal_enhance", "Win by outlasting all-in."),
+    ("Lux", "Leona", "support", "Root on Leona R target.", ["Luden's Companion", "Shadowflame"], "poke_burst", "Burst with combined CC chain."),
+    ("Brand", "Soraka", "support", "All-in before she heals through.", ["Liandry's", "Rylai's"], "burst_poke", "Combo R when carry trapped."),
+    ("Soraka", "Brand", "support", "Heal through poke. Silence on combo.", ["Moonstone Renewer", "Redemption"], "heal_sustain", "Win by sustaining through lane."),
+    ("Nami", "Draven", "support", "Bubble on axe catch. E for trades.", ["Moonstone Renewer", "Ardent Censer"], "trade_enhance", "R teamfight disengage or engage."),
+    ("Karma", "Nautilus", "support", "Shield hook attempts. Poke with Q.", ["Shurelya's", "Staff of Flowing Water"], "poke_shield", "Speed up team for picks."),
+    ("Zilean", "Zed", "mid", "R on R target. Poke with bombs.", ["Rod of Ages", "Seraph's"], "peel_poke", "Deny assassin picks with R."),
+    ("Vladimir", "Pantheon", "top", "Survive early. Scale to late.", ["Hextech Rocketbelt", "Cosmic Drive"], "defensive_scale", "Flank teamfights with R pool."),
+    ("Swain", "Yasuo", "mid", "Pull on dash. Tank damage in fights.", ["Liandry's", "Rylai's"], "tank_control", "Win extended teamfights with drain."),
+    ("Neeko", "Zed", "mid", "Root from disguise. W fake escape.", ["Luden's", "Shadowflame"], "burst_cc", "Catch with R after root."),
+    ("Ziggs", "Yasuo", "mid", "Poke from max range. W escape dash.", ["Luden's", "Shadowflame"], "poke_siege", "Siege towers; chunk before fights."),
+    ("Vel'Koz", "Yasuo", "mid", "True damage bypasses Wind Wall angles.", ["Luden's", "Shadowflame"], "poke_true", "Land full combo R in teamfights."),
+    ("Heimerdinger", "Yasuo", "top", "Zone with turrets. All-in when low.", ["Liandry's", "Zhonya's"], "zone_poke", "Push and deny farm under turret."),
+    ("Singed", "Darius", "top", "Proxy farm. Ghost flips.", ["Rod of Ages", "Rylai's"], "proxy_flank", "Create chaos; never fight him in lane."),
+    ("Urgot", "Darius", "top", "Kite with W. Execute at 25%.", ["Black Cleaver", "Plated Steelcaps"], "kite_execute", "Win long trades with passive."),
+    ("Mordekaiser", "Fiora", "top", "R before vitals proc. Tank in realm.", ["Riftmaker", "Rylai's"], "duel_tank", "Win extended duels in R."),
+    ("Nasus", "Darius", "top", "Farm stacks. Survive early all-ins.", ["Trinity Force", "Spirit Visage"], "defensive_scale", "Scale to 400 stacks; split push."),
+    ("Tryndamere", "Malphite", "top", "Spin through slow. R at 6.", ["Kraken Slayer", "Navori Flickerblade"], "split_all_in", "Split push; R through burst."),
+    ("Yorick", "Darius", "top", "Wall to block pull. Maiden push.", ["Trinity Force", "Sundered Sky"], "split_push", "Split with maidens; TP to fights."),
+    ("Illaoi", "Darius", "top", "Fight in E spirit range. R in tentacles.", ["Black Cleaver", "Spirit Visage"], "zone_all_in", "Win 1v2 with tentacles."),
+    ("Gwen", "Darius", "top", "Kite with W. Short trades.", ["Riftmaker", "Nashor's Tooth"], "kite_dps", "Scale and kite; all-in with R up."),
+    ("Rumble", "Jax", "top", "Poke with Q. All-in in Equalizer.", ["Liandry's", "Zhonya's"], "poke_teamfight", "Fight in R zone."),
+    ("Cho'Gath", "Darius", "top", "Farm stacks. Q knockup on engage.", ["Heartsteel", "Plated Steelcaps"], "tank_scale", "Scale HP; feast carries."),
+    ("Sion", "Fiora", "top", "Push with W. R to bot.", ["Heartsteel", "Plated Steelcaps"], "push_roam", "Create map pressure with R."),
+    ("Poppy", "Jax", "top", "W his Q. Steal walls with E.", ["Sunfire", "Iceborn Gauntlet"], "anti_dive", "Peel team with W in fights."),
+    ("Trundle", "Malphite", "top", "R steal stats. Zone with pillar.", ["Trinity Force", "Spirit Visage"], "duel_split", "Win duels and split."),
+    ("Warwick", "Darius", "top", "Fight at low HP. Q through pull.", ["Blade of the Ruined King", "Wit's End"], "sustain_all_in", "All-in when passive procs."),
+    ("Volibear", "Jax", "top", "All-in at 5. Dive with R.", ["Trinity Force", "Plated Steelcaps"], "aggressive_dive", "Tower dive with R."),
+    ("Olaf", "Malphite", "top", "R through CC. All-in early.", ["Stridebreaker", "Plated Steelcaps"], "aggressive_all_in", "Snowball before armor stacks."),
+    ("Kayle", "Darius", "top", "Farm to 6 and 11. Kite with W.", ["Kraken Slayer", "Nashor's Tooth"], "defensive_scale", "Scale to level 16; become carry."),
+    ("Viego", "Rammus", "jungle", "Avoid early W. Farm and reset.", ["Kraken Slayer", "Blade of the Ruined King"], "farm_reset", "Reset in teamfights on kills."),
+    ("Diana", "Kassadin", "mid", "Punish pre-6. All-in with R.", ["Dark Seal", "Sorcerer's Shoes"], "aggressive_all_in", "Snowball before he scales."),
+    ("Yasuo", "Zed", "mid", "Wind Wall R. Trade when W down.", ["Noonquiver", "Plated Steelcaps"], "skirmish", "Outplay with Wall; scale crit."),
+    ("Ahri", "Yasuo", "mid", "Charm when he dashes. Poke with Q.", ["Luden's", "Shadowflame"], "poke_pick", "Pick with E-Q before he scales."),
+    ("Jinx", "Malphite", "adc", "Stay back from R. DPS from range.", ["Kraken Slayer", "Lord Dominik's"], "defensive_dps", "Peel with traps; reset on kills."),
+    ("Caitlyn", "Malphite", "adc", "Respect R flash. Trap knockup path.", ["Kraken Slayer", "Lord Dominik's"], "poke_safe", "Siege from max range."),
+    ("Ezreal", "Malphite", "adc", "E blink R knockup. Poke safely.", ["Trinity Force", "Manamune"], "poke_kite", "Chip before objectives."),
+    ("Vayne", "Malphite", "adc", "Condemn knockup. Kite with Q.", ["Guinsoo's", "Wit's End"], "kite_dps", "Shred tank after peel."),
+]
+
+def main() -> int:
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    lines = []
+    for row in MATCHUPS:
+        your, enemy, role, lane, items, style, win = row
+        lines.append(json.dumps({
+            "your_champ": your,
+            "enemy_champ": enemy,
+            "role": role,
+            "lane_plan": lane,
+            "itemization": items,
+            "playstyle": style,
+            "win_condition": win,
+            "queue": "ranked_solo",
+            "patch": "15.12",
+        }, ensure_ascii=False))
+
+    OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"Wrote {len(lines)} matchups to {OUT}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

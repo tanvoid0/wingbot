@@ -1,0 +1,18 @@
+{
+  "id": "221031",
+  "name": "Chain Vest",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>40</attention> Armor</stats><br><br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": false,
+    "total": 500,
+    "sell": 350
+  },
+  "tags": [
+    "Armor"
+  ],
+  "stats": {
+    "FlatArmorMod": 40
+  }
+}

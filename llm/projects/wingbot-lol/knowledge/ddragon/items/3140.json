@@ -1,0 +1,19 @@
+{
+  "id": "3140",
+  "name": "Quicksilver Sash",
+  "plaintext": "Activate to remove all crowd control debuffs",
+  "description": "<mainText><stats><attention>30</attention> Magic Resist</stats><br><br><active>Quicksilver</active><br>Remove all crowd control debuffs (excluding <keyword>Airborne</keyword>).</mainText>",
+  "gold": {
+    "base": 900,
+    "purchasable": true,
+    "total": 1300,
+    "sell": 910
+  },
+  "tags": [
+    "Active",
+    "SpellBlock"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 30
+  }
+}

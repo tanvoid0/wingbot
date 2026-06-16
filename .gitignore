@@ -11,3 +11,20 @@ vite.config.ts.timestamp-*
 wingbot_client/
 wingbot_server/
 wingbot_invalid_setup/
+
+# Rust build output
+/target/
+src-tauri/target/
+
+# Local reference / vendored trees (not part of WingBot)
+/raw/
+
+# Python caches and virtualenvs
+**/__pycache__/
+**/.venv/
+
+# LLM model weights and merged checkpoints (rebuild locally)
+*.gguf
+llm/projects/*/export/merged/
+llm/projects/*/adapters/*/
+llm/core/*.log

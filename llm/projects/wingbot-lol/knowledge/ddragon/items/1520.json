@@ -1,0 +1,18 @@
+{
+  "id": "1520",
+  "name": "OvererchargedHA",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Armor",
+    "ManaRegen",
+    "OnHit"
+  ],
+  "stats": {}
+}

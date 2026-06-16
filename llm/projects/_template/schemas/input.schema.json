@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CompactInput",
+  "type": "object",
+  "required": ["phase"],
+  "properties": {
+    "phase": {
+      "type": "string",
+      "enum": ["champ_select", "in_game", "post_game", "draft", "query"]
+    },
+    "context": {
+      "type": "string",
+      "description": "Domain-specific compact context string or identifier"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

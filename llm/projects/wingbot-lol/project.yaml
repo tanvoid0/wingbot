@@ -1,0 +1,25 @@
+name: wingbot-lol
+description: League of Legends coaching model — matchups, items, playstyles
+# Required HuggingFace model ID — see ../../defaults.yaml for the repo default.
+# Gemma 3 4B: stable PEFT/QLoRA. Gemma 4 E4B is experimental (multimodal + newer tooling).
+base_model: google/gemma-3-4b-it
+fallback_base_model: google/gemma-4-E4B-it
+ollama_tag: wingbot-lol
+input_schema: schemas/game_state.schema.json
+knowledge_packs:
+  - knowledge/ddragon
+  - knowledge/rules
+  - knowledge/matchups
+system_prompt: export/system.txt
+shared_datasets:
+  - ../_shared/decision_patterns.jsonl
+train:
+  lora_rank: 16
+  lora_alpha: 32
+  epochs: 3
+  max_seq_len: 2048
+  learning_rate: 2.0e-4
+  batch_size: 4
+  gradient_accumulation_steps: 4
+  replay_ratio: 0.2
+  max_incremental_examples: 500

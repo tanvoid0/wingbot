@@ -1,0 +1,22 @@
+{
+  "id": "6655",
+  "name": "Luden's Echo",
+  "plaintext": "High burst damage, good against fragile foes",
+  "description": "<mainText><stats><attention>100</attention> Ability Power<br><attention>600</attention> Mana<br><attention>10</attention> Ability Haste</stats><br><br><passive>Echo</passive><br>Damaging Abilities fire 6 Echoes that deal <magicDamage>bonus magic damage</magicDamage> to the target and nearby enemies. Remaining Echoes fire on the primary target, dealing 20% damage.<br></mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1925
+  },
+  "tags": [
+    "SpellDamage",
+    "Mana",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 600,
+    "FlatMagicDamageMod": 100
+  }
+}

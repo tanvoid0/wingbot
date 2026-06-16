@@ -1,0 +1,22 @@
+{
+  "id": "223068",
+  "name": "Sunfire Aegis",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>350</attention> Health<br><attention>40</attention> Armor<br><attention>10</attention> Ability Haste</stats><br><br><passive>Immolate</passive><br>After taking or dealing damage, deal <magicDamage> magic damage</magicDamage> per second to nearby enemies for 3 seconds. </mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "Armor",
+    "Aura",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 350,
+    "FlatArmorMod": 40
+  }
+}

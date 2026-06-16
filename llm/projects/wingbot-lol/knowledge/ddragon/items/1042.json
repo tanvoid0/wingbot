@@ -1,0 +1,18 @@
+{
+  "id": "1042",
+  "name": "Dagger",
+  "plaintext": "Slightly increases Attack Speed",
+  "description": "<mainText><stats><attention>10%</attention> Attack Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 250,
+    "purchasable": true,
+    "total": 250,
+    "sell": 175
+  },
+  "tags": [
+    "AttackSpeed"
+  ],
+  "stats": {
+    "PercentAttackSpeedMod": 0.1
+  }
+}

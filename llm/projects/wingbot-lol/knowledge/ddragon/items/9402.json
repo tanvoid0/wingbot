@@ -1,0 +1,14 @@
+{
+  "id": "9402",
+  "name": "Anima Echo",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Waves now come back upon reaching their end point, dealing damage again and shooting past Seraphine<br><br><rules>Damage, Ability Haste, Crit Chance, Projectile Count, Duration </rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

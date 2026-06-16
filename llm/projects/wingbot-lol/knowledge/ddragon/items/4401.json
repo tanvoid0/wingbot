@@ -1,0 +1,22 @@
+{
+  "id": "4401",
+  "name": "Force of Nature",
+  "plaintext": "Move Speed, Magic Resist, and max Health Regeneration",
+  "description": "<mainText><stats><attention>400</attention> Health<br><attention>55</attention> Magic Resist<br><attention>4%</attention> Move Speed</stats><br><br><passive>Steadfast</passive><br>Gain <scaleMR>70 Magic Resist</scaleMR> and <speed>6% bonus Move Speed</speed> after taking magic damage from Champions 8 times.</mainText>",
+  "gold": {
+    "base": 750,
+    "purchasable": true,
+    "total": 2800,
+    "sell": 1960
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 55,
+    "FlatHPPoolMod": 400,
+    "PercentMovementSpeedMod": 0.04
+  }
+}

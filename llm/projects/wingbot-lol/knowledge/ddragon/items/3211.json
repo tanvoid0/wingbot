@@ -1,0 +1,21 @@
+{
+  "id": "3211",
+  "name": "Spectre's Cowl",
+  "plaintext": "Improves defense and grants regeneration upon being damaged",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>35</attention> Magic Resist<br><attention>100%</attention> Base Health Regen</stats><br><br></mainText>",
+  "gold": {
+    "base": 150,
+    "purchasable": true,
+    "total": 1250,
+    "sell": 875
+  },
+  "tags": [
+    "Health",
+    "HealthRegen",
+    "SpellBlock"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 35,
+    "FlatHPPoolMod": 200
+  }
+}

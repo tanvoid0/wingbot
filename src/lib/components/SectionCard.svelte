@@ -8,10 +8,10 @@
 </script>
 
 <Card class={cn('', className)}>
-  <CardHeader>
-    <h2 class="text-lg font-semibold text-foreground">{title}</h2>
+  <CardHeader class="py-3 px-4">
+    <h2 class="text-sm font-semibold text-foreground">{title}</h2>
   </CardHeader>
-  <CardContent>
+  <CardContent class="pt-0 px-4 pb-4">
     {@render children?.()}
   </CardContent>
 </Card>

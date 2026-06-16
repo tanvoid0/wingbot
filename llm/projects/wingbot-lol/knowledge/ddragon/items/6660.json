@@ -1,0 +1,19 @@
+{
+  "id": "6660",
+  "name": "Bami's Cinder",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>150</attention> Health<br><attention>5</attention> Ability Haste</stats><br><br><passive>Immolate</passive><br>After taking or dealing damage, deal <magicDamage>magic damage</magicDamage> to nearby enemies for 3 seconds.</mainText>",
+  "gold": {
+    "base": 250,
+    "purchasable": true,
+    "total": 900,
+    "sell": 630
+  },
+  "tags": [
+    "Health",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 150
+  }
+}

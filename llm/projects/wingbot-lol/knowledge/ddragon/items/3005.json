@@ -1,0 +1,18 @@
+{
+  "id": "3005",
+  "name": "Ghostcrawlers",
+  "plaintext": "Increases Attack Damage based on maximum Health",
+  "description": "<mainText><stats><attention>45</attention> Move Speed</stats><br><br><active>Wall Walk</active> (0s)<br>Gain the ability to walk through walls for 6 seconds. While inside walls, gain <speed>125 move speed</speed>. Casting a spell or attacking will end this effect.</mainText>",
+  "gold": {
+    "base": 700,
+    "purchasable": true,
+    "total": 1000,
+    "sell": 700
+  },
+  "tags": [
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 45
+  }
+}

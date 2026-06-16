@@ -1,0 +1,20 @@
+{
+  "id": "3066",
+  "name": "Winged Moonplate",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>4%</attention> Move Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 800,
+    "sell": 560
+  },
+  "tags": [
+    "Health",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 200,
+    "PercentMovementSpeedMod": 0.04
+  }
+}

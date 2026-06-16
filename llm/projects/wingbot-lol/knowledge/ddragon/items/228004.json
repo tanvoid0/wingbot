@@ -1,0 +1,24 @@
+{
+  "id": "228004",
+  "name": "Adaptive Helm",
+  "plaintext": "",
+  "description": "<mainText><stats><ornnBonus>800</ornnBonus> Health<br><ornnBonus>50</ornnBonus> Armor<br><ornnBonus>100</ornnBonus> Magic Resist</stats><br><br><br><li><passive>Voidborn Resilience:</passive> For each second in champion combat gain a stack granting 2 <scaleArmor>Armor</scaleArmor> and <scaleMR>Magic Resist</scaleMR>, up to 8 stacks max. At max stacks become empowered, instantly draining enemies around you for <magicDamage>magic damage</magicDamage> (healing you for the same amount), and increasing your bonus resists by 20% until end of combat. The drain repeats every 4s as long as you stay in combat.<li><passive>Absorb:</passive> Taking <magicDamage>magic damage</magicDamage> from enemy Champions grants a stack of <attention>Steadfast</attention> (max 8) for 7 seconds. Enemy <status>Immobi",
+  "gold": {
+    "base": 6000,
+    "purchasable": false,
+    "total": 6000,
+    "sell": 4200
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "Armor",
+    "MagicResist"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 100,
+    "FlatHPPoolMod": 800,
+    "FlatArmorMod": 50,
+    "PercentMovementSpeedMod": 0.05
+  }
+}

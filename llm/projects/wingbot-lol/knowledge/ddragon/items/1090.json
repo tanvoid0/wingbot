@@ -1,0 +1,16 @@
+{
+  "id": "1090",
+  "name": "Quest: Top",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

@@ -1,0 +1,14 @@
+{
+  "id": "220002",
+  "name": "Legendary Marksman Item",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Automatically open a semi-random selection for a Legendary Marksman item.</mainText>",
+  "gold": {
+    "base": 2250,
+    "purchasable": true,
+    "total": 2250,
+    "sell": 2250
+  },
+  "tags": [],
+  "stats": {}
+}

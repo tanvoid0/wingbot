@@ -1,0 +1,21 @@
+{
+  "id": "228002",
+  "name": "Wooglet's Witchcap",
+  "plaintext": "",
+  "description": "<mainText><stats><ornnBonus>300</ornnBonus> Ability Power<br><ornnBonus>50</ornnBonus> Armor<br><ornnBonus>20</ornnBonus> Ability Haste</stats><br><br><passive>Magical Opus:</passive><br>Increases your total <scaleAP>Ability Power by 50% (0)</scaleAP>.<br><br><active>Time Stop</active><br>Enter <keyword>Stasis</keyword> for 2.5 seconds.</mainText>",
+  "gold": {
+    "base": 6000,
+    "purchasable": true,
+    "total": 6000,
+    "sell": 4200
+  },
+  "tags": [
+    "Armor",
+    "SpellDamage",
+    "Active"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 300,
+    "FlatArmorMod": 50
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "233",
+  "name": "Briar",
+  "title": "the Restrained Hunger",
+  "tags": [
+    "Fighter",
+    "Assassin"
+  ],
+  "partype": "Fury",
+  "info": {
+    "attack": 9,
+    "defense": 5,
+    "magic": 3,
+    "difficulty": 3
+  },
+  "stats": {
+    "hp": 625,
+    "hpperlevel": 95,
+    "mp": 0,
+    "mpperlevel": 0,
+    "movespeed": 340,
+    "armor": 30,
+    "armorperlevel": 4.5,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 125,
+    "hpregen": 0,
+    "hpregenperlevel": 0,
+    "mpregen": 0,
+    "mpregenperlevel": 0,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 60,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2,
+    "attackspeed": 0.644
+  },
+  "blurb": "A failed experiment by the Black Rose, Briar's uncontrollable bloodlust required a special pillory to focus her frenzied mind. After years of confinement, this living weapon broke free from her restraints and unleashed herself into the world. Now she's..."
+}

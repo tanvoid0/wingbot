@@ -1,0 +1,16 @@
+{
+  "id": "1220",
+  "name": "Unleashed Teleport (Top Lane Quest Reward)",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><font color = '#00FF00'>Rewards</font><br>\u2022 Extra Action - Teleport: After channeling for 0 seconds, become <keyword>Untargetable</keyword> and travel to target allied structure, minion, or ward.<br>\u2022 Flat bonus experience, more experience from all sources, and an increased level cap</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

@@ -1,0 +1,22 @@
+{
+  "id": "4010",
+  "name": "Bloodletter's Curse",
+  "plaintext": "Grant Spell Shield after damaging an enemy with an ability",
+  "description": "<mainText><stats><attention>60</attention> Ability Power<br><attention>350</attention> Health<br><attention>15</attention> Ability Haste</stats><br><br><passive>Vile Decay</passive><br>Dealing <magicDamage>magic damage</magicDamage> with abilities or passives to champions reduces their <scaleMR>Magic Resist by 7.5%</scaleMR> for 6 seconds. (Stacks 4 times).</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "SpellBlock",
+    "SpellDamage",
+    "CooldownReduction",
+    "MagicPenetration"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 350,
+    "FlatMagicDamageMod": 60
+  }
+}

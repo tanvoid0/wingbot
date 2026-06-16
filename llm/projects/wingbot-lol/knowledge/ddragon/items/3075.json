@@ -1,0 +1,20 @@
+{
+  "id": "3075",
+  "name": "Thornmail",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>150</attention> Health<br><attention>75</attention> Armor</stats><br><br><passive>Thorns</passive><br>When struck by an Attack, deal <magicDamage>magic damage</magicDamage> to the attacker and apply 40% <keyword>Wounds</keyword> for 3 seconds if they are a champion.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 2450,
+    "sell": 1715
+  },
+  "tags": [
+    "Health",
+    "Armor"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 150,
+    "FlatArmorMod": 75
+  }
+}

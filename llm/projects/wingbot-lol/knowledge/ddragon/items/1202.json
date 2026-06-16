@@ -1,0 +1,16 @@
+{
+  "id": "1202",
+  "name": "Bot Lane Quest",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Takedown champions, minions, towers, plates, and epic monsters to complete your quest. Earn points much faster in bot lane!<br><br><font color = '#00FF00'>Rewards</font><br>\u2022 Gold imediately and Increased gold from Minion kills and champion takedowns<br>\u2022 A bonus item slot for your boots</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

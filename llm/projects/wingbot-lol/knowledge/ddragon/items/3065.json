@@ -1,0 +1,23 @@
+{
+  "id": "3065",
+  "name": "Spirit Visage",
+  "plaintext": "Increases Health and healing effects",
+  "description": "<mainText><stats><attention>400</attention> Health<br><attention>50</attention> Magic Resist<br><attention>10</attention> Ability Haste<br><attention>100%</attention> Base Health Regen</stats><br><br><passive>Boundless Vitality</passive><br>Heals and Shields on you are increased by 25%.</mainText>",
+  "gold": {
+    "base": 650,
+    "purchasable": true,
+    "total": 2700,
+    "sell": 1890
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "HealthRegen",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 50,
+    "FlatHPPoolMod": 400
+  }
+}

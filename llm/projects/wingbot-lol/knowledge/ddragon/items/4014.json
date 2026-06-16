@@ -1,0 +1,22 @@
+{
+  "id": "4014",
+  "name": "Frozen Mallet",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>60%</attention> Attack Speed<br><attention>600</attention> Health</stats><br><br><br><li><passive>Encroaching Frost:</passive> <OnHit>On-Hit</OnHit>, apply a stacking {{ Item_Melee_Ranged_Split }} move speed slow for 1.5 seconds. This effect stacks up to 35%.<br><br><rules>{{ Item_Melee_Ranged_Rules }}</rules><br></mainText>",
+  "gold": {
+    "base": 3000,
+    "purchasable": false,
+    "total": 3000,
+    "sell": 2100
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "AttackSpeed",
+    "Slow"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 600,
+    "PercentAttackSpeedMod": 0.6
+  }
+}

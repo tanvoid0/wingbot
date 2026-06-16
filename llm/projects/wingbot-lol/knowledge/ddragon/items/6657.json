@@ -1,0 +1,24 @@
+{
+  "id": "6657",
+  "name": "Rod of Ages",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>45</attention> Ability Power<br><attention>350</attention> Health<br><attention>500</attention> Mana</stats><br><br><passive>Timeless</passive><br>This item gains <scaleHealth>10 Health</scaleHealth>, <scaleMana>30 Mana</scaleMana> and <scaleAP>3 Ability Power</scaleAP> every 60 seconds up to 10 times. Upon reaching max stacks, gain a level.<br><br><passive>Eternity</passive><br>Taking damage from champions restores <scaleMana>10%</scaleMana> of the damage as <scaleMana>Mana</scaleMana>. <br>Casting an ability <healing>heals for 25%</healing> of Mana spent.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 2600,
+    "sell": 1820
+  },
+  "tags": [
+    "Health",
+    "HealthRegen",
+    "SpellDamage",
+    "Mana",
+    "ManaRegen"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 500,
+    "FlatHPPoolMod": 350,
+    "FlatMagicDamageMod": 45
+  }
+}

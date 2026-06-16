@@ -5,7 +5,9 @@ impl LCUAPI {
     pub async fn get_runes_structured(&self) -> Result<Vec<Rune>, String> {
         println!("[LCU] Fetching runes data...");
         
-        let url = format!("{}{}", LCU_BASE_URL, LCU_RUNES_ENDPOINT);
+        let connection = self.connection.as_ref()
+            .ok_or("No LCU connection established")?;
+        let url = format!("{}:{}{}", LCU_BASE_URL, connection.port, LCU_RUNES_ENDPOINT);
         let response = self.make_request(&url, "GET", None).await?;
         
         if !response.status().is_success() {

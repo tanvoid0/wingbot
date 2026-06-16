@@ -1,0 +1,18 @@
+{
+  "id": "3117",
+  "name": "Mobility Boots",
+  "plaintext": "Greatly enhances Move Speed when out of combat",
+  "description": "<mainText><stats></stats><br><br><attention>25</attention> Move Speed <br>When out of combat for at least 5 seconds, increase this item's effect to <attention>45</attention>.</mainText>",
+  "gold": {
+    "base": 700,
+    "purchasable": false,
+    "total": 1000,
+    "sell": 700
+  },
+  "tags": [
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 45
+  }
+}

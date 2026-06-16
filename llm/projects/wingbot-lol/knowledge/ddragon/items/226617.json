@@ -1,0 +1,23 @@
+{
+  "id": "226617",
+  "name": "Moonstone Renewer",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>35</attention> Ability Power<br><attention>200</attention> Health<br><attention>30</attention> Ability Haste<br><attention>125%</attention> Base Mana Regen</stats><br><br><passive>Starlit Grace</passive><br><healing>Healing</healing> or <shield>shielding</shield> yourself or an ally chains to the other champion, <healing>healing 20%</healing> or <shield>shielding 25%</shield> of the original amount.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "ManaRegen",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 200,
+    "FlatMagicDamageMod": 35
+  }
+}

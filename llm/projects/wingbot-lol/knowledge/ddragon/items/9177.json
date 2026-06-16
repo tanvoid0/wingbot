@@ -1,0 +1,14 @@
+{
+  "id": "9177",
+  "name": "Searing Shortbow",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Fires projectiles that create lingering fire areas.<br><br><status>Evolve:</status> Area Size<br><br><rules>Damage, Ability Haste, Area Size, Projectile Count, Duration</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

@@ -1,0 +1,16 @@
+{
+  "id": "2150",
+  "name": "Elixir of Skill",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Consume</active><br>Grants 1 Skill Point.<br><br><rules>This item does not increase your level or allow allocating skill points past the normal maximum in a skill</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Consumable"
+  ],
+  "stats": {}
+}

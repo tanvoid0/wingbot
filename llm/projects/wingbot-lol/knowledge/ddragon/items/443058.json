@@ -1,0 +1,20 @@
+{
+  "id": "443058",
+  "name": "Shield of Molten Stone",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>300</attention> Health<br><attention>100</attention> Armor</stats><br><br><passive>Immovable as the Earth</passive><br>Increase your armor by 20%, and gain Block Chance based on your Armor.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "Armor"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 300,
+    "FlatArmorMod": 100
+  }
+}

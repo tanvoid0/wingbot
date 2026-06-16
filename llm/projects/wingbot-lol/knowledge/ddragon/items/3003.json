@@ -1,0 +1,21 @@
+{
+  "id": "3003",
+  "name": "Archangel's Staff",
+  "plaintext": "Increases Ability Power based on maximum Mana",
+  "description": "<mainText><stats><attention>70</attention> Ability Power<br><attention>600</attention> Mana<br><attention>25</attention> Ability Haste</stats><br><br><passive>Awe</passive><br>Gain Ability Power equal to <scaleMana>1% bonus Mana.</scaleMana><br><br><passive>Manaflow</passive> (8s, max 5 charges)<br>Landing Abilities grants <scaleMana>5 max Mana</scaleMana> (doubled vs. champions).<br>Transforms into <rarityLegendary>Seraph's Embrace</rarityLegendary> at <scaleMana>360 max Mana</scaleMana>.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 2900,
+    "sell": 2030
+  },
+  "tags": [
+    "SpellDamage",
+    "Mana",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 600,
+    "FlatMagicDamageMod": 70
+  }
+}

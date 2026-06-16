@@ -1,0 +1,18 @@
+{
+  "id": "1035",
+  "name": "Emberknife",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><passive>7%</passive> Omnivamp against jungle monsters<br><li><passive>Sear:</passive> Damaging jungle monsters burns them for <magicDamage> magic damage</magicDamage> over 5 seconds.<li><passive>Challenging Path:</passive> Smiting 5 times <status>consumes</status> this item and upgrades your Smite to <attention>Challenging Smite</attention>, increasing its damage to monsters to <trueDamage>900</trueDamage> and damage to minions to <trueDamage>500 +10% target max Health</trueDamage>. Challenging Smite marks champions for 4 seconds. Damaging a marked champion deals an additional <trueDamage> true damage</trueDamage> to them over 2.5 seconds. You take 10% reduced damage from marked champions.<li><passive>Huntsman:</passive> Killing large jungle monsters grant",
+  "gold": {
+    "base": 350,
+    "purchasable": false,
+    "total": 350,
+    "sell": 140
+  },
+  "tags": [
+    "LifeSteal",
+    "SpellVamp",
+    "Jungle"
+  ],
+  "stats": {}
+}

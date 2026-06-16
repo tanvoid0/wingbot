@@ -1,0 +1,18 @@
+{
+  "id": "1018",
+  "name": "Cloak of Agility",
+  "plaintext": "Increases critical strike chance",
+  "description": "<mainText><stats><attention>15%</attention> Critical Strike Chance</stats><br><br></mainText>",
+  "gold": {
+    "base": 600,
+    "purchasable": true,
+    "total": 600,
+    "sell": 420
+  },
+  "tags": [
+    "CriticalStrike"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.15
+  }
+}

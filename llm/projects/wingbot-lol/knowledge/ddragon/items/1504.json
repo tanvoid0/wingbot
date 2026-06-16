@@ -1,0 +1,18 @@
+{
+  "id": "1504",
+  "name": "Vanguard",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Armor",
+    "ManaRegen",
+    "OnHit"
+  ],
+  "stats": {}
+}

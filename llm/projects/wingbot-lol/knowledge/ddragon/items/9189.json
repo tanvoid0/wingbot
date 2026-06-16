@@ -1,0 +1,14 @@
+{
+  "id": "9189",
+  "name": "Final City Transit",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Fires a rotating stream of projectiles.<br><br><status>Evolve:</status> Health Regeneration<br><br><rules>Damage, Crit Chance, Projectile Count</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

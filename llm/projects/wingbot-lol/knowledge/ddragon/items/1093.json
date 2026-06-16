@@ -1,0 +1,16 @@
+{
+  "id": "1093",
+  "name": "Quest: Support",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

@@ -1,0 +1,20 @@
+{
+  "id": "223185",
+  "name": "Guardian's Dirk",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>25</attention> Attack Damage<br><attention>11</attention> Lethality<br><attention>10</attention> Ability Haste</stats><br><br><passive>Agricultural Reaper</passive> <br>Increases effects of <attention>Power Flower by 20%</attention>. Gain <speed>100 Move Speed</speed> for 3s after attacking a plant.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 250
+  },
+  "tags": [
+    "Damage",
+    "ArmorPenetration",
+    "Lane"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 25
+  }
+}

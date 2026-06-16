@@ -1,0 +1,18 @@
+{
+  "id": "3176",
+  "name": "Forever Forward",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>55</attention> Move Speed</stats><br><br><passive>Omnipresent</passive><br>Gain a new Active: Teleport.<br><br><passive>Voidborn</passive><br>Gain Empowered Recall.<br><br><passive>Noxian Synchrony</passive><br>Gain <speed>45 Move Speed</speed> and <speed>8% total Move Speed</speed> when out of combat.</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 900,
+    "sell": 630
+  },
+  "tags": [
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 55
+  }
+}

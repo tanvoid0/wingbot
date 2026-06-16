@@ -1,0 +1,18 @@
+{
+  "id": "3123",
+  "name": "Executioner's Calling",
+  "plaintext": "Overcomes enemies with high health gain",
+  "description": "<mainText><stats><attention>15</attention> Attack Damage</stats><br><br><passive>Grievous Wounds</passive><br>Dealing physical damage to champions applies <keyword>40% Wounds</keyword> for 3 seconds.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 800,
+    "sell": 560
+  },
+  "tags": [
+    "Damage"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 15
+  }
+}

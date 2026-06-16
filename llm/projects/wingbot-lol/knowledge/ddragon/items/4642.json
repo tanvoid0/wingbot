@@ -1,0 +1,21 @@
+{
+  "id": "4642",
+  "name": "Bandleglass Mirror",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>20</attention> Ability Power<br><attention>100%</attention> Base Mana Regen<br><attention>10</attention> Ability Haste</stats><br><br></mainText>",
+  "gold": {
+    "base": 50,
+    "purchasable": true,
+    "total": 900,
+    "sell": 630
+  },
+  "tags": [
+    "SpellDamage",
+    "ManaRegen",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 20
+  }
+}

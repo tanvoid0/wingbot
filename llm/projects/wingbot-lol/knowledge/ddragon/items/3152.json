@@ -1,0 +1,24 @@
+{
+  "id": "3152",
+  "name": "Hextech Rocketbelt",
+  "plaintext": "Activate to dash forward and unleash a fiery explosion",
+  "description": "<mainText><stats><attention>70</attention> Ability Power<br><attention>300</attention> Health<br><attention>20</attention> Ability Haste</stats><br><br><active>Supersonic</active><br>Dash in target direction, unleashing missiles that deal <magicDamage>magic damage</magicDamage>.</mainText>",
+  "gold": {
+    "base": 300,
+    "purchasable": true,
+    "total": 2650,
+    "sell": 1855
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "Active",
+    "CooldownReduction",
+    "NonbootsMovement",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 300,
+    "FlatMagicDamageMod": 70
+  }
+}

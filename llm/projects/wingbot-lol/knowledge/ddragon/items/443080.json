@@ -1,0 +1,22 @@
+{
+  "id": "443080",
+  "name": "Twin Mask",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><passive>Unanimity</passive><br>Gain a percent of your teammate's <scaleHealth>Health</scaleHealth>, <scaleArmor>Armor</scaleArmor>, <scaleMR>Magic Resist</scaleMR>, <physicalDamage>Attack Damage</physicalDamage>, <scaleAP>Ability Power</scaleAP>, <attackSpeed>Attack Speed</attackSpeed>, and Ability Haste, increased significantly if they also have <keywordMajor>Twin Mask</keywordMajor> and are alive.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": false,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "Armor",
+    "Damage",
+    "AttackSpeed",
+    "SpellDamage",
+    "MagicResist",
+    "AbilityHaste"
+  ],
+  "stats": {}
+}

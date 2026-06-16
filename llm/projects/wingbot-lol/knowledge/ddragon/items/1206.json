@@ -1,0 +1,16 @@
+{
+  "id": "1206",
+  "name": "Mid Lane Quest Reward",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><font color = '#00FF00'>Rewards</font><br>\u2022 Upgrade boots to tier 3<br>\u2022 +8% bonus Attack Damage and Ability Power</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

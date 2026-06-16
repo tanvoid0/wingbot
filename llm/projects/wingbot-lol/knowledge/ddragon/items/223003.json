@@ -1,0 +1,21 @@
+{
+  "id": "223003",
+  "name": "Archangel's Staff",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>55</attention> Ability Power<br><attention>600</attention> Mana<br><attention>25</attention> Ability Haste</stats><br><br><passive>Awe</passive> <br>Gain Ability Power equal to <scaleMana>2% bonus Mana.</scaleMana><br><br><passive>Mana Charge</passive><br><buffedStat>After 2 combat rounds</buffedStat>, this item transforms into <rarityLegendary>Seraph's Embrace</rarityLegendary>.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "SpellDamage",
+    "Mana",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 600,
+    "FlatMagicDamageMod": 55
+  }
+}

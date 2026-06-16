@@ -1,0 +1,12 @@
+# Merged Data Dragon snapshots (large). Re-fetch with extract_ddragon.py
+**/knowledge/_merged/
+**/knowledge/ddragon/champions/
+**/knowledge/ddragon/items/
+
+# Model weights and training artifacts (rebuild locally)
+*.gguf
+export/merged/
+adapters/*/
+.venv/
+__pycache__/
+*.log

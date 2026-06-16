@@ -1,0 +1,14 @@
+{
+  "id": "9292",
+  "name": "Bearfoot Chem-Dispenser",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

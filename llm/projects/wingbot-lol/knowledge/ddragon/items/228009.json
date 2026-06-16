@@ -1,0 +1,14 @@
+{
+  "id": "228009",
+  "name": "Multitool",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Molds into another item each Shopping Phase.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [],
+  "stats": {}
+}

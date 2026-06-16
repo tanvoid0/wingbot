@@ -1,0 +1,19 @@
+{
+  "id": "447120",
+  "name": "Diamond-Tipped Spear",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>75</attention> Adaptive Force<br><attention>40%</attention> Attack Speed</stats><br><br><passive>Reach Weapon</passive><br>Increase your attack range by 75.<br><br><passive>Sweet Spot</passive><br>Deal up to 30% increased damage with Attacks and 50% with Abilities based on how far your target is from you. Damage caps at 700 units. </mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Damage",
+    "AttackSpeed"
+  ],
+  "stats": {
+    "PercentAttackSpeedMod": 0.4
+  }
+}

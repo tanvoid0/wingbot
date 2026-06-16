@@ -1,0 +1,23 @@
+{
+  "id": "2050",
+  "name": "Guardian's Shroud",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>300</attention> Health<br><attention>35</attention> Ability Power<br><attention>15</attention> Ability Haste</stats><br><br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 250
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "CooldownReduction",
+    "Lane",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 300,
+    "FlatMagicDamageMod": 35
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "447109",
+  "name": "Cruelty",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>80</attention> Ability Power<br><attention>30</attention> Armor<br><attention>30</attention> Magic Resist</stats><br><br><passive>Watch Them Fall</passive><br>On <status>Immobilize</status> or <status>Grounding</status> an enemy champion, summon a comet above them. The comet lands after 1 second, dealing additional <magicDamage> magic damage</magicDamage> in the area. This effect has a 6s cooldown per target per spell cast.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Armor",
+    "SpellDamage",
+    "MagicResist"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 30,
+    "FlatMagicDamageMod": 80,
+    "FlatArmorMod": 30
+  }
+}

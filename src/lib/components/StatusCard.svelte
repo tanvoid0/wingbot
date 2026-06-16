@@ -35,24 +35,24 @@
 </script>
 
 <Card class={cn('', className)}>
-  <CardHeader class="pb-3">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-sm font-medium text-muted-foreground">{title}</p>
-        <p class="text-2xl font-semibold text-foreground">{value}</p>
+  <CardHeader class="py-3 px-4">
+    <div class="flex items-center justify-between gap-2">
+      <div class="min-w-0">
+        <p class="text-xs font-medium text-muted-foreground">{title}</p>
+        <p class="text-lg font-semibold text-foreground truncate">{value}</p>
       </div>
-      <div class={cn('p-2 rounded-full', config.bgColor)}>
-        <svelte:component this={icon} class={cn('w-6 h-6', config.iconColor)} />
+      <div class={cn('p-1.5 rounded-full shrink-0', config.bgColor)}>
+        <svelte:component this={icon} class={cn('w-4 h-4', config.iconColor)} />
       </div>
     </div>
   </CardHeader>
-  
+
   {#if actionLabel && onAction}
-    <CardContent class="pt-0">
-      <Button 
-        variant="outline" 
-        size="sm" 
-        class="w-full"
+    <CardContent class="pt-0 pb-3 px-4">
+      <Button
+        variant="outline"
+        size="sm"
+        class="w-full h-8"
         onclick={onAction}
       >
         {actionLabel}

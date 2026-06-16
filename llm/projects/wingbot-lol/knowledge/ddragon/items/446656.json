@@ -1,0 +1,26 @@
+{
+  "id": "446656",
+  "name": "Everfrost",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>100</attention> Ability Power<br><attention>250</attention> Health<br><attention>600</attention> Mana<br><attention>25</attention> Ability Haste</stats><br><br><active>ACTIVE</active> (0s)<br><active>Glaciate</active><br> Deal damage in a cone, <status>Slowing</status> enemies hit. Enemies at the center of the cone are <status>Rooted</status> instead.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "Mana",
+    "Active",
+    "CooldownReduction",
+    "Slow",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 600,
+    "FlatHPPoolMod": 250,
+    "FlatMagicDamageMod": 100
+  }
+}

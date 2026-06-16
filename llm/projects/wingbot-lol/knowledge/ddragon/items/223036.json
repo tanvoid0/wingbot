@@ -1,0 +1,21 @@
+{
+  "id": "223036",
+  "name": "Lord Dominik's Regards",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>30</attention> Attack Damage<br><attention>40%</attention> Armor Penetration<br><attention>25%</attention> Critical Strike Chance</stats><br><br></mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Damage",
+    "CriticalStrike",
+    "ArmorPenetration"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 30
+  }
+}

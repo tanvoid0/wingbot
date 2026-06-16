@@ -1,0 +1,22 @@
+{
+  "id": "3172",
+  "name": "Gunmetal Greaves",
+  "plaintext": "Mobility and Tenacity",
+  "description": "<mainText><stats><attention>40%</attention> Attack Speed<br><attention>45</attention> Move Speed<br><attention>5%</attention> Life Steal</stats><br><br><passive>Noxian Gait</passive><br>Attacks against Champions grant <speed>Move Speed</speed> <OnHit>On-Hit</OnHit> decaying over 2 seconds.</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "AttackSpeed",
+    "LifeSteal",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 45,
+    "PercentAttackSpeedMod": 0.4,
+    "PercentLifeStealMod": 0.05
+  }
+}

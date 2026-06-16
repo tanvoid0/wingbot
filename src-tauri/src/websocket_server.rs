@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use tokio::sync::{broadcast, Mutex as TokioMutex, RwLock};
 use tokio::time::{interval, Duration};
@@ -60,9 +61,12 @@ pub struct WebSocketServer {
     lcu_api: &'static TokioMutex<crate::lcu_api::LCUAPI>,
     previous_game_state: Arc<RwLock<Option<serde_json::Value>>>,
     previous_live_game_data: Arc<RwLock<Option<serde_json::Value>>>,
+    previous_champion_select: Arc<RwLock<Option<serde_json::Value>>>,
     previous_game_time: Arc<RwLock<Option<f64>>>,
     lcu_websocket_connected: Arc<RwLock<bool>>,
+    champ_select_lcu_push_at: Arc<RwLock<Option<std::time::Instant>>>,
     connection_health: Arc<RwLock<ConnectionHealth>>,
+    running: Arc<AtomicBool>,
 }
 
 #[derive(Debug, Clone)]
@@ -181,17 +185,19 @@ impl WebSocketServer {
         }
     }
 
-    pub fn new() -> Self {
+    pub fn new(running: Arc<AtomicBool>) -> Self {
         let (broadcast_tx, _) = broadcast::channel(1000);
-        
+
         Self {
             clients: Arc::new(RwLock::new(HashMap::new())),
             broadcast_tx,
             lcu_api: crate::get_lcu_api(),
             previous_game_state: Arc::new(RwLock::new(None)),
             previous_live_game_data: Arc::new(RwLock::new(None)),
+            previous_champion_select: Arc::new(RwLock::new(None)),
             previous_game_time: Arc::new(RwLock::new(None)),
             lcu_websocket_connected: Arc::new(RwLock::new(false)),
+            champ_select_lcu_push_at: Arc::new(RwLock::new(None)),
             connection_health: Arc::new(RwLock::new(ConnectionHealth {
                 last_check: std::time::SystemTime::now(),
                 is_healthy: false,
@@ -199,7 +205,19 @@ impl WebSocketServer {
                 last_error: None,
                 websocket_connected: false,
             })),
+            running,
         }
+    }
+
+    pub fn shutdown(&self) {
+        self.running.store(false, Ordering::Relaxed);
+    }
+
+    pub fn client_count(&self) -> usize {
+        self.clients
+            .try_read()
+            .map(|c| c.len())
+            .unwrap_or(0)
     }
 
     pub async fn get_client_count(&self) -> usize {
@@ -253,6 +271,12 @@ impl WebSocketServer {
         tokio::spawn(async move {
             server_clone.monitor_lcu_websocket().await;
         });
+
+        // Push champion select updates from LCU WebSocket events (near real-time)
+        let server_clone = self.clone_for_task();
+        tokio::spawn(async move {
+            server_clone.monitor_lcu_champion_select_events().await;
+        });
         
         // Start connection health monitoring
         let server_clone = self.clone_for_task();
@@ -261,17 +285,32 @@ impl WebSocketServer {
         });
         
         // Accept incoming connections
-        while let Ok((stream, addr)) = listener.accept().await {
-            println!("[WebSocket] New connection from {}", addr);
-            
-            let server_clone = self.clone_for_task();
-            tokio::spawn(async move {
-                if let Err(e) = server_clone.handle_connection(stream).await {
-                    eprintln!("[WebSocket] Error handling connection: {}", e);
+        while self.running.load(Ordering::Relaxed) {
+            let accept_result = tokio::time::timeout(
+                Duration::from_millis(500),
+                listener.accept(),
+            )
+            .await;
+
+            match accept_result {
+                Ok(Ok((stream, addr))) => {
+                    println!("[WebSocket] New connection from {}", addr);
+
+                    let server_clone = self.clone_for_task();
+                    tokio::spawn(async move {
+                        if let Err(e) = server_clone.handle_connection(stream).await {
+                            eprintln!("[WebSocket] Error handling connection: {}", e);
+                        }
+                    });
                 }
-            });
+                Ok(Err(e)) => {
+                    eprintln!("[WebSocket] Accept error: {}", e);
+                    break;
+                }
+                Err(_) => continue,
+            }
         }
-        
+
         Ok(())
     }
 
@@ -282,9 +321,13 @@ impl WebSocketServer {
             lcu_api: self.lcu_api,
             previous_game_state: Arc::clone(&self.previous_game_state),
             previous_live_game_data: Arc::clone(&self.previous_live_game_data),
+            previous_champion_select: Arc::clone(&self.previous_champion_select),
             previous_game_time: Arc::clone(&self.previous_game_time),
             lcu_websocket_connected: Arc::clone(&self.lcu_websocket_connected),
+            champ_select_lcu_push_at: Arc::clone(&self.champ_select_lcu_push_at),
             connection_health: Arc::clone(&self.connection_health),
+            running: Arc::clone(&self.running),
+            refresh_interval_ms: crate::league_session::LeagueSession::refresh_interval_ms(),
         }
     }
 
@@ -296,6 +339,7 @@ impl WebSocketServer {
             interval.tick().await;
             
             // Get comprehensive game state
+            let _ = crate::league_session::LeagueSession::ensure_lcu_connected().await;
             let game_state = {
                 let lcu_api = self.lcu_api.lock().await;
                 lcu_api.get_comprehensive_game_state().await
@@ -444,7 +488,7 @@ impl WebSocketServer {
             match champion_select_data {
                 Ok(data) => {
                     // Only send updates if we have valid champion select data
-                    if !data.is_null() && data.get("phase").is_some() {
+                    if crate::lcu_api::LCUAPI::is_champion_select_session(&data) {
                         let msg = WebSocketMessage::ChampionSelectUpdate { data };
                         let _ = self.broadcast_tx.send(msg);
                     }
@@ -484,40 +528,63 @@ impl WebSocketServer {
     }
 
     async fn monitor_match_history(&self) {
-        let mut interval = interval(Duration::from_secs(30)); // Check every 30 seconds
-        
-        loop {
+        let mut interval = interval(Duration::from_secs(30));
+        let mut last_phase = String::new();
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
-            
-            // Check for current summoner's match history
-            let match_history = {
-                let lcu_api = self.lcu_api.lock().await;
-                lcu_api.get_current_summoner_match_history().await
-            };
-            
-            match match_history {
-                Ok(analysis) => {
-                    if !analysis.is_null() {
-                        // Send match history analysis for current player
-                        let msg = WebSocketMessage::MatchHistoryUpdate { 
-                            player_id: "current".to_string(), 
-                            analysis 
+
+            let lcu_api = self.lcu_api.lock().await;
+            let current_phase = lcu_api
+                .resolve_game_phase()
+                .await
+                .unwrap_or_else(|_| "Unknown".to_string());
+
+            crate::match_history_service::maybe_invalidate_riot_cache_on_game_end(
+                &lcu_api,
+                &last_phase,
+                &current_phase,
+            )
+            .await;
+            last_phase = current_phase;
+
+            let analysis =
+                crate::match_history_service::MatchHistoryService::fetch_current_player_analysis(
+                    &*lcu_api,
+                    crate::match_history_service::DEFAULT_MATCH_COUNT,
+                    false,
+                )
+                .await;
+            drop(lcu_api);
+
+            match analysis {
+                Ok(data) if !data.is_null() => {
+                    let msg = WebSocketMessage::MatchHistoryUpdate {
+                        player_id: "current".to_string(),
+                        analysis: data.clone(),
+                    };
+                    let _ = self.broadcast_tx.send(msg);
+
+                    if let Some(ranked) = data.get("ranked") {
+                        let stats_msg = WebSocketMessage::PlayerStatsAnalysis {
+                            player_id: "current".to_string(),
+                            stats: ranked.clone(),
                         };
-                        let _ = self.broadcast_tx.send(msg);
+                        let _ = self.broadcast_tx.send(stats_msg);
                     }
                 }
+                Ok(_) => {}
                 Err(_) => {
-                    // Match history not available (not logged in or no matches)
-                    // This is normal, so we don't send error messages
+                    // Match history not available — normal when client is closed
                 }
             }
         }
     }
 
     async fn monitor_rune_analysis(&self) {
-        let mut interval = interval(Duration::from_secs(10)); // Check every 10 seconds
-        
-        loop {
+        let mut interval = interval(Duration::from_secs(10));
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
             
             // Check for live client availability
@@ -576,9 +643,9 @@ impl WebSocketServer {
     }
 
     async fn monitor_lobby(&self) {
-        let mut interval = interval(Duration::from_secs(5)); // Check every 5 seconds
-        
-        loop {
+        let mut interval = interval(Duration::from_secs(5));
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
             
             // Check for lobby status
@@ -678,101 +745,265 @@ struct WebSocketServerTask {
     lcu_api: &'static TokioMutex<crate::lcu_api::LCUAPI>,
     previous_game_state: Arc<RwLock<Option<serde_json::Value>>>,
     previous_live_game_data: Arc<RwLock<Option<serde_json::Value>>>,
+    previous_champion_select: Arc<RwLock<Option<serde_json::Value>>>,
     previous_game_time: Arc<RwLock<Option<f64>>>,
     lcu_websocket_connected: Arc<RwLock<bool>>,
+    champ_select_lcu_push_at: Arc<RwLock<Option<std::time::Instant>>>,
     connection_health: Arc<RwLock<ConnectionHealth>>,
+    running: Arc<AtomicBool>,
+    refresh_interval_ms: u64,
 }
 
 impl WebSocketServerTask {
-    async fn monitor_champion_select(&self) {
-        let mut interval = interval(Duration::from_millis(2000)); // Check every 2 seconds
-        
-        loop {
-            interval.tick().await;
-            
-            // Check for champion select data
-            let champion_select_data = {
-                let lcu_api = self.lcu_api.lock().await;
-                lcu_api.get_champion_select_raw().await
+    fn is_champ_select_phase(phase: &str) -> bool {
+        matches!(phase, "ChampSelect" | "champion_select")
+    }
+
+    fn is_timer_only_changes(changes: &serde_json::Value) -> bool {
+        changes
+            .as_object()
+            .is_some_and(|obj| obj.len() == 1 && obj.contains_key("timer"))
+    }
+
+    async fn touch_champ_select_lcu_push(&self) {
+        let mut at = self.champ_select_lcu_push_at.write().await;
+        *at = Some(std::time::Instant::now());
+    }
+
+    async fn is_lcu_push_recent(&self) -> bool {
+        const RECENT: Duration = Duration::from_secs(3);
+
+        let lcu_ws_ok = {
+            let ws = crate::get_lcu_websocket().lock().await;
+            ws.is_connected().await
+        };
+        if !lcu_ws_ok {
+            return false;
+        }
+
+        self.champ_select_lcu_push_at
+            .read()
+            .await
+            .is_some_and(|at| at.elapsed() < RECENT)
+    }
+
+    async fn clear_champion_select_broadcast(&self) {
+        let had_session = self.previous_champion_select.read().await.is_some();
+        {
+            let mut prev = self.previous_champion_select.write().await;
+            *prev = None;
+        }
+        {
+            let mut at = self.champ_select_lcu_push_at.write().await;
+            *at = None;
+        }
+        if had_session {
+            let msg = WebSocketMessage::ChampionSelectUpdate {
+                data: serde_json::Value::Null,
             };
-            
-            match champion_select_data {
-                Ok(data) => {
-                    // Only send updates if we have valid champion select data
-                    if !data.is_null() && data.get("phase").is_some() {
-                        let msg = WebSocketMessage::ChampionSelectUpdate { data };
-                        let _ = self.broadcast_tx.send(msg);
-                    }
-                }
-                Err(_) => {
-                    // Champion select not available (not in champ select phase)
-                    // This is normal, so we don't send error messages
+            let _ = self.broadcast_tx.send(msg);
+        }
+    }
+
+    async fn fetch_and_broadcast_champion_select(&self) {
+        let champion_select_data = {
+            let lcu_api = self.lcu_api.lock().await;
+            lcu_api.get_champion_select_raw().await
+        };
+
+        match champion_select_data {
+            Ok(data) => {
+                if crate::lcu_api::LCUAPI::is_champion_select_session(&data) {
+                    self.broadcast_champion_select(data, false).await;
+                } else {
+                    self.clear_champion_select_broadcast().await;
                 }
             }
-            
-            // Check for item updates if we have live game data
-            let live_client_available_for_items = {
-                let lcu_api = self.lcu_api.lock().await;
-                lcu_api.is_live_client_available().await
+            Err(_) => {
+                self.clear_champion_select_broadcast().await;
+            }
+        }
+    }
+
+    async fn broadcast_champion_select(&self, data: serde_json::Value, from_lcu_push: bool) {
+        if !crate::lcu_api::LCUAPI::is_champion_select_session(&data) {
+            return;
+        }
+
+        let previous = self.previous_champion_select.read().await.clone();
+
+        if let Some(changes) =
+            DeltaDetector::detect_champion_select_changes(&data, &previous)
+        {
+            let should_send =
+                from_lcu_push || !Self::is_timer_only_changes(&changes);
+
+            if should_send {
+                if previous.is_some() {
+                    let msg = WebSocketMessage::ChampionSelectDelta { changes };
+                    let _ = self.broadcast_tx.send(msg);
+                } else {
+                    let msg = WebSocketMessage::ChampionSelectUpdate { data: data.clone() };
+                    let _ = self.broadcast_tx.send(msg);
+                }
+            }
+
+            let mut prev = self.previous_champion_select.write().await;
+            *prev = Some(data);
+        }
+    }
+
+    async fn handle_lcu_champion_select_event(&self, event: serde_json::Value) {
+        let uri = event
+            .get("uri")
+            .and_then(|v| v.as_str())
+            .unwrap_or_default();
+        if uri != crate::lcu_api::LCU_CHAMP_SELECT_ENDPOINT {
+            return;
+        }
+
+        self.touch_champ_select_lcu_push().await;
+
+        let event_type = event
+            .get("eventType")
+            .and_then(|v| v.as_str())
+            .unwrap_or_default();
+
+        if event_type == "Delete" {
+            self.clear_champion_select_broadcast().await;
+            return;
+        }
+
+        if let Some(data) = event.get("data").filter(|d| !d.is_null()) {
+            self.broadcast_champion_select(data.clone(), true).await;
+        } else {
+            // LCU often emits uri-only notifications — fetch the full session.
+            self.fetch_and_broadcast_champion_select().await;
+        }
+    }
+
+    async fn monitor_lcu_champion_select_events(&self) {
+        let mut lcu_rx = None;
+
+        while self.running.load(Ordering::Relaxed) {
+            if lcu_rx.is_none() {
+                let _ = crate::league_session::LeagueSession::connect_lcu_websocket_if_needed().await;
+                let lcu_ws = crate::get_lcu_websocket().lock().await;
+                if lcu_ws.is_connected().await {
+                    lcu_rx = Some(lcu_ws.subscribe());
+                }
+            }
+
+            let Some(ref mut rx) = lcu_rx else {
+                tokio::time::sleep(Duration::from_millis(500)).await;
+                continue;
             };
-            
-            if live_client_available_for_items {
-                let all_players_items = {
-                    let lcu_api = self.lcu_api.lock().await;
-                    lcu_api.get_all_players_items().await
-                };
-                
-                match all_players_items {
-                    Ok(items_data) => {
-                        if !items_data.is_null() {
-                            let msg = WebSocketMessage::AllPlayersItemsUpdate { items: items_data };
-                            let _ = self.broadcast_tx.send(msg);
-                        }
-                    }
-                    Err(_) => {
-                        // Items not available (not in game or no live client)
-                        // This is normal, so we don't send error messages
-                    }
+
+            match rx.recv().await {
+                Ok(event) => {
+                    self.handle_lcu_champion_select_event(event).await;
+                }
+                Err(broadcast::error::RecvError::Lagged(_)) => {
+                    self.fetch_and_broadcast_champion_select().await;
+                }
+                Err(broadcast::error::RecvError::Closed) => {
+                    lcu_rx = None;
+                    tokio::time::sleep(Duration::from_millis(500)).await;
                 }
             }
         }
     }
 
-    async fn monitor_match_history(&self) {
-        let mut interval = interval(Duration::from_secs(30)); // Check every 30 seconds
-        
-        loop {
-            interval.tick().await;
-            
-            // Check for current summoner's match history
-            let match_history = {
-                let lcu_api = self.lcu_api.lock().await;
-                lcu_api.get_current_summoner_match_history().await
+    async fn monitor_champion_select(&self) {
+        while self.running.load(Ordering::Relaxed) {
+            let poll_ms = if self.is_lcu_push_recent().await {
+                crate::league_session::LeagueSession::champion_select_slow_poll_interval_ms()
+            } else {
+                crate::league_session::LeagueSession::champion_select_poll_interval_ms()
             };
-            
-            match match_history {
-                Ok(analysis) => {
-                    if !analysis.is_null() {
-                        // Send match history analysis for current player
-                        let msg = WebSocketMessage::MatchHistoryUpdate { 
-                            player_id: "current".to_string(), 
-                            analysis 
+            tokio::time::sleep(Duration::from_millis(poll_ms)).await;
+
+            let _ = crate::league_session::LeagueSession::ensure_lcu_connected().await;
+
+            let game_phase = {
+                let lcu_api = self.lcu_api.lock().await;
+                lcu_api
+                    .resolve_game_phase()
+                    .await
+                    .unwrap_or_else(|_| "Unknown".to_string())
+            };
+
+            let had_session = self.previous_champion_select.read().await.is_some();
+            if !Self::is_champ_select_phase(&game_phase) {
+                if had_session {
+                    self.clear_champion_select_broadcast().await;
+                }
+                continue;
+            }
+
+            // Fallback REST poll — LCU WebSocket push is the primary path
+            self.fetch_and_broadcast_champion_select().await;
+        }
+    }
+
+    async fn monitor_match_history(&self) {
+        let mut interval = interval(Duration::from_secs(30));
+        let mut last_phase = String::new();
+
+        while self.running.load(Ordering::Relaxed) {
+            interval.tick().await;
+
+            let lcu_api = self.lcu_api.lock().await;
+            let current_phase = lcu_api
+                .resolve_game_phase()
+                .await
+                .unwrap_or_else(|_| "Unknown".to_string());
+
+            crate::match_history_service::maybe_invalidate_riot_cache_on_game_end(
+                &lcu_api,
+                &last_phase,
+                &current_phase,
+            )
+            .await;
+            last_phase = current_phase;
+
+            let analysis =
+                crate::match_history_service::MatchHistoryService::fetch_current_player_analysis(
+                    &*lcu_api,
+                    crate::match_history_service::DEFAULT_MATCH_COUNT,
+                    false,
+                )
+                .await;
+            drop(lcu_api);
+
+            match analysis {
+                Ok(data) if !data.is_null() => {
+                    let msg = WebSocketMessage::MatchHistoryUpdate {
+                        player_id: "current".to_string(),
+                        analysis: data.clone(),
+                    };
+                    let _ = self.broadcast_tx.send(msg);
+
+                    if let Some(ranked) = data.get("ranked") {
+                        let stats_msg = WebSocketMessage::PlayerStatsAnalysis {
+                            player_id: "current".to_string(),
+                            stats: ranked.clone(),
                         };
-                        let _ = self.broadcast_tx.send(msg);
+                        let _ = self.broadcast_tx.send(stats_msg);
                     }
                 }
+                Ok(_) => {}
                 Err(_) => {
-                    // Match history not available (not logged in or no matches)
-                    // This is normal, so we don't send error messages
+                    // Match history not available — normal when client is closed
                 }
             }
         }
     }
 
     async fn monitor_rune_analysis(&self) {
-        let mut interval = interval(Duration::from_secs(10)); // Check every 10 seconds
-        
-        loop {
+        let mut interval = interval(Duration::from_secs(10));
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
             
             // Check for live client availability
@@ -831,9 +1062,9 @@ impl WebSocketServerTask {
     }
 
     async fn monitor_lobby(&self) {
-        let mut interval = interval(Duration::from_secs(5)); // Check every 5 seconds
-        
-        loop {
+        let mut interval = interval(Duration::from_secs(5));
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
             
             // Check for lobby status
@@ -1151,10 +1382,12 @@ impl WebSocketServerTask {
     }
 
     async fn monitor_game_state(&self) {
-        let mut interval = interval(Duration::from_millis(1000));
-        
-        loop {
+        let mut interval = interval(Duration::from_millis(self.refresh_interval_ms.max(500)));
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
+
+            let _ = crate::league_session::LeagueSession::ensure_lcu_connected().await;
             
             let game_state = {
                 let lcu_api = self.lcu_api.lock().await;
@@ -1265,14 +1498,26 @@ impl WebSocketServerTask {
                         let _ = self.broadcast_tx.send(msg);
                     }
                 }
+
+                let all_players_items = {
+                    let lcu_api = self.lcu_api.lock().await;
+                    lcu_api.get_all_players_items().await
+                };
+
+                if let Ok(items_data) = all_players_items {
+                    if !items_data.is_null() {
+                        let msg = WebSocketMessage::AllPlayersItemsUpdate { items: items_data };
+                        let _ = self.broadcast_tx.send(msg);
+                    }
+                }
             }
         }
     }
 
     async fn ping_clients(&self) {
         let mut interval = interval(Duration::from_secs(30));
-        
-        loop {
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
             
             let clients_to_remove = {
@@ -1299,10 +1544,12 @@ impl WebSocketServerTask {
     }
 
     async fn monitor_lcu_websocket(&self) {
-        let mut interval = interval(Duration::from_secs(5)); // Check every 5 seconds
-        
-        loop {
+        let mut interval = interval(Duration::from_secs(5));
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
+
+            let _ = crate::league_session::LeagueSession::connect_lcu_websocket_if_needed().await;
             
             // Check if LCU connection exists or Live Client Data API is available
             let has_connection = {
@@ -1342,9 +1589,9 @@ impl WebSocketServerTask {
 
 
     async fn monitor_connection_health(&self) {
-        let mut interval = interval(Duration::from_secs(10)); // Check every 10 seconds
-        
-        loop {
+        let mut interval = interval(Duration::from_secs(10));
+
+        while self.running.load(Ordering::Relaxed) {
             interval.tick().await;
             
             let base_health = {
@@ -1433,6 +1680,7 @@ impl WebSocketServerTask {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::atomic::AtomicBool;
 
     #[tokio::test]
     async fn test_websocket_message_serialization() {
@@ -1455,7 +1703,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_websocket_server_creation() {
-        let server = WebSocketServer::new();
+        let server = WebSocketServer::new(Arc::new(AtomicBool::new(true)));
         
         // Test that server can be created
         assert_eq!(server.clients.read().await.len(), 0);

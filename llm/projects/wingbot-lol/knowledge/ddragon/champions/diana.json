@@ -1,0 +1,39 @@
+{
+  "id": "131",
+  "name": "Diana",
+  "title": "Scorn of the Moon",
+  "tags": [
+    "Fighter",
+    "Assassin"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 7,
+    "defense": 6,
+    "magic": 8,
+    "difficulty": 4
+  },
+  "stats": {
+    "hp": 640,
+    "hpperlevel": 109,
+    "mp": 375,
+    "mpperlevel": 25,
+    "movespeed": 345,
+    "armor": 31,
+    "armorperlevel": 4.3,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 150,
+    "hpregen": 6.5,
+    "hpregenperlevel": 0.85,
+    "mpregen": 8,
+    "mpregenperlevel": 0.8,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 57,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2,
+    "attackspeed": 0.625
+  },
+  "blurb": "Bearing her crescent moonblade, Diana fights as a warrior of the Lunari\u2014a faith all but quashed in the lands around Mount Targon. Clad in shimmering armor the color of winter snow at night, she is a living embodiment of the silver moon's power. Imbued..."
+}

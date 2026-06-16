@@ -1,0 +1,39 @@
+{
+  "id": "223",
+  "name": "Tahm Kench",
+  "title": "The River King",
+  "tags": [
+    "Tank",
+    "Support"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 3,
+    "defense": 9,
+    "magic": 6,
+    "difficulty": 5
+  },
+  "stats": {
+    "hp": 640,
+    "hpperlevel": 103,
+    "mp": 325,
+    "mpperlevel": 50,
+    "movespeed": 335,
+    "armor": 39,
+    "armorperlevel": 4.7,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 175,
+    "hpregen": 6.5,
+    "hpregenperlevel": 0.55,
+    "mpregen": 8,
+    "mpregenperlevel": 1,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 56,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2.5,
+    "attackspeed": 0.658
+  },
+  "blurb": "Known by many names throughout history, the demon Tahm Kench travels the waterways of Runeterra, feeding his insatiable appetite with the misery of others. Though he may appear singularly charming and proud, he swaggers through the physical realm like a..."
+}

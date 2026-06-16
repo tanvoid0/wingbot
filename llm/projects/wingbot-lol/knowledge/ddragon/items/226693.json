@@ -1,0 +1,21 @@
+{
+  "id": "226693",
+  "name": "Prowler's Claw",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>55</attention> Attack Damage<br><attention>22</attention> Lethality<br><attention>15</attention> Ability Haste</stats><br><br><active>Sandswipe</active><br>Dash through target enemy, dealing a part of the target's <scaleHealth>maximum Health</scaleHealth> as <physicalDamage>bonus Physical Damage</physicalDamage>. For the next 3 seconds, you deal increased damage to the target.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Damage",
+    "CooldownReduction",
+    "ArmorPenetration",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 55
+  }
+}

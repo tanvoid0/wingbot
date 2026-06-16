@@ -1,0 +1,39 @@
+{
+  "id": "44",
+  "name": "Taric",
+  "title": "the Shield of Valoran",
+  "tags": [
+    "Support",
+    "Tank"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 4,
+    "defense": 8,
+    "magic": 5,
+    "difficulty": 3
+  },
+  "stats": {
+    "hp": 645,
+    "hpperlevel": 99,
+    "mp": 300,
+    "mpperlevel": 60,
+    "movespeed": 340,
+    "armor": 40,
+    "armorperlevel": 4.3,
+    "spellblock": 28,
+    "spellblockperlevel": 2.05,
+    "attackrange": 150,
+    "hpregen": 6,
+    "hpregenperlevel": 0.5,
+    "mpregen": 8.5,
+    "mpregenperlevel": 0.8,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 55,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2,
+    "attackspeed": 0.625
+  },
+  "blurb": "Taric is the Aspect of the Protector, wielding incredible power as Runeterra's guardian of life, love, and beauty. Shamed by a dereliction of duty and exiled from his homeland Demacia, Taric ascended Mount Targon to find redemption, only to discover a..."
+}

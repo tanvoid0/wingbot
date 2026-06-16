@@ -1,0 +1,16 @@
+{
+  "id": "1209",
+  "name": "Jungle Quest Reward",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><font color = '#00FF00'>Rewards</font><br>\u2022 Upgraded Smite and evolve jungle pet to <font color = '#0B6623'>Mosstomper</font><br>\u2022 Increased gold and XP from large monsters<br>\u2022 Bonus movement speed in the jungle</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

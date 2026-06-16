@@ -1,0 +1,20 @@
+{
+  "id": "223006",
+  "name": "Berserker's Greaves",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>35%</attention> Attack Speed<br><attention>55</attention> Move Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 350
+  },
+  "tags": [
+    "AttackSpeed",
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 55,
+    "PercentAttackSpeedMod": 0.35
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "443062",
+  "name": "Sanguine Gift",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>80</attention> Ability Power<br><attention>20</attention> Ability Haste<br><attention>15%</attention> Heal and Shield Power</stats><br><br><passive>Patronage</passive><br>Store 15% of the total damage you've dealt to enemies. Whenever this exceeds 333, consume it to <healing>heal</healing> yourself and your nearest ally for that amount.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "SpellDamage",
+    "SpellVamp",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 80
+  }
+}

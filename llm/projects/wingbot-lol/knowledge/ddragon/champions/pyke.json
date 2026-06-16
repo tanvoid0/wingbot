@@ -1,0 +1,39 @@
+{
+  "id": "555",
+  "name": "Pyke",
+  "title": "the Bloodharbor Ripper",
+  "tags": [
+    "Support",
+    "Assassin"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 9,
+    "defense": 3,
+    "magic": 1,
+    "difficulty": 7
+  },
+  "stats": {
+    "hp": 670,
+    "hpperlevel": 110,
+    "mp": 415,
+    "mpperlevel": 50,
+    "movespeed": 330,
+    "armor": 37,
+    "armorperlevel": 4.7,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 150,
+    "hpregen": 7,
+    "hpregenperlevel": 0.5,
+    "mpregen": 8,
+    "mpregenperlevel": 1,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 62,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2.5,
+    "attackspeed": 0.667
+  },
+  "blurb": "A renowned harpooner from the slaughter docks of Bilgewater, Pyke should have met his death in the belly of a gigantic jaull-fish\u2026 and yet, he returned. Now, stalking the dank alleys and backways of his former hometown, he uses his new supernatural..."
+}

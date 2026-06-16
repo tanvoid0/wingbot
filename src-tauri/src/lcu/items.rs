@@ -5,7 +5,9 @@ impl LCUAPI {
     pub async fn get_items_structured(&self) -> Result<Vec<Item>, String> {
         println!("[LCU] Fetching items data...");
         
-        let url = format!("{}{}", LCU_BASE_URL, LCU_ITEMS_ENDPOINT);
+        let connection = self.connection.as_ref()
+            .ok_or("No LCU connection established")?;
+        let url = format!("{}:{}{}", LCU_BASE_URL, connection.port, LCU_ITEMS_ENDPOINT);
         let response = self.make_request(&url, "GET", None).await?;
         
         if !response.status().is_success() {

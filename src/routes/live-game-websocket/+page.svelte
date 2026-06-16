@@ -25,6 +25,7 @@
     startWebSocketListening,
     stopWebSocketListening
   } from '$lib/stores/websocketStore';
+  import { formatTimestamp } from '$lib/utils/timestamp';
   
   // Local state for manual refresh
   let isManualRefresh = $state(false);
@@ -183,7 +184,7 @@ import LobbyManagement from '$lib/components/live-game/LobbyManagement.svelte';
           </div>
           <!-- Subtle update indicator -->
           <div class="flex items-center gap-1 text-xs text-muted-foreground">
-            <div class="w-1.5 h-1.5 bg-green-400 rounded-full {Date.now() - lastUpdateTime < 3000 ? 'animate-pulse' : 'opacity-50'}" title="Last updated: {new Date(lastUpdateTime).toLocaleTimeString()}"></div>
+            <div class="w-1.5 h-1.5 bg-green-400 rounded-full {Date.now() - lastUpdateTime < 3000 ? 'animate-pulse' : 'opacity-50'}" title="Last updated: {formatTimestamp(lastUpdateTime)}"></div>
             <span class="hidden sm:inline">Live</span>
           </div>
         </div>

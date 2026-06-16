@@ -1,0 +1,20 @@
+{
+  "id": "3108",
+  "name": "Fiendish Codex",
+  "plaintext": "Increases Ability Power and Cooldown Reduction",
+  "description": "<mainText><stats><attention>25</attention> Ability Power<br><attention>10</attention> Ability Haste</stats><br><br></mainText>",
+  "gold": {
+    "base": 200,
+    "purchasable": true,
+    "total": 850,
+    "sell": 595
+  },
+  "tags": [
+    "SpellDamage",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 25
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "223157",
+  "name": "Zhonya's Hourglass",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>80</attention> Ability Power<br><attention>50</attention> Armor</stats><br><br><active>Active -</active> <active>Stasis:</active> You become <status>Invulnerable</status> and <status>Untargetable</status> for 2.5 seconds, but are prevented from taking any other actions during this time <buffedStat>(120s)</buffedStat>.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Armor",
+    "SpellDamage",
+    "Active"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 80,
+    "FlatArmorMod": 50
+  }
+}

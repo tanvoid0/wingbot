@@ -1,0 +1,21 @@
+{
+  "id": "3023",
+  "name": "Lifewell Pendant",
+  "plaintext": "Summon wraiths to slow and reveal enemy champions",
+  "description": "<mainText><stats><attention>150</attention> Health<br><attention>25</attention> Armor<br><attention>5</attention> Ability Haste</stats><br><br><br><br><flavorText>'Fashionable and functional.'</flavorText></mainText>",
+  "gold": {
+    "base": 350,
+    "purchasable": false,
+    "total": 1050,
+    "sell": 735
+  },
+  "tags": [
+    "Health",
+    "Armor",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 150,
+    "FlatArmorMod": 25
+  }
+}

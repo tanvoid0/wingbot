@@ -1,0 +1,23 @@
+{
+  "id": "3042",
+  "name": "Muramana",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>35</attention> Attack Damage<br><attention>1000</attention> Mana<br><attention>15</attention> Ability Haste</stats><br><br><passive>Awe</passive><br>Gain <scaleAD>2% max Mana as bonus Attack Damage</scaleAD>.<br><br><passive>Shock</passive><br>Attacks against champions deal <physicalDamage>1.2% max Mana as bonus physical damage</physicalDamage> <OnHit>On-Hit</OnHit>. <br>Damaging Abilities against champions deal <physicalDamage>3% - 4% max Mana as bonus physical damage</physicalDamage>.</mainText>",
+  "gold": {
+    "base": 2900,
+    "purchasable": false,
+    "total": 2900,
+    "sell": 2030
+  },
+  "tags": [
+    "Damage",
+    "Mana",
+    "CooldownReduction",
+    "OnHit",
+    "ArmorPenetration"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 1000,
+    "FlatPhysicalDamageMod": 35
+  }
+}

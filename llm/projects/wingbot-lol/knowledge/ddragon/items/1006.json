@@ -1,0 +1,16 @@
+{
+  "id": "1006",
+  "name": "Rejuvenation Bead",
+  "plaintext": "Slightly increases Health Regen",
+  "description": "<mainText><stats><attention>100%</attention> Base Health Regen</stats><br><br></mainText>",
+  "gold": {
+    "base": 300,
+    "purchasable": true,
+    "total": 300,
+    "sell": 120
+  },
+  "tags": [
+    "HealthRegen"
+  ],
+  "stats": {}
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3024",
+  "name": "Glacial Buckler",
+  "plaintext": "Increases Armor and Cooldown Reduction",
+  "description": "<mainText><stats><attention>25</attention> Armor<br><attention>300</attention> Mana<br><attention>10</attention> Ability Haste</stats><br><br></mainText>",
+  "gold": {
+    "base": 50,
+    "purchasable": true,
+    "total": 900,
+    "sell": 630
+  },
+  "tags": [
+    "Armor",
+    "Mana",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 300,
+    "FlatArmorMod": 25
+  }
+}

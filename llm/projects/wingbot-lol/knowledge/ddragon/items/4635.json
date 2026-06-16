@@ -1,0 +1,21 @@
+{
+  "id": "4635",
+  "name": "Leeching Leer",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>20</attention> Ability Power<br><attention>250</attention> Health<br><attention>5%</attention> Omnivamp</stats><br><br></mainText>",
+  "gold": {
+    "base": 465,
+    "purchasable": false,
+    "total": 1265,
+    "sell": 886
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "SpellVamp"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 250,
+    "FlatMagicDamageMod": 20
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "48",
+  "name": "Trundle",
+  "title": "the Troll King",
+  "tags": [
+    "Fighter",
+    "Tank"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 7,
+    "defense": 6,
+    "magic": 2,
+    "difficulty": 5
+  },
+  "stats": {
+    "hp": 650,
+    "hpperlevel": 110,
+    "mp": 340,
+    "mpperlevel": 45,
+    "movespeed": 350,
+    "armor": 37,
+    "armorperlevel": 4.5,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 175,
+    "hpregen": 6,
+    "hpregenperlevel": 0.75,
+    "mpregen": 7.5,
+    "mpregenperlevel": 0.6,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 68,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2.9,
+    "attackspeed": 0.67
+  },
+  "blurb": "Trundle is a hulking and devious troll with a particularly vicious streak, and there is nothing he cannot bludgeon into submission\u2014not even the Freljord itself. Fiercely territorial, he chases down anyone foolish enough to enter his domain. Then, his..."
+}

@@ -1,0 +1,17 @@
+{
+  "models": [
+    {
+      "ollama_tag": "wingbot-lol",
+      "project": "wingbot-lol",
+      "version": "v1",
+      "base_model": "google/gemma-3-4b-it",
+      "adapter": "projects/wingbot-lol/adapters/v1",
+      "gguf": "projects/wingbot-lol/export/wingbot-lol-q4_k_m.gguf",
+      "created_at": "2026-06-15",
+      "eval_score": 0.852
+    }
+  ],
+  "active": {
+    "wingbot-lol": "wingbot-lol"
+  }
+}

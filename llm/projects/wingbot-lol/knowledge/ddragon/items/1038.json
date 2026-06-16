@@ -1,0 +1,18 @@
+{
+  "id": "1038",
+  "name": "B. F. Sword",
+  "plaintext": "Greatly increases Attack Damage",
+  "description": "<mainText><stats><attention>40</attention> Attack Damage</stats><br><br></mainText>",
+  "gold": {
+    "base": 1300,
+    "purchasable": true,
+    "total": 1300,
+    "sell": 910
+  },
+  "tags": [
+    "Damage"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 40
+  }
+}

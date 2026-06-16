@@ -1,0 +1,14 @@
+{
+  "id": "7050",
+  "name": "Gangplank Placeholder",
+  "plaintext": "New Gangplank interface coming soon!",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

@@ -1,0 +1,25 @@
+{
+  "id": "3087",
+  "name": "Statikk Shiv",
+  "plaintext": "Movement builds charges that release chain lightning on basic attack",
+  "description": "<mainText><stats><attention>45</attention> Attack Damage<br><attention>45</attention> Ability Power<br><attention>30%</attention> Attack Speed<br><attention>4%</attention> Move Speed</stats><br><br><passive>Electrospark</passive><br>Your <keyword>Energized Attacks</keyword> fire chain lightning, applying <OnHit>On-Hit</OnHit> effects and dealing <magicDamage>magic damage</magicDamage> to nearby targets.<br><br><passive>Electroshock</passive> <br>Basic Attacks grant extra <keyword>Energized</keyword> stacks.</mainText>",
+  "gold": {
+    "base": 625,
+    "purchasable": true,
+    "total": 3000,
+    "sell": 2100
+  },
+  "tags": [
+    "Damage",
+    "AttackSpeed",
+    "SpellDamage",
+    "OnHit",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 45,
+    "FlatPhysicalDamageMod": 45,
+    "PercentAttackSpeedMod": 0.3,
+    "PercentMovementSpeedMod": 0.04
+  }
+}

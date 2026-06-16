@@ -260,6 +260,27 @@ export function getChampionImageUrlSync(championName: string | null | undefined)
   return `${DATA_DRAGON_BASE}/15.13.1/img/champion/${fallbackChampionId}.png`;
 }
 
+const COMMUNITY_DRAGON_CHAMPION_ICON =
+  'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons';
+const COMMUNITY_DRAGON_SPELL_ICON =
+  'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/summoner-spell-icons';
+
+/** Champion square icon by numeric Riot champion ID (LCU format). */
+export function getChampionImageUrlByIdSync(
+  championId: number | null | undefined,
+): string | null {
+  if (!championId || championId <= 0) return null;
+  return `${COMMUNITY_DRAGON_CHAMPION_ICON}/${championId}.png`;
+}
+
+/** Summoner spell icon by numeric spell ID (LCU format). */
+export function getSummonerSpellImageUrlByIdSync(
+  spellId: number | null | undefined,
+): string | null {
+  if (!spellId || spellId <= 0) return null;
+  return `${COMMUNITY_DRAGON_SPELL_ICON}/${spellId}.png`;
+}
+
 /**
  * Get item image URL from Data Dragon CDN (async version with caching)
  * @param itemId - The item ID (e.g., 1001, 3006)
@@ -607,6 +628,20 @@ export async function isImageUrlValid(url: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/**
+ * Rank tier emblem URL from Community Dragon (falls back gracefully in UI).
+ */
+export function getRankEmblemUrl(tier: string | null | undefined): string | null {
+  if (!tier) return null;
+  const normalized = tier.toLowerCase().replace(/\s+/g, '');
+  const valid = [
+    'iron', 'bronze', 'silver', 'gold', 'platinum', 'emerald',
+    'diamond', 'master', 'grandmaster', 'challenger',
+  ];
+  if (!valid.includes(normalized)) return null;
+  return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/ranked-emblem/emblem-${normalized}.png`;
 }
 
 /**

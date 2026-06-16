@@ -1,0 +1,14 @@
+{
+  "id": "9407",
+  "name": "Hopped-Up Hex",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Aurora now shoots more hexes and her purge now deals damage in an area around <keywordMajor> Hexed</keywordMajor>target. <br><br><rules>Damage, Ability Haste, Crit Chance, Projectiles, Duration, Exp</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

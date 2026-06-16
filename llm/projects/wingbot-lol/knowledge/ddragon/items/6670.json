@@ -1,0 +1,20 @@
+{
+  "id": "6670",
+  "name": "Noonquiver",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>15</attention> Attack Damage<br><attention>20%</attention> Critical Strike Chance</stats><br><br></mainText>",
+  "gold": {
+    "base": 350,
+    "purchasable": true,
+    "total": 1300,
+    "sell": 910
+  },
+  "tags": [
+    "Damage",
+    "CriticalStrike"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.2,
+    "FlatPhysicalDamageMod": 15
+  }
+}

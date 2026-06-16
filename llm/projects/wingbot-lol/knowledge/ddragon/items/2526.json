@@ -1,0 +1,21 @@
+{
+  "id": "2526",
+  "name": "Whispering Circlet",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>8%</attention> Heal and Shield Power<br><attention>75%</attention> Base Mana Regen<br><attention>300</attention> Mana</stats><br><br><passive>Harmony</passive><br>Gain % Heal and Shield Power.<br><br><passive>Manaflow</passive> (8s, max 5 charges)<br>Landing Abilities grants <scaleMana>4 max Mana</scaleMana> (doubled vs. champions).<br>Transforms into <rarityLegendary>Diadem of Songs</rarityLegendary> at <scaleMana>360 max Mana</scaleMana>.</mainText>",
+  "gold": {
+    "base": 850,
+    "purchasable": true,
+    "total": 2250,
+    "sell": 1575
+  },
+  "tags": [
+    "Health",
+    "Mana",
+    "ManaRegen"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 300,
+    "FlatHPPoolMod": 200
+  }
+}

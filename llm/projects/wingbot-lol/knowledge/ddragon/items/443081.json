@@ -1,0 +1,22 @@
+{
+  "id": "443081",
+  "name": "Hexbolt Companion",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>70</attention> Attack Damage<br><attention>50%</attention> Attack Speed<br><attention>6%</attention> Move Speed</stats><br><br><passive>Covering Fire</passive><br>Every 10 seconds, <keywordMajor>Autocast</keywordMajor> fires a bolt towards a nearby target, dealing <physicalDamage> physical damage</physicalDamage> and applying <OnHit>On-Hit</OnHit> effects.<br><br><passive>Energized</passive><br>Moving and Attacking generates an <keyword>Energized Attack</keyword>.<br><br><passive>Unload</passive><br>Your <keyword>Energized Attacks</keyword> trigger your <keywordMajor>Autocast</keywordMajor> effects.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "AttackSpeed",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 70,
+    "PercentAttackSpeedMod": 0.5,
+    "PercentMovementSpeedMod": 0.06
+  }
+}

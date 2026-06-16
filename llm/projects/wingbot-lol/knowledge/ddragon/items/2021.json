@@ -1,0 +1,20 @@
+{
+  "id": "2021",
+  "name": "Tunneler",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>15</attention> Attack Damage<br><attention>250</attention> Health</stats><br><br></mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 1150,
+    "sell": 805
+  },
+  "tags": [
+    "Health",
+    "Damage"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 250,
+    "FlatPhysicalDamageMod": 15
+  }
+}

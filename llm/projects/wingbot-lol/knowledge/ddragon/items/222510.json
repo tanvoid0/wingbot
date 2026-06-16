@@ -1,0 +1,24 @@
+{
+  "id": "222510",
+  "name": "Dusk and Dawn",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>300</attention> Health<br><attention>60</attention> Ability Power<br><attention>20</attention> Ability Haste<br><attention>20%</attention> Attack Speed</stats><br><br><passive>Spellblade</passive> (0s)<br>After using an Ability, your next Attack deals <magicDamage> bonus magic damage</magicDamage> and <healing>heals you for </healing> <OnHit>On-Hit</OnHit> and then applies <OnHit>On-Hit</OnHit> effects an additional time.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "Health",
+    "AttackSpeed",
+    "SpellDamage",
+    "OnHit",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 300,
+    "FlatMagicDamageMod": 60,
+    "PercentAttackSpeedMod": 0.2
+  }
+}

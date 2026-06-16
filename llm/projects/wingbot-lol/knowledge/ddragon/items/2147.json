@@ -1,0 +1,16 @@
+{
+  "id": "2147",
+  "name": "Augment Level",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Gain 1 augment level.<br><br><flavorText>Good for you.</flavorText></mainText>",
+  "gold": {
+    "base": 1250,
+    "purchasable": true,
+    "total": 1250,
+    "sell": 0
+  },
+  "tags": [
+    "Consumable"
+  ],
+  "stats": {}
+}

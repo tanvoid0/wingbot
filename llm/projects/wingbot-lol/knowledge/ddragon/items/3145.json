@@ -1,0 +1,18 @@
+{
+  "id": "3145",
+  "name": "Hextech Alternator",
+  "plaintext": "Increases Ability Power. Deal bonus magic damage on attack periodically.",
+  "description": "<mainText><stats><attention>45</attention> Ability Power</stats><br><br><passive>Revved</passive><br>Damaging a champion deals <magicDamage>bonus magic damage</magicDamage>.</mainText>",
+  "gold": {
+    "base": 300,
+    "purchasable": true,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 45
+  }
+}

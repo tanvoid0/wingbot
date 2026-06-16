@@ -1,4 +1,6 @@
 use super::websocket_server::{WebSocketServer, WebSocketMessage};
+use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 use futures_util::{SinkExt, StreamExt};
 use serde_json;
@@ -7,7 +9,7 @@ use tokio::time::timeout;
 
 #[tokio::test]
 async fn test_websocket_server_startup() {
-    let server = WebSocketServer::new();
+    let server = WebSocketServer::new(Arc::new(AtomicBool::new(true)));
     
     // Test that server can be created
     assert_eq!(server.get_client_count().await, 0);
@@ -109,7 +111,7 @@ async fn test_websocket_client_connection() {
     // This test requires a running server, so we'll test the connection logic
     // without actually starting a server to avoid port conflicts
     
-    let server = WebSocketServer::new();
+    let server = WebSocketServer::new(Arc::new(AtomicBool::new(true)));
     
     // Test that we can create a server instance
     assert_eq!(server.get_client_count().await, 0);
@@ -120,7 +122,7 @@ async fn test_websocket_client_connection() {
 
 #[tokio::test]
 async fn test_websocket_subscription_management() {
-    let server = WebSocketServer::new();
+    let server = WebSocketServer::new(Arc::new(AtomicBool::new(true)));
     
     // Test subscription message handling
     let subscribe_msg = WebSocketMessage::Subscribe {
@@ -312,7 +314,7 @@ async fn test_websocket_integration() {
 
 #[tokio::test]
 async fn test_websocket_error_handling() {
-    let server = WebSocketServer::new();
+    let server = WebSocketServer::new(Arc::new(AtomicBool::new(true)));
     
     // Test error message creation and serialization
     let error_msg = WebSocketMessage::Error {

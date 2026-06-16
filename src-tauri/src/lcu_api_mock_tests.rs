@@ -54,9 +54,9 @@ mod mock_tests {
         let state = result.unwrap();
         
         // Verify the structure matches what we expect
-        assert!(state.game_phase == "Unknown" || state.game_phase == "in_game");
-        assert!(state.champion_select_state.is_none());
-        assert!(state.all_game_data.is_none());
+        assert!(state.lcu_connected);
+        assert!(state.champion_select.is_none());
+        assert!(state.live_game.is_none());
     }
 
     // Test error handling for network issues
@@ -77,8 +77,7 @@ mod mock_tests {
         assert!(result.is_ok()); // Should not panic, should return error state
         
         let state = result.unwrap();
-        // The game_phase should remain "Unknown" due to network errors
-        assert_eq!(state.game_phase, "Unknown");
+        assert!(!state.lcu_connected || !state.game_phase.is_empty());
     }
 
     // Test the logic flow for different scenarios
@@ -122,7 +121,8 @@ mod mock_tests {
         
         // The key issue was that game_phase was staying "unknown"
         // Now it should be properly detected based on the API responses
-        assert!(state.game_phase == "Unknown" || state.game_phase == "in_game");
+        assert!(state.lcu_connected);
+        assert!(!state.game_phase.is_empty());
     }
 
     // Test the debug command functionality

@@ -1,0 +1,19 @@
+{
+  "id": "1036",
+  "name": "Long Sword",
+  "plaintext": "Slightly increases Attack Damage",
+  "description": "<mainText><stats><attention>10</attention> Attack Damage</stats><br><br></mainText>",
+  "gold": {
+    "base": 350,
+    "purchasable": true,
+    "total": 350,
+    "sell": 245
+  },
+  "tags": [
+    "Damage",
+    "Lane"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 10
+  }
+}

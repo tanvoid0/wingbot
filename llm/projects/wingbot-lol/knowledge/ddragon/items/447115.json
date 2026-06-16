@@ -1,0 +1,21 @@
+{
+  "id": "447115",
+  "name": "Regicide",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>60</attention> Attack Damage<br><attention>15</attention> Lethality<br><attention>8%</attention> Move Speed</stats><br><br><passive>End the Line</passive><br>At the start of each round, declare the lowest health enemy the <keywordMajor>Regent</keywordMajor>. Getting a takedown on the <keywordMajor>Regent</keywordMajor> grants you a permanent <physicalDamage>15 Attack Damage</physicalDamage> and refreshes your Ultimate's Cooldown.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Damage",
+    "NonbootsMovement",
+    "ArmorPenetration"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 60,
+    "PercentMovementSpeedMod": 0.08
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "9400",
+  "name": "Battle Cat Barrage",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Jinx shoots out a barrage of bullets in a target direction. Bullets now pierce, dealing less damage to targets hit after the first. Cooldown is heavily reduced.<br><br><rules>Damage, Ability Haste, Crit Chance, Projectile Count</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

@@ -1,0 +1,20 @@
+{
+  "id": "223072",
+  "name": "Bloodthirster",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>70</attention> Attack Damage<br><attention>18%</attention> Life Steal</stats><br><br><passive>Ichorshield</passive><br>Convert excess healing from your <lifeSteal>Life Steal</lifeSteal> to a <shield>Shield</shield>.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Damage",
+    "LifeSteal"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 70,
+    "PercentLifeStealMod": 0.18
+  }
+}

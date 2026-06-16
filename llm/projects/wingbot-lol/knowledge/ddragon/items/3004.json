@@ -1,0 +1,23 @@
+{
+  "id": "3004",
+  "name": "Manamune",
+  "plaintext": "Increases Attack Damage based on maximum Mana",
+  "description": "<mainText><stats><attention>35</attention> Attack Damage<br><attention>500</attention> Mana<br><attention>15</attention> Ability Haste</stats><br><br><passive>Awe</passive><br>Gain <scaleAD> bonus Attack Damage</scaleAD>.<br><br><passive>Manaflow</passive> (8s, max 4 charges)<br>Landing Attacks and Abilities grants <scaleMana>3 max Mana</scaleMana> (doubled vs. champions).<br>Transforms into <rarityLegendary>Muramana</rarityLegendary> at <scaleMana>360 max Mana</scaleMana>.</mainText>",
+  "gold": {
+    "base": 1100,
+    "purchasable": true,
+    "total": 2900,
+    "sell": 2030
+  },
+  "tags": [
+    "Damage",
+    "Mana",
+    "CooldownReduction",
+    "OnHit",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 500,
+    "FlatPhysicalDamageMod": 35
+  }
+}

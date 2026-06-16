@@ -1,0 +1,21 @@
+{
+  "id": "3157",
+  "name": "Zhonya's Hourglass",
+  "plaintext": "Activate to become invincible but unable to take actions",
+  "description": "<mainText><stats><attention>105</attention> Ability Power<br><attention>50</attention> Armor</stats><br><br><br><br><active>Time Stop</active><br>Enter <keyword>Stasis</keyword> for 2.5 seconds.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 3250,
+    "sell": 2275
+  },
+  "tags": [
+    "Armor",
+    "SpellDamage",
+    "Active"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 105,
+    "FlatArmorMod": 50
+  }
+}

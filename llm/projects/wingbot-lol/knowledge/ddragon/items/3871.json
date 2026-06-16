@@ -1,0 +1,23 @@
+{
+  "id": "3871",
+  "name": "Zaz'Zak's Realmspike",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>75%</attention> Base Health Regen<br><attention>75%</attention> Base Mana Regen<br><attention>9</attention> Gold Per 10 Seconds</stats><br><br><passive>Void Explosion</passive><br>Dealing Ability damage to a champion causes an explosion that deals <magicDamage>magic damage</magicDamage>.<br><br><active>Active</active> (4 charges)<br>Places an <keyword>Invisible</keyword> Stealth Ward that grants vision.</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 400,
+    "sell": 160
+  },
+  "tags": [
+    "Health",
+    "HealthRegen",
+    "ManaRegen",
+    "Vision",
+    "GoldPer",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 200
+  }
+}

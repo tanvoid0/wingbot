@@ -1,0 +1,23 @@
+{
+  "id": "3074",
+  "name": "Ravenous Hydra",
+  "plaintext": "Melee attacks hit nearby enemies, dealing damage and restoring Health",
+  "description": "<mainText><stats><attention>65</attention> Attack Damage<br><attention>15</attention> Ability Haste<br><attention>12%</attention> Life Steal</stats><br><br><passive>Cleave</passive><br>Attacks deal <physicalDamage>physical damage</physicalDamage> to nearby enemies.<active>Ravenous Crescent</active><br>Deal <physicalDamage>physical damage</physicalDamage> to enemies around you. <br>Your Life Steal applies to this damage.</mainText>",
+  "gold": {
+    "base": 150,
+    "purchasable": true,
+    "total": 3300,
+    "sell": 2310
+  },
+  "tags": [
+    "Damage",
+    "LifeSteal",
+    "CooldownReduction",
+    "OnHit",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 65,
+    "PercentLifeStealMod": 0.12
+  }
+}

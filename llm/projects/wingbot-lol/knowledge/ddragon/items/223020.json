@@ -1,0 +1,19 @@
+{
+  "id": "223020",
+  "name": "Sorcerer's Shoes",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>20</attention> Magic Penetration<br><attention>55</attention> Move Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 350
+  },
+  "tags": [
+    "Boots",
+    "MagicPenetration"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 55
+  }
+}

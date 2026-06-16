@@ -1,0 +1,25 @@
+{
+  "id": "3071",
+  "name": "Black Cleaver",
+  "plaintext": "Dealing physical damage to enemy champions reduces their Armor",
+  "description": "<mainText><stats><attention>40</attention> Attack Damage<br><attention>400</attention> Health<br><attention>20</attention> Ability Haste</stats><br><br><passive>Carve</passive><br>Dealing <physicalDamage>physical damage</physicalDamage> to champions reduces the target's <scaleArmor>Armor by 6%</scaleArmor> for 6 seconds. (stacks 5 times).<br><br><passive>Fervor</passive><br>Dealing <physicalDamage>physical damage</physicalDamage> grants <speed>20 Move Speed</speed> for 2 seconds.</mainText>",
+  "gold": {
+    "base": 225,
+    "purchasable": true,
+    "total": 3000,
+    "sell": 2100
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "CooldownReduction",
+    "OnHit",
+    "NonbootsMovement",
+    "ArmorPenetration",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 400,
+    "FlatPhysicalDamageMod": 40
+  }
+}

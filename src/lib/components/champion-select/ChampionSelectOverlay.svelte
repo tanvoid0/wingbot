@@ -1,56 +1,145 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { wsChampionSelect, wsGamePhase } from '$lib/stores/websocketStore';
-  import { championSelectStore } from '$lib/stores/championSelectStore';
-  import { getChampionImageUrlSync, getSummonerSpellImageUrlSync } from '$lib/services/imageService';
+  import {
+    getChampionImageUrlByIdSync,
+    getChampionImageUrlSync,
+    getSummonerSpellImageUrlByIdSync,
+    getSummonerSpellImageUrlSync,
+  } from '$lib/services/imageService';
+  import {
+    champSelectTimerSec,
+    isTimerOnlyChampSelectChange,
+    parseChampionSelectSession,
+    type ParsedChampionSelect,
+    type ChampSelectSlot,
+  } from '$lib/utils/championSelectParser';
   import ImageWithFallback from '$lib/components/ui/ImageWithFallback.svelte';
   
-  let championSelectData: any = null;
+  let championSelectData: Record<string, unknown> | null = null;
+  let parsed: ParsedChampionSelect | null = null;
   let gamePhase: string = 'unknown';
-  let timeRemaining: number = 0;
-  let currentPhase: string = 'unknown';
   
-  // Team data
-  let blueTeam: {
-    name: string;
-    score: number;
-    bans: any[];
-    picks: any[];
-    coach: string;
-  } = {
-    name: 'Blue Team',
+  let blueTeam = {
+    name: 'Your Team',
     score: 0,
-    bans: [],
-    picks: [],
-    coach: ''
+    bans: [] as ChampSelectSlot[],
+    picks: [] as ChampSelectSlot[],
+    coach: '',
   };
   
-  let redTeam: {
-    name: string;
-    score: number;
-    bans: any[];
-    picks: any[];
-    coach: string;
-  } = {
-    name: 'Red Team', 
+  let redTeam = {
+    name: 'Enemy Team',
     score: 0,
-    bans: [],
-    picks: [],
-    coach: ''
+    bans: [] as ChampSelectSlot[],
+    picks: [] as ChampSelectSlot[],
+    coach: '',
   };
+  
+  let timeRemaining = 0;
+  let currentPhase = 'unknown';
+  let timerSnapshot: Record<string, unknown> | null = null;
+  let countdownInterval: ReturnType<typeof setInterval> | null = null;
   
   let unsubscribe: (() => void)[] = [];
+  let lastSessionSnapshot: Record<string, unknown> | null = null;
+
+  function syncTimerFromSnapshot() {
+    timeRemaining = champSelectTimerSec(timerSnapshot);
+  }
+
+  function startTimerCountdown() {
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+    if (!timerSnapshot) return;
+    syncTimerFromSnapshot();
+    countdownInterval = setInterval(syncTimerFromSnapshot, 100);
+  }
+
+  function stopTimerCountdown() {
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+    timerSnapshot = null;
+    timeRemaining = 0;
+  }
+
+  function applyTimerOnlyUpdate(data: Record<string, unknown>) {
+    championSelectData = data;
+    timerSnapshot =
+      data.timer && typeof data.timer === 'object'
+        ? (data.timer as Record<string, unknown>)
+        : null;
+    if (timerSnapshot && typeof timerSnapshot.phase === 'string') {
+      currentPhase = timerSnapshot.phase;
+    }
+    if (timerSnapshot) {
+      syncTimerFromSnapshot();
+    }
+  }
+  
+  function applyChampionSelectData(data: Record<string, unknown> | null) {
+    if (!data) {
+      lastSessionSnapshot = null;
+      championSelectData = null;
+      parsed = null;
+      blueTeam = { ...blueTeam, bans: [], picks: [] };
+      redTeam = { ...redTeam, bans: [], picks: [] };
+      stopTimerCountdown();
+      return;
+    }
+
+    if (
+      lastSessionSnapshot &&
+      isTimerOnlyChampSelectChange(lastSessionSnapshot, data)
+    ) {
+      lastSessionSnapshot = data;
+      applyTimerOnlyUpdate(data);
+      return;
+    }
+
+    lastSessionSnapshot = data;
+    championSelectData = data;
+    parsed = parseChampionSelectSession(data);
+    
+    if (!parsed) {
+      blueTeam = { ...blueTeam, bans: [], picks: [] };
+      redTeam = { ...redTeam, bans: [], picks: [] };
+      stopTimerCountdown();
+      return;
+    }
+    
+    blueTeam = {
+      name: 'Your Team',
+      score: 0,
+      bans: parsed.blueTeam.bans,
+      picks: parsed.blueTeam.picks,
+      coach: '',
+    };
+    redTeam = {
+      name: 'Enemy Team',
+      score: 0,
+      bans: parsed.redTeam.bans,
+      picks: parsed.redTeam.picks,
+      coach: '',
+    };
+    timerSnapshot =
+      data?.timer && typeof data.timer === 'object'
+        ? (data.timer as Record<string, unknown>)
+        : null;
+    currentPhase = parsed.phase;
+    startTimerCountdown();
+  }
   
   onMount(() => {
-    // Subscribe to champion select updates
-    const unsub1 = wsChampionSelect.subscribe((data: any) => {
-      if (data) {
-        championSelectData = data;
-        updateTeamData();
-      }
+    const unsub1 = wsChampionSelect.subscribe((data: Record<string, unknown> | null) => {
+      applyChampionSelectData(data);
     });
     
-    const unsub2 = wsGamePhase.subscribe(phase => {
+    const unsub2 = wsGamePhase.subscribe((phase) => {
       gamePhase = phase;
     });
     
@@ -58,68 +147,9 @@
   });
   
   onDestroy(() => {
-    unsubscribe.forEach(unsub => unsub());
+    stopTimerCountdown();
+    unsubscribe.forEach((unsub) => unsub());
   });
-  
-  function updateTeamData() {
-    if (!championSelectData) return;
-    
-    console.log('Champion Select Data:', championSelectData);
-    
-    // Extract team data from champion select session
-    // LCU API provides teams in the 'teams' array with teamId 100 (blue) and 200 (red)
-    if (championSelectData.teams) {
-      const blueTeamData = championSelectData.teams.find((team: any) => team.teamId === 100);
-      const redTeamData = championSelectData.teams.find((team: any) => team.teamId === 200);
-      
-      if (blueTeamData) {
-        blueTeam = {
-          name: 'Your Team',
-          score: 0,
-          bans: blueTeamData.bans || [],
-          picks: blueTeamData.picks || [],
-          coach: ''
-        };
-      }
-      
-      if (redTeamData) {
-        redTeam = {
-          name: 'Enemy Team',
-          score: 0,
-          bans: redTeamData.bans || [],
-          picks: redTeamData.picks || [],
-          coach: ''
-        };
-      }
-    }
-    
-    // Handle alternative data structure (myTeam/theirTeam)
-    if (championSelectData.myTeam) {
-      blueTeam = {
-        name: 'Your Team',
-        score: 0,
-        bans: championSelectData.bans?.filter((ban: any) => ban.teamId === 100) || [],
-        picks: championSelectData.myTeam || [],
-        coach: ''
-      };
-    }
-    
-    if (championSelectData.theirTeam) {
-      redTeam = {
-        name: 'Enemy Team',
-        score: 0,
-        bans: championSelectData.bans?.filter((ban: any) => ban.teamId === 200) || [],
-        picks: championSelectData.theirTeam || [],
-        coach: ''
-      };
-    }
-    
-    // Update timer and phase
-    if (championSelectData.timer) {
-      timeRemaining = championSelectData.timer.adjustedTimeLeftInPhase || 0;
-      currentPhase = championSelectData.timer.phase || 'unknown';
-    }
-  }
   
   function formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
@@ -127,12 +157,21 @@
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
   
-  function getChampionImageUrl(championName: string): string {
-    return getChampionImageUrlSync(championName) || '';
+  function championImage(slot: ChampSelectSlot): string {
+    return (
+      getChampionImageUrlByIdSync(slot.championId) ||
+      getChampionImageUrlSync(String(slot.championId)) ||
+      ''
+    );
   }
   
-  function getSpellImageUrl(spellName: string): string {
-    return getSummonerSpellImageUrlSync(spellName) || '';
+  function spellImage(spellId: number | undefined): string {
+    if (!spellId) return '';
+    return (
+      getSummonerSpellImageUrlByIdSync(spellId) ||
+      getSummonerSpellImageUrlSync(String(spellId)) ||
+      ''
+    );
   }
 </script>
 
@@ -162,9 +201,9 @@
       <div class="bans-container">
         {#each blueTeam.bans as ban, index}
           <div class="ban-slot">
-            {#if ban.championName}
+            {#if ban.championId}
               <ImageWithFallback 
-                src={getChampionImageUrl(ban.championName)} 
+                src={championImage(ban)} 
                 alt="Ban {index + 1}" 
                 class="ban-image"
                 fallback="?"
@@ -182,32 +221,35 @@
       <h3 class="section-title">Picks</h3>
       <div class="picks-container">
         {#each blueTeam.picks as pick, index}
-          <div class="pick-slot">
-            {#if pick.championName}
+          <div class="pick-slot" class:hover-intent={pick.isHovered}>
+            {#if pick.championId}
               <ImageWithFallback 
-                src={getChampionImageUrl(pick.championName)} 
+                src={championImage(pick)} 
                 alt="Pick {index + 1}" 
                 class="pick-image"
                 fallback="?"
               />
               <div class="summoner-spells">
-                {#if pick.spell1Name}
+                {#if pick.spell1Id}
                   <ImageWithFallback 
-                    src={getSpellImageUrl(pick.spell1Name)} 
+                    src={spellImage(pick.spell1Id)} 
                     class="spell" 
                     alt="Spell 1" 
                     fallback="?"
                   />
                 {/if}
-                {#if pick.spell2Name}
+                {#if pick.spell2Id}
                   <ImageWithFallback 
-                    src={getSpellImageUrl(pick.spell2Name)} 
+                    src={spellImage(pick.spell2Id)} 
                     class="spell" 
                     alt="Spell 2" 
                     fallback="?"
                   />
                 {/if}
               </div>
+              {#if pick.summonerName}
+                <div class="player-name">{pick.summonerName}</div>
+              {/if}
             {:else}
               <div class="empty-slot">?</div>
             {/if}
@@ -228,7 +270,7 @@
     
     <!-- Game Phase Indicator -->
     <div class="game-phase-indicator">
-      <div class="phase-dot {gamePhase === 'champion_select' ? 'active' : ''}"></div>
+      <div class="phase-dot {gamePhase === 'ChampSelect' || gamePhase === 'champion_select' ? 'active' : ''}"></div>
       <span>Champion Select</span>
     </div>
   </div>
@@ -246,9 +288,9 @@
       <div class="bans-container">
         {#each redTeam.bans as ban, index}
           <div class="ban-slot">
-            {#if ban.championName}
+            {#if ban.championId}
               <ImageWithFallback 
-                src={getChampionImageUrl(ban.championName)} 
+                src={championImage(ban)} 
                 alt="Ban {index + 1}" 
                 class="ban-image"
                 fallback="?"
@@ -266,26 +308,26 @@
       <h3 class="section-title">Picks</h3>
       <div class="picks-container">
         {#each redTeam.picks as pick, index}
-          <div class="pick-slot">
-            {#if pick.championName}
+          <div class="pick-slot" class:hover-intent={pick.isHovered}>
+            {#if pick.championId}
               <ImageWithFallback 
-                src={getChampionImageUrl(pick.championName)} 
+                src={championImage(pick)} 
                 alt="Pick {index + 1}" 
                 class="pick-image"
                 fallback="?"
               />
               <div class="summoner-spells">
-                {#if pick.spell1Name}
+                {#if pick.spell1Id}
                   <ImageWithFallback 
-                    src={getSpellImageUrl(pick.spell1Name)} 
+                    src={spellImage(pick.spell1Id)} 
                     class="spell" 
                     alt="Spell 1" 
                     fallback="?"
                   />
                 {/if}
-                {#if pick.spell2Name}
+                {#if pick.spell2Id}
                   <ImageWithFallback 
-                    src={getSpellImageUrl(pick.spell2Name)} 
+                    src={spellImage(pick.spell2Id)} 
                     class="spell" 
                     alt="Spell 2" 
                     fallback="?"
@@ -446,6 +488,25 @@
   .red-team .ban-slot,
   .red-team .pick-slot {
     border-color: #e74c3c;
+  }
+  
+  .pick-slot.hover-intent {
+    opacity: 0.75;
+    border-style: dashed;
+  }
+  
+  .player-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-size: 0.55rem;
+    background: rgba(0, 0, 0, 0.75);
+    text-align: center;
+    padding: 1px 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .ban-image, .pick-image {

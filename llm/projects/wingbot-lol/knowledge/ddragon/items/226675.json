@@ -1,0 +1,22 @@
+{
+  "id": "226675",
+  "name": "Navori Flickerblades",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>35%</attention> Attack Speed<br><attention>25%</attention> Critical Strike Chance<br><attention>4%</attention> Move Speed</stats><br><br><passive>Transcendence</passive><br>Your Attacks reduce your non-Ultimate Ability cooldowns by <attention>15%</attention> of their remaining cooldown.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "CriticalStrike",
+    "AttackSpeed",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "PercentAttackSpeedMod": 0.35,
+    "PercentMovementSpeedMod": 0.04
+  }
+}

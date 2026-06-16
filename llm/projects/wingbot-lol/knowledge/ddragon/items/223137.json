@@ -1,0 +1,20 @@
+{
+  "id": "223137",
+  "name": "Cryptbloom",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>60</attention> Ability Power<br><attention>30%</attention> Magic Penetration<br><attention>15</attention> Ability Haste</stats><br><br><passive>Life from Death</passive><br>When a champion that you damaged within 3 seconds dies, a nova spreads from their corpse that <healing>heals</healing>.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "SpellDamage",
+    "MagicPenetration",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 60
+  }
+}

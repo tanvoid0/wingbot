@@ -1,0 +1,18 @@
+{
+  "id": "1033",
+  "name": "Null-Magic Mantle",
+  "plaintext": "Slightly increases Magic Resist",
+  "description": "<mainText><stats><attention>20</attention> Magic Resist</stats><br><br></mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 400,
+    "sell": 280
+  },
+  "tags": [
+    "SpellBlock"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 20
+  }
+}

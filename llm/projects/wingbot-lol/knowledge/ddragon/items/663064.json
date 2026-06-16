@@ -1,0 +1,14 @@
+{
+  "id": "663064",
+  "name": "Veigar's Talisman of Ascension",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Gain 100% Extra Experience<br><br>Offers no stats, and cannot be sold...<br><br>...But will be worth it if you reach Level 30.</mainText>",
+  "gold": {
+    "base": 900,
+    "purchasable": true,
+    "total": 900,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

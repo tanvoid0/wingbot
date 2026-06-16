@@ -1,0 +1,17 @@
+{
+  "id": "3057",
+  "name": "Sheen",
+  "plaintext": "Grants a bonus to next attack after spell cast",
+  "description": "<mainText><stats><attention>10</attention> Ability Haste</stats><br><br><passive>Spellblade</passive><br>After using an Ability, your next Attack deals <physicalDamage>bonus physical damage</physicalDamage> <OnHit>On-Hit</OnHit>.<br></mainText>",
+  "gold": {
+    "base": 650,
+    "purchasable": true,
+    "total": 900,
+    "sell": 630
+  },
+  "tags": [
+    "OnHit",
+    "AbilityHaste"
+  ],
+  "stats": {}
+}

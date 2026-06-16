@@ -1,0 +1,14 @@
+{
+  "id": "3903",
+  "name": "<rarityLegendary>Raise Morale</rarityLegendary><br><subtitleLeft><silver>500 Silver Serpents</silver></subtitleLeft>",
+  "plaintext": "Allies in the Cannon Barrage gain <speed>bonus Move Speed</speed>.",
+  "description": "<mainText><stats></stats><br><br>Allies in the Cannon Barrage gain <speed>bonus Move Speed</speed>.</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

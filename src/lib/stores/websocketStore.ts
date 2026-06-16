@@ -7,6 +7,60 @@ import type {
   PlayerScoresData, 
   ComprehensiveGameState 
 } from '$lib/types/game';
+import { champSelectTimerSec } from '$lib/utils/championSelectParser';
+
+/** Phases where champ-select session data from LCU is stale and must be ignored. */
+export const POST_CHAMP_SELECT_PHASES = new Set([
+  'InProgress',
+  'GameStart',
+  'in_game',
+  'EndOfGame',
+  'WaitingForStats',
+  'PreEndOfGame',
+]);
+
+export function isPostChampSelectPhase(phase: string | null | undefined): boolean {
+  return !!phase && POST_CHAMP_SELECT_PHASES.has(phase);
+}
+
+/** True while loading into game after champ select ends (LCU phase may lag). */
+const CHAMP_SELECT_TRANSITION_MS = 120_000;
+let champSelectEndedAt: number | null = null;
+
+export function isRecentChampSelectTransition(
+  maxMs: number = CHAMP_SELECT_TRANSITION_MS,
+): boolean {
+  return champSelectEndedAt !== null && Date.now() - champSelectEndedAt < maxMs;
+}
+
+export function isInMatchOrLoadingPhase(phase: string | null | undefined): boolean {
+  if (isPostChampSelectPhase(phase)) return true;
+  const preMatchPhases = ['None', 'Lobby', 'Matchmaking', 'ReadyCheck', 'TerminatedInError'];
+  if (phase && preMatchPhases.includes(phase)) return false;
+  if (phase === 'ChampSelect' || phase === 'champion_select') return false;
+  return isRecentChampSelectTransition();
+}
+
+function setChampionSelectStores(cs: Record<string, unknown>) {
+  champSelectEndedAt = null;
+  wsChampionSelect.set(cs);
+  wsChampionSelectData.set(cs);
+  wsIsChampionSelectActive.set(true);
+  wsChampionSelectPhase.set((cs.timer as { phase?: string } | undefined)?.phase ?? 'Active');
+  wsChampionSelectTimer.set(champSelectTimerSec(cs.timer as Parameters<typeof champSelectTimerSec>[0]));
+}
+
+function clearChampionSelectStores() {
+  const hadSession = get(wsIsChampionSelectActive) || get(wsChampionSelectData);
+  if (hadSession) {
+    champSelectEndedAt = Date.now();
+  }
+  wsChampionSelect.set(null);
+  wsChampionSelectData.set(null);
+  wsIsChampionSelectActive.set(false);
+  wsChampionSelectPhase.set('None');
+  wsChampionSelectTimer.set(0);
+}
 
 // WebSocket connection state
 export const wsConnected = writable(false);
@@ -76,16 +130,16 @@ export const wsLCUWebSocketEvents = writable<any[]>([]);
 export const wsLCUWebSocketConnected = writable<boolean>(false);
 
 // Game Time Tracking
-let wsGameTimeInterval: number | null = null;
+let wsGameTimeInterval: ReturnType<typeof setInterval> | null = null;
 let wsGameStartTime: number | null = null;
 let wsLastApiGameTime: number | null = null;
 let wsLastApiSyncTime: number | null = null;
 
 // WebSocket connection
 let ws: WebSocket | null = null;
-let reconnectTimeout: number | null = null;
+let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 let isListening = false;
-let connectionHealthCheck: number | null = null;
+let connectionHealthCheck: ReturnType<typeof setInterval> | null = null;
 
 // WebSocket message types - matches backend Rust enum
 interface WebSocketMessage {
@@ -323,11 +377,61 @@ function sendMessage(message: WebSocketMessage) {
   }
 }
 
+function applyGameSnapshot(data: ComprehensiveGameState) {
+  wsGameState.set(data);
+
+  if (data.game_phase) {
+    wsGamePhase.set(data.game_phase);
+    const preMatchPhases = ['None', 'Lobby', 'Matchmaking', 'ReadyCheck', 'TerminatedInError'];
+    if (preMatchPhases.includes(data.game_phase)) {
+      champSelectEndedAt = null;
+    }
+  }
+
+  wsIsSpectatorMode.set(data.is_spectator_mode ?? false);
+
+  const phase = data.game_phase ?? get(wsGamePhase);
+  if (data.champion_select && !isPostChampSelectPhase(phase)) {
+    setChampionSelectStores(data.champion_select as Record<string, unknown>);
+    if (phase === 'Unknown' || phase === 'ChampSelect' || phase === 'champion_select') {
+      wsGamePhase.set('ChampSelect');
+    }
+  } else {
+    clearChampionSelectStores();
+  }
+
+  if (data.live_game) {
+    champSelectEndedAt = null;
+    wsLiveGameData.set(data.live_game as LiveClientGameData);
+    wsGameData.set(data.live_game as LiveClientGameData);
+  } else if (!data.live_client_available) {
+    wsLiveGameData.set(null);
+    wsGameData.set(null);
+  }
+
+  if (data.live_stats) {
+    wsLiveGameStats.set(data.live_stats);
+  } else if (!data.live_client_available) {
+    wsLiveGameStats.set(null);
+  }
+
+  if (data.player_scores) {
+    wsPlayerScores.set(data.player_scores);
+  } else if (!data.live_client_available) {
+    wsPlayerScores.set(null);
+  }
+
+  if (data.live_game) {
+    const mode = (data.live_game as { gameData?: { gameMode?: string } }).gameData?.gameMode;
+    if (mode) wsGameMode.set(mode);
+  }
+}
+
 function handleWebSocketMessage(message: WebSocketMessage) {
   if (message.GameStateUpdate) {
-    const data = message.GameStateUpdate.data;
+    const data = message.GameStateUpdate.data as ComprehensiveGameState;
     console.log('[WebSocket] GameStateUpdate received:', data);
-    wsGameState.set(data);
+    applyGameSnapshot(data);
   } else if (message.GameStateDelta) {
     const changes = message.GameStateDelta.changes;
     console.log('[WebSocket] GameStateDelta received:', changes);
@@ -336,6 +440,20 @@ function handleWebSocketMessage(message: WebSocketMessage) {
       if (!currentState) return changes;
       return { ...currentState, ...changes };
     });
+
+    const deltaPhase = (changes.game_phase ?? get(wsGamePhase)) as string;
+    if (changes.champion_select && !isPostChampSelectPhase(deltaPhase)) {
+      setChampionSelectStores(changes.champion_select as Record<string, unknown>);
+      if (deltaPhase === 'Unknown' || deltaPhase === 'ChampSelect' || deltaPhase === 'champion_select') {
+        wsGamePhase.set('ChampSelect');
+      }
+    } else if (isPostChampSelectPhase(deltaPhase)) {
+      clearChampionSelectStores();
+    }
+    if (changes.live_game) {
+      wsLiveGameData.set(changes.live_game);
+      wsGameData.set(changes.live_game);
+    }
     
     // Update game phase and mode
     if (changes.game_phase) {
@@ -623,47 +741,54 @@ function handleWebSocketMessage(message: WebSocketMessage) {
   
   if (message.ChampionSelectUpdate) {
     const data = message.ChampionSelectUpdate.data;
-    console.log('[WebSocket] ChampionSelectUpdate received:', data);
-    wsChampionSelect.set(data);
-    wsChampionSelectData.set(data);
-    
-    // Update champion select state
-    if (data && data.phase) {
-      wsChampionSelectPhase.set(data.phase);
-      wsIsChampionSelectActive.set(true);
-      
-      // Update timer if available
-      if (data.timer) {
-        wsChampionSelectTimer.set(data.timer);
+
+    if (data == null) {
+      clearChampionSelectStores();
+      void refreshGameStateFromBackend().catch(() => {});
+      return;
+    }
+
+    const currentPhase = get(wsGamePhase);
+    const hasSession = data && (data.myTeam || data.timer?.phase);
+    if (hasSession && !isPostChampSelectPhase(currentPhase)) {
+      setChampionSelectStores(data);
+      if (currentPhase === 'Unknown' || currentPhase === 'ChampSelect' || currentPhase === 'champion_select') {
+        wsGamePhase.set('ChampSelect');
       }
-    } else {
-      // Clear champion select data
-      wsChampionSelect.set(null);
-      wsChampionSelectData.set(null);
-      wsChampionSelectPhase.set('None');
-      wsIsChampionSelectActive.set(false);
-      wsChampionSelectTimer.set(0);
+    } else if (!hasSession || isPostChampSelectPhase(currentPhase)) {
+      clearChampionSelectStores();
     }
   } else if (message.ChampionSelectDelta) {
     const changes = message.ChampionSelectDelta.changes;
-    console.log('[WebSocket] ChampionSelectDelta received:', changes);
-    // Apply delta changes to current champion select data
-    wsChampionSelect.update(currentData => {
-      if (!currentData) return changes;
-      return { ...currentData, ...changes };
-    });
-    wsChampionSelectData.update(currentData => {
-      if (!currentData) return changes;
-      return { ...currentData, ...changes };
-    });
-    
-    // Update individual fields from delta
-    if (changes.phase !== undefined) {
-      wsChampionSelectPhase.set(changes.phase);
-      wsIsChampionSelectActive.set(changes.phase !== 'None');
-    }
-    if (changes.timer !== undefined) {
-      wsChampionSelectTimer.set(changes.timer);
+    const currentPhase = get(wsGamePhase);
+    if (isPostChampSelectPhase(currentPhase)) {
+      clearChampionSelectStores();
+    } else {
+      wsChampionSelect.update(currentData => {
+        const merged = !currentData ? changes : { ...currentData, ...changes };
+        if (merged?.timer) {
+          wsChampionSelectTimer.set(champSelectTimerSec(merged.timer));
+        }
+        return merged;
+      });
+      wsChampionSelectData.update(currentData => {
+        const merged = !currentData ? changes : { ...currentData, ...changes };
+        return merged;
+      });
+
+      wsIsChampionSelectActive.set(true);
+      if (changes.timer?.phase) {
+        wsChampionSelectPhase.set(changes.timer.phase);
+      } else if (changes.phase !== undefined) {
+        wsChampionSelectPhase.set(changes.phase);
+        wsIsChampionSelectActive.set(changes.phase !== 'None');
+      }
+      if (changes.timer !== undefined) {
+        wsChampionSelectTimer.set(champSelectTimerSec(changes.timer));
+      }
+      if (currentPhase === 'Unknown' || currentPhase === 'ChampSelect' || currentPhase === 'champion_select') {
+        wsGamePhase.set('ChampSelect');
+      }
     }
   }
   
@@ -993,10 +1118,22 @@ export async function refreshWebSocketData() {
 }
 
 // Enhanced LCU API functions
+export async function refreshGameStateFromBackend() {
+  try {
+    const state = (await invoke('get_comprehensive_game_state')) as ComprehensiveGameState;
+    applyGameSnapshot(state);
+    return state;
+  } catch (error) {
+    console.error('[WebSocket] Failed to refresh game state:', error);
+    throw error;
+  }
+}
+
 export async function detectLeagueClientWithRetry(maxAttempts: number = 5) {
   try {
     const result = await invoke('detect_league_client_with_retry', { maxAttempts });
     console.log('[WebSocket] League client detected with retry:', result);
+    await refreshGameStateFromBackend().catch(() => {});
     return result;
   } catch (error) {
     console.error('[WebSocket] Failed to detect League client with retry:', error);
@@ -1144,6 +1281,7 @@ export const wsActions = {
   connectWebSocket,
   // Enhanced LCU API functions
   detectLeagueClientWithRetry,
+  refreshGameStateFromBackend,
   setConnectionWithWebSocket,
   checkConnectionHealth,
   getConnectionHealthInfo,

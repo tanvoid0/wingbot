@@ -1,0 +1,18 @@
+{
+  "id": "1037",
+  "name": "Pickaxe",
+  "plaintext": "Moderately increases Attack Damage",
+  "description": "<mainText><stats><attention>25</attention> Attack Damage</stats><br><br></mainText>",
+  "gold": {
+    "base": 875,
+    "purchasable": true,
+    "total": 875,
+    "sell": 613
+  },
+  "tags": [
+    "Damage"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 25
+  }
+}

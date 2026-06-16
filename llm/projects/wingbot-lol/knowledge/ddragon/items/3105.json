@@ -1,0 +1,22 @@
+{
+  "id": "3105",
+  "name": "Aegis of the Legion",
+  "plaintext": "Grants Armor and Magic Resistance",
+  "description": "<mainText><stats><attention>25</attention> Armor<br><attention>25</attention> Magic Resist<br><attention>10</attention> Ability Haste</stats><br><br></mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "SpellBlock",
+    "Armor",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 25,
+    "FlatArmorMod": 25
+  }
+}

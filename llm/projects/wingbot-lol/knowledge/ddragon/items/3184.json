@@ -1,0 +1,23 @@
+{
+  "id": "3184",
+  "name": "Guardian's Hammer",
+  "plaintext": "Good starting item for attackers",
+  "description": "<mainText><stats><attention>25</attention> Attack Damage<br><attention>150</attention> Health<br><attention>5%</attention> Life Steal</stats><br><br></mainText>",
+  "gold": {
+    "base": 950,
+    "purchasable": true,
+    "total": 950,
+    "sell": 665
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "LifeSteal",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 150,
+    "FlatPhysicalDamageMod": 25,
+    "PercentLifeStealMod": 0.05
+  }
+}

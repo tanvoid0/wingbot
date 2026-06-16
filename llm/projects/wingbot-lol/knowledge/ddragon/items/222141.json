@@ -1,0 +1,16 @@
+{
+  "id": "222141",
+  "name": "Cappa Juice",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><rules>Helps you get on a head.</rules><active>Active - Consume:</active> This juice does nothing.<br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 500
+  },
+  "tags": [
+    "Consumable"
+  ],
+  "stats": {}
+}

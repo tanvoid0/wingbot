@@ -1,0 +1,39 @@
+{
+  "id": "141",
+  "name": "Kayn",
+  "title": "the Shadow Reaper",
+  "tags": [
+    "Fighter",
+    "Assassin"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 10,
+    "defense": 6,
+    "magic": 1,
+    "difficulty": 8
+  },
+  "stats": {
+    "hp": 655,
+    "hpperlevel": 103,
+    "mp": 410,
+    "mpperlevel": 50,
+    "movespeed": 340,
+    "armor": 38,
+    "armorperlevel": 4.5,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 175,
+    "hpregen": 8,
+    "hpregenperlevel": 0.75,
+    "mpregen": 11.5,
+    "mpregenperlevel": 0.95,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 68,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2.7,
+    "attackspeed": 0.669
+  },
+  "blurb": "A peerless practitioner of lethal shadow magic, Shieda Kayn battles to achieve his true destiny\u2014to one day lead the Order of Shadow into a new era of Ionian supremacy. He wields the sentient darkin weapon Rhaast, undeterred by its creeping corruption of..."
+}

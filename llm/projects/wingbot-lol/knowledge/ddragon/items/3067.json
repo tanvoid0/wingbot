@@ -1,0 +1,20 @@
+{
+  "id": "3067",
+  "name": "Kindlegem",
+  "plaintext": "Increases Health and Cooldown Reduction",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>10</attention> Ability Haste</stats><br><br></mainText>",
+  "gold": {
+    "base": 150,
+    "purchasable": true,
+    "total": 800,
+    "sell": 560
+  },
+  "tags": [
+    "Health",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 200
+  }
+}

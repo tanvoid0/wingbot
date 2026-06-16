@@ -1,0 +1,14 @@
+{
+  "id": "9192",
+  "name": "Paw Print Poisoner",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

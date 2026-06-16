@@ -1,0 +1,23 @@
+{
+  "id": "223742",
+  "name": "Dead Man's Plate",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>300</attention> Health<br><attention>40</attention> Armor<br><attention>7%</attention> Move Speed</stats><br><br><passive>Shipwrecker</passive><br>While moving, build up  Move Speed. Your next Attack discharges built up Move Speed to deal damage. If dealt by a Melee champion at top speed, the Attack also <status>Slows</status> the target.<br><br><passive>Unsinkable</passive><br>The strength of movement slowing effects is reduced.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "Armor",
+    "Slow",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 300,
+    "FlatArmorMod": 40,
+    "PercentMovementSpeedMod": 0.07
+  }
+}

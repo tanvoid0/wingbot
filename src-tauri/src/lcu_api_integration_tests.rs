@@ -56,9 +56,9 @@ mod integration_tests {
         // The live_client_available will depend on the actual Live Client API
         // In spectator mode, it should be false, but we can't easily mock this
         // So we'll just verify the structure is correct
-        assert!(state.game_phase.is_empty() || state.game_phase == "Unknown" || state.game_phase == "in_game");
-        assert!(state.champion_select_state.is_none());
-        assert!(state.all_game_data.is_none());
+        assert!(state.lcu_connected);
+        assert!(state.champion_select.is_none());
+        assert!(state.live_game.is_none());
     }
 
     // Test lockfile detection with various scenarios
@@ -137,29 +137,29 @@ mod integration_tests {
         let state = json!({
             "lcu_connected": true,
             "live_client_available": false,
-            "game_phase": "in_game",
+            "is_spectator_mode": false,
+            "game_phase": "InProgress",
+            "current_summoner": null,
             "champion_select": null,
             "live_game": null,
-            "game_mode": "Unknown",
-            "timestamp": 1234567890
+            "live_stats": null,
+            "player_scores": null,
+            "timestamp": 1234567890u64
         });
 
-        // Test all required fields exist
         assert!(state.get("lcu_connected").is_some());
         assert!(state.get("live_client_available").is_some());
+        assert!(state.get("is_spectator_mode").is_some());
         assert!(state.get("game_phase").is_some());
         assert!(state.get("champion_select").is_some());
         assert!(state.get("live_game").is_some());
-        assert!(state.get("game_mode").is_some());
         assert!(state.get("timestamp").is_some());
 
-        // Test field types
         assert!(state["lcu_connected"].is_boolean());
         assert!(state["live_client_available"].is_boolean());
         assert!(state["game_phase"].is_string());
         assert!(state["champion_select"].is_null());
         assert!(state["live_game"].is_null());
-        assert!(state["game_mode"].is_string());
         assert!(state["timestamp"].is_number());
     }
 

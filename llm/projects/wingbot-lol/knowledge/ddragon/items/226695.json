@@ -1,0 +1,19 @@
+{
+  "id": "226695",
+  "name": "Serpent's Fang",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>55</attention> Attack Damage<br><attention>19</attention> Lethality</stats><br><br><passive>Shield Reaver</passive><br>Dealing damage to an enemy champion reduces any shields they gain. When you damage an enemy who is unaffected by Shield Reaver, reduce all shields on them.<br><br>Item performance differs for melee and ranged users.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Damage",
+    "ArmorPenetration"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 55
+  }
+}

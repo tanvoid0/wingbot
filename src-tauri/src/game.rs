@@ -356,23 +356,138 @@ impl GameManager {
     }
 
     // Method to populate caches with LCU data
-    pub async fn populate_caches(&self) -> Result<(), String> {
-        println!("[GameManager] Populating caches with LCU data...");
-        
-        // This method should be called with an active LCU connection
-        // The actual implementation would use the LCU API to fetch data
-        // For now, we'll indicate that this needs to be connected to the LCU API
-        
-        println!("[GameManager] Cache population requires active LCU connection");
-        println!("[GameManager] Call this method after establishing LCU connection");
+    pub async fn populate_caches_from_lcu(&self, lcu_api: &crate::lcu_api::LCUAPI) -> Result<(), String> {
+        println!("[GameManager] Populating caches from LCU...");
+
+        let champions = lcu_api.get_champions().await?;
+        {
+            let mut cache = self.champion_cache.lock().await;
+            cache.clear();
+            if let Some(arr) = champions.as_array() {
+                for champ in arr {
+                    if let Some(id) = champ.get("id").and_then(|v| v.as_u64()) {
+                        cache.insert(id, champ.clone());
+                    }
+                }
+            } else if let Some(obj) = champions.as_object() {
+                for (id_str, champ) in obj {
+                    if let Ok(id) = id_str.parse::<u64>() {
+                        cache.insert(id, champ.clone());
+                    }
+                }
+            }
+            println!("[GameManager] Cached {} champions", cache.len());
+        }
+
+        if let Ok(items) = lcu_api.get_items().await {
+            let mut cache = self.item_cache.lock().await;
+            cache.clear();
+            if let Some(obj) = items.as_object() {
+                for (id_str, item) in obj {
+                    if let Ok(id) = id_str.parse::<u32>() {
+                        cache.insert(id, item.clone());
+                    }
+                }
+            }
+        }
+
+        if let Ok(runes) = lcu_api.get_runes().await {
+            let mut cache = self.rune_cache.lock().await;
+            cache.clear();
+            if let Some(obj) = runes.as_object() {
+                for (id_str, rune) in obj {
+                    if let Ok(id) = id_str.parse::<u32>() {
+                        cache.insert(id, rune.clone());
+                    }
+                }
+            }
+        }
+
         Ok(())
+    }
+
+    pub async fn populate_caches(&self) -> Result<(), String> {
+        Err("Use populate_caches_from_lcu with an active LCU connection".to_string())
     }
 
     // Helper methods for champion analysis
     async fn get_available_champions(&self) -> Result<Vec<crate::lcu_api::Champion>, String> {
-        // This should fetch from LCU API or return cached data
-        // For now, return empty vector - this will be populated by LCU connection
-        Ok(Vec::new())
+        let cache = self.champion_cache.lock().await;
+        if cache.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let mut champions = Vec::new();
+        for (id, data) in cache.iter() {
+            let name = data
+                .get("name")
+                .and_then(|n| n.as_str())
+                .unwrap_or("Unknown")
+                .to_string();
+            let tags = data
+                .get("tags")
+                .and_then(|t| t.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str())
+                        .map(|s| s.to_string())
+                        .collect()
+                })
+                .unwrap_or_default();
+
+            champions.push(crate::lcu_api::Champion {
+                id: *id,
+                name,
+                title: data
+                    .get("title")
+                    .and_then(|t| t.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                description: data
+                    .get("blurb")
+                    .and_then(|d| d.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                tags,
+                stats: crate::lcu_api::ChampionStats {
+                    hp: 0.0,
+                    hpperlevel: 0.0,
+                    mp: 0.0,
+                    mpperlevel: 0.0,
+                    movespeed: 0.0,
+                    armor: 0.0,
+                    armorperlevel: 0.0,
+                    spellblock: 0.0,
+                    spellblockperlevel: 0.0,
+                    attackrange: 0.0,
+                    hpregen: 0.0,
+                    hpregenperlevel: 0.0,
+                    mpregen: 0.0,
+                    mpregenperlevel: 0.0,
+                    crit: 0.0,
+                    critperlevel: 0.0,
+                    attackdamage: 0.0,
+                    attackdamageperlevel: 0.0,
+                    attackspeedperlevel: 0.0,
+                    attackspeed: 0.0,
+                },
+                abilities: Vec::new(),
+                passive: crate::lcu_api::ChampionPassive {
+                    name: "Passive".to_string(),
+                    description: String::new(),
+                    image: crate::lcu_api::ChampionImage {
+                        full: String::new(),
+                        sprite: String::new(),
+                        group: String::new(),
+                        x: 0,
+                        y: 0,
+                        w: 0,
+                        h: 0,
+                    },
+                },
+            });
+        }
+        Ok(champions)
     }
 
     fn is_champion_suitable_for_role(&self, champion: &crate::lcu_api::Champion, role: &Role) -> bool {

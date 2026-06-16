@@ -3,13 +3,15 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 use std::time::Duration;
 use crate::data_processing::GameDataShaper;
+use crate::types::GameSnapshot;
+use crate::config::LeagueClientConfig;
 use regex::Regex;
 
 // LCU modules will be added later
 
 // Constants for LCU API endpoints
 pub const LCU_BASE_URL: &str = "https://127.0.0.1";
-pub const LIVE_CLIENT_BASE_URL: &str = "https://127.0.0.1:2999"; // Live Client Data API uses HTTPS on port 2999
+pub const LIVE_CLIENT_BASE_URL: &str = "http://127.0.0.1:2999";
 
 // LCU API Endpoints
 pub const LCU_CHAMP_SELECT_ENDPOINT: &str = "/lol-champ-select/v1/session";
@@ -22,6 +24,7 @@ pub const LCU_ITEMS_ENDPOINT: &str = "/lol-items/v1/items";
 pub const LCU_RUNES_ENDPOINT: &str = "/lol-perks/v1/perks";
 pub const LCU_SUMMONER_SPELLS_ENDPOINT: &str = "/lol-summoner/v1/summoner-spells";
 pub const LCU_MATCH_HISTORY_ENDPOINT: &str = "/lol-match-history/v1/products/lol";
+pub const LCU_RANKED_STATS_ENDPOINT: &str = "/lol-ranked/v1/current-ranked-stats";
 pub const LCU_LOBBY_ENDPOINT: &str = "/lol-lobby/v2/lobby";
 pub const LCU_READY_CHECK_ENDPOINT: &str = "/lol-lobby-team-builder/v1/ready-check";
 
@@ -204,19 +207,6 @@ pub struct SpellImage {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ComprehensiveGameState {
-    pub game_phase: String,
-    pub live_client_available: bool,
-    pub is_spectator_mode: Option<bool>,
-    pub current_summoner: Option<serde_json::Value>,
-    pub champion_select_state: Option<ChampionSelectState>,
-    pub live_game_data: Option<serde_json::Value>,
-    pub live_game_stats: Option<serde_json::Value>,
-    pub player_scores: Option<serde_json::Value>,
-    pub all_game_data: Option<serde_json::Value>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameEvent {
     pub timestamp: u64,
     pub event_type: String,
@@ -227,6 +217,7 @@ pub struct GameEvent {
 pub struct LCUAPI {
     pub connection: Option<LCUConnection>,
     pub client: reqwest::Client,
+    live_client: reqwest::Client,
 }
 
 impl LCUAPI {
@@ -238,7 +229,20 @@ impl LCUAPI {
                 .timeout(Duration::from_secs(30))
                 .build()
                 .unwrap(),
+            live_client: reqwest::Client::builder()
+                .timeout(Duration::from_secs(3))
+                .build()
+                .unwrap(),
         }
+    }
+
+    async fn live_client_get(&self, path: &str) -> Result<reqwest::Response, String> {
+        let url = format!("{}{}", LIVE_CLIENT_BASE_URL, path);
+        self.live_client
+            .get(&url)
+            .send()
+            .await
+            .map_err(|e| format!("Failed to request {url}: {e}"))
     }
 
     pub fn set_connection(&mut self, connection: LCUConnection) {
@@ -271,20 +275,37 @@ impl LCUAPI {
 
     // Core LCU API methods
     pub async fn get_current_game_state(&self) -> Result<String, String> {
-        let connection = self.connection.as_ref()
+        self.resolve_game_phase().await
+    }
+
+    /// Reads phase from `/gameflow-phase`, falling back to `/session` when the phase
+    /// endpoint is unavailable (common during GameStart and in-game).
+    pub async fn resolve_game_phase(&self) -> Result<String, String> {
+        let connection = self
+            .connection
+            .as_ref()
             .ok_or("No LCU connection established")?;
-        
-        let url = format!("{}:{}{}", LCU_BASE_URL, connection.port, LCU_GAMEFLOW_PHASE_ENDPOINT);
-        let response = self.make_request(&url, "GET", None).await?;
-        
-        if !response.status().is_success() {
-            return Err(format!("Failed to get game state: HTTP {}", response.status()));
+
+        let url = format!(
+            "{}:{}{}",
+            LCU_BASE_URL, connection.port, LCU_GAMEFLOW_PHASE_ENDPOINT
+        );
+        if let Ok(response) = self.make_request(&url, "GET", None).await {
+            if response.status().is_success() {
+                let phase: String = response
+                    .json()
+                    .await
+                    .map_err(|e| format!("Failed to parse game state: {}", e))?;
+                return Ok(phase);
+            }
         }
-        
-        let phase: String = response.json().await
-            .map_err(|e| format!("Failed to parse game state: {}", e))?;
-        
-        Ok(phase)
+
+        let session = self.get_game_flow_session().await?;
+        session
+            .get("phase")
+            .and_then(|p| p.as_str())
+            .map(str::to_string)
+            .ok_or_else(|| "Game flow session missing phase".to_string())
     }
 
     pub async fn get_game_flow_session(&self) -> Result<serde_json::Value, String> {
@@ -305,8 +326,10 @@ impl LCUAPI {
     }
 
     pub async fn is_live_client_available(&self) -> bool {
-        let url = format!("{}{}", LIVE_CLIENT_BASE_URL, LIVE_CLIENT_ALL_GAME_DATA_ENDPOINT);
-        match self.client.get(&url).send().await {
+        match self
+            .live_client_get(LIVE_CLIENT_ALL_GAME_DATA_ENDPOINT)
+            .await
+        {
             Ok(response) => response.status().is_success(),
             Err(_) => false,
         }
@@ -337,33 +360,11 @@ impl LCUAPI {
         println!("[LCU] Live client available: {}", live_client_available);
         
         if !live_client_available {
-            // Check if we're in an active game phase
-            match self.get_current_game_state().await {
-                Ok(current_state) => {
-                    println!("[LCU] Current game state: {}", current_state);
-                    if current_state == "InProgress" {
-                        println!("[LCU] ✓ Spectator mode detected - InProgress phase but live client unavailable");
-                        return Ok(true);
-                    }
-                }
-                Err(e) => {
-                    println!("[LCU] Failed to get current game state: {}", e);
-                    // Try game flow session as fallback
-                    match self.get_game_flow_session().await {
-                        Ok(session) => {
-                            println!("[LCU] Game flow session: {:?}", session);
-                            if let Some(phase) = session.get("phase").and_then(|p| p.as_str()) {
-                                // Check for spectator phases in session
-                                if phase == "Spectator" || phase == "WatchingGame" || phase == "InProgress" {
-                                    println!("[LCU] ✓ Spectator mode detected - Game flow {} but live client unavailable", phase);
-                                    return Ok(true);
-                                }
-                            }
-                        }
-                        Err(e) => {
-                            println!("[LCU] Failed to get game flow session: {}", e);
-                        }
-                    }
+            if let Ok(current_state) = self.resolve_game_phase().await {
+                println!("[LCU] Current game state: {}", current_state);
+                if current_state == "Spectator" || current_state == "WatchingGame" {
+                    println!("[LCU] ✓ Spectator mode detected - phase is {}", current_state);
+                    return Ok(true);
                 }
             }
         }
@@ -450,28 +451,87 @@ impl LCUAPI {
         Ok(false)
     }
 
-    pub async fn get_comprehensive_game_state(&self) -> Result<ComprehensiveGameState, String> {
-        let game_phase = self.get_current_game_state().await.unwrap_or_else(|_| "Unknown".to_string());
-        let live_client_available = self.is_live_client_available().await;
-        let is_spectator_mode = self.detect_spectator_mode().await.ok();
+    pub async fn get_game_snapshot(&self) -> Result<GameSnapshot, String> {
+        let lcu_connected = self.has_connection();
+        let mut snapshot = GameSnapshot::disconnected();
+        snapshot.lcu_connected = lcu_connected;
 
-        Ok(ComprehensiveGameState {
-            game_phase,
-            live_client_available,
-            is_spectator_mode,
-            current_summoner: None,
-            champion_select_state: None,
-            live_game_data: None,
-            live_game_stats: None,
-            player_scores: None,
-            all_game_data: None,
-        })
+        if !lcu_connected {
+            return Ok(snapshot);
+        }
+
+        let game_phase = self
+            .resolve_game_phase()
+            .await
+            .unwrap_or_else(|_| "Unknown".to_string());
+        snapshot.game_phase = game_phase.clone();
+
+        let live_client_available = self.is_live_client_available().await;
+        snapshot.live_client_available = live_client_available;
+
+        let is_spectator_mode = if game_phase == "InProgress" || (game_phase == "Unknown" && live_client_available) {
+            self.detect_spectator_mode().await.unwrap_or(false)
+        } else {
+            false
+        };
+        snapshot.is_spectator_mode = is_spectator_mode;
+
+        if let Ok(summoner) = self.get_current_summoner().await {
+            snapshot.current_summoner = Some(summoner);
+        }
+
+        // LCU may return stale champ-select JSON after the game starts; ignore it then.
+        let post_champ_select = matches!(
+            snapshot.game_phase.as_str(),
+            "InProgress" | "GameStart" | "EndOfGame" | "WaitingForStats" | "PreEndOfGame"
+        );
+        if !post_champ_select {
+            if let Ok(cs) = self.get_champion_select_state().await {
+                if Self::is_champion_select_session(&cs) {
+                    snapshot.champion_select = Some(cs);
+                    if snapshot.game_phase == "Unknown" {
+                        snapshot.game_phase = "ChampSelect".to_string();
+                    }
+                }
+            }
+        }
+
+        if snapshot.game_phase == "Unknown" {
+            if live_client_available {
+                snapshot.game_phase = "InProgress".to_string();
+            } else if let Ok(session) = self.get_game_flow_session().await {
+                if let Some(phase) = session.get("phase").and_then(|p| p.as_str()) {
+                    if !phase.is_empty() {
+                        snapshot.game_phase = phase.to_string();
+                    }
+                }
+            }
+        }
+
+        if live_client_available && !is_spectator_mode {
+            if let Ok(data) = self.get_all_game_data().await {
+                snapshot.live_game = Some(data);
+            }
+            if let Ok(stats) = self.get_live_game_stats().await {
+                snapshot.live_stats = Some(stats);
+            }
+            if let Ok(scores) = self.get_player_scores("").await {
+                snapshot.player_scores = Some(scores);
+            }
+        }
+
+        snapshot.timestamp = chrono::Utc::now().timestamp_millis() as u64;
+        Ok(snapshot)
+    }
+
+    pub async fn get_comprehensive_game_state(&self) -> Result<GameSnapshot, String> {
+        self.get_game_snapshot().await
     }
 
     pub async fn get_live_game_stats(&self) -> Result<serde_json::Value, String> {
-        let url = format!("{}{}", LIVE_CLIENT_BASE_URL, LIVE_CLIENT_GAMESTATS_ENDPOINT);
-        let response = self.client.get(&url).send().await
-            .map_err(|e| format!("Failed to get live game stats: {}", e))?;
+        let response = self
+            .live_client_get(LIVE_CLIENT_GAMESTATS_ENDPOINT)
+            .await?;
         
         if !response.status().is_success() {
             return Err(format!("Failed to get live game stats: HTTP {}", response.status()));
@@ -484,9 +544,9 @@ impl LCUAPI {
     }
 
     pub async fn get_player_scores(&self, _player_name: &str) -> Result<serde_json::Value, String> {
-        let url = format!("{}{}", LIVE_CLIENT_BASE_URL, LIVE_CLIENT_PLAYER_SCORES_ENDPOINT);
-        let response = self.client.get(&url).send().await
-            .map_err(|e| format!("Failed to get player scores: {}", e))?;
+        let response = self
+            .live_client_get(LIVE_CLIENT_PLAYER_SCORES_ENDPOINT)
+            .await?;
         
         if !response.status().is_success() {
             return Err(format!("Failed to get player scores: HTTP {}", response.status()));
@@ -499,9 +559,9 @@ impl LCUAPI {
     }
 
     pub async fn get_all_game_data(&self) -> Result<serde_json::Value, String> {
-        let url = format!("{}{}", LIVE_CLIENT_BASE_URL, LIVE_CLIENT_ALL_GAME_DATA_ENDPOINT);
-        let response = self.client.get(&url).send().await
-            .map_err(|e| format!("Failed to get all game data: {}", e))?;
+        let response = self
+            .live_client_get(LIVE_CLIENT_ALL_GAME_DATA_ENDPOINT)
+            .await?;
         
         if !response.status().is_success() {
             return Err(format!("Failed to get all game data: HTTP {}", response.status()));
@@ -591,6 +651,16 @@ impl LCUAPI {
         self.connection.is_some()
     }
 
+    /// LCU champ select session exposes phase under `timer.phase`, not at the root.
+    pub fn is_champion_select_session(data: &serde_json::Value) -> bool {
+        !data.is_null()
+            && (data.get("myTeam").is_some()
+                || data
+                    .get("timer")
+                    .and_then(|t| t.get("phase"))
+                    .is_some())
+    }
+
     pub fn get_connection_status(&self) -> String {
         if self.connection.is_some() {
             "Connected".to_string()
@@ -672,8 +742,9 @@ impl LCUAPI {
     }
 
     pub(crate) fn parse_league_client_command_line(cmdline: &str) -> Result<LCUConnection, String> {
-        let port_re = Regex::new(r"--?app-port=(\d+)").unwrap();
-        let token_re = Regex::new(r#"--?(?:remoting-auth-token|app-password)=([^\s"']+)"#).unwrap();
+        // Must not match `--riotclient-app-port`; only the League `--app-port` arg.
+        let port_re = Regex::new(r"(?:^|\s)--app-port=(\d+)").unwrap();
+        let token_re = Regex::new(r#"(?:^|\s)--(?:remoting-auth-token|app-password)=([^\s"']+)"#).unwrap();
         
         let port: u16 = port_re
             .captures(cmdline)
@@ -786,6 +857,23 @@ impl LCUAPI {
             .map_err(|e| format!("LCU detection task failed: {}", e))?
     }
 
+    pub async fn detect_connection_with_config(
+        &self,
+        config: &LeagueClientConfig,
+    ) -> Result<LCUConnection, String> {
+        if let (Some(port), Some(password)) = (config.manual_port, &config.manual_password) {
+            return Ok(LCUConnection {
+                port,
+                password: password.clone(),
+                protocol: "https".to_string(),
+            });
+        }
+        if config.auto_detect {
+            return self.detect_league_client().await;
+        }
+        Err("League client auto-detect is disabled and no manual connection configured".to_string())
+    }
+
     pub async fn detect_connection(&self) -> Result<LCUConnection, String> {
         self.detect_league_client().await
     }
@@ -854,20 +942,30 @@ impl LCUAPI {
     }
 
     pub async fn get_current_summoner_match_history(&self) -> Result<serde_json::Value, String> {
+        let summoner = self.get_current_summoner().await?;
+        let puuid = summoner
+            .get("puuid")
+            .and_then(|v| v.as_str())
+            .ok_or("Current summoner has no puuid")?;
+        self.get_match_history(puuid, crate::match_history_service::DEFAULT_MATCH_COUNT)
+            .await
+    }
+
+    pub async fn get_ranked_stats(&self) -> Result<serde_json::Value, String> {
         let connection = self.connection.as_ref()
             .ok_or("No LCU connection established")?;
-        
-        let url = format!("{}:{}{}", LCU_BASE_URL, connection.port, LCU_MATCH_HISTORY_ENDPOINT);
+
+        let url = format!("{}:{}{}", LCU_BASE_URL, connection.port, LCU_RANKED_STATS_ENDPOINT);
         let response = self.make_request(&url, "GET", None).await?;
-        
+
         if !response.status().is_success() {
-            return Err(format!("Failed to get match history: HTTP {}", response.status()));
+            return Err(format!("Failed to get ranked stats: HTTP {}", response.status()));
         }
-        
-        let history: serde_json::Value = response.json().await
-            .map_err(|e| format!("Failed to parse match history: {}", e))?;
-        
-        Ok(history)
+
+        let stats: serde_json::Value = response.json().await
+            .map_err(|e| format!("Failed to parse ranked stats: {}", e))?;
+
+        Ok(stats)
     }
 
     pub async fn get_all_players_runes(&self) -> Result<serde_json::Value, String> {
@@ -934,13 +1032,14 @@ impl LCUAPI {
     }
 
     pub async fn check_connection_health(&self) -> Result<serde_json::Value, String> {
-        // Check both LCU connection and Live Client Data API
-        let lcu_healthy = self.has_connection();
+        let lcu_healthy = if self.has_connection() {
+            self.get_current_summoner().await.is_ok()
+        } else {
+            false
+        };
         let live_client_healthy = self.is_live_client_available().await;
-        
-        // In spectator mode, we might not have LCU connection but Live Client should work
         let overall_healthy = lcu_healthy || live_client_healthy;
-        
+
         Ok(serde_json::json!({
             "healthy": overall_healthy,
             "lcu_connected": lcu_healthy,
@@ -984,21 +1083,85 @@ impl LCUAPI {
         Ok(champion)
     }
 
-    pub async fn get_match_history(&self, puuid: &str) -> Result<serde_json::Value, String> {
-        let connection = self.connection.as_ref()
-            .ok_or("No LCU connection established")?;
-        
-        let url = format!("{}:{}{}/{}", LCU_BASE_URL, connection.port, LCU_MATCH_HISTORY_ENDPOINT, puuid);
-        let response = self.make_request(&url, "GET", None).await?;
-        
-        if !response.status().is_success() {
-            return Err(format!("Failed to get match history: HTTP {}", response.status()));
+    pub async fn get_match_history(
+        &self,
+        puuid: &str,
+        count: u32,
+    ) -> Result<serde_json::Value, String> {
+        let count = crate::match_history_service::clamp_match_count(Some(count));
+        let page_size = crate::match_history_service::LCU_MATCH_PAGE_SIZE;
+        let mut all_games: Vec<serde_json::Value> = Vec::new();
+        let mut beg_index = 0u32;
+
+        while (all_games.len() as u32) < count {
+            let remaining = count - all_games.len() as u32;
+            let page_count = remaining.min(page_size);
+            let end_index = beg_index + page_count - 1;
+
+            let page = self
+                .get_match_history_page(puuid, beg_index, end_index)
+                .await?;
+            let games = page
+                .get("games")
+                .and_then(|g| g.get("games"))
+                .and_then(|g| g.as_array())
+                .cloned()
+                .unwrap_or_default();
+
+            if games.is_empty() {
+                break;
+            }
+
+            let page_len = games.len();
+            all_games.extend(games);
+            if (page_len as u32) < page_count {
+                break;
+            }
+
+            beg_index += page_count;
         }
-        
-        let history: serde_json::Value = response.json().await
-            .map_err(|e| format!("Failed to parse match history: {}", e))?;
-        
-        Ok(history)
+
+        Ok(serde_json::json!({
+            "games": {
+                "gameCount": all_games.len(),
+                "games": all_games,
+            }
+        }))
+    }
+
+    async fn get_match_history_page(
+        &self,
+        puuid: &str,
+        beg_index: u32,
+        end_index: u32,
+    ) -> Result<serde_json::Value, String> {
+        let connection = self
+            .connection
+            .as_ref()
+            .ok_or("No LCU connection established")?;
+
+        let url = format!(
+            "{}:{}{}/{}/matches?begIndex={}&endIndex={}",
+            LCU_BASE_URL,
+            connection.port,
+            LCU_MATCH_HISTORY_ENDPOINT,
+            puuid,
+            beg_index,
+            end_index
+        );
+        let response = self.make_request(&url, "GET", None).await?;
+
+        if !response.status().is_success() {
+            return Err(format!(
+                "Failed to get match history: HTTP {}",
+                response.status()
+            ));
+        }
+
+        response
+            .json()
+            .await
+            .map_err(|e| format!("Failed to parse match history: {}", e))
     }
 
     pub async fn get_lobby(&self) -> Result<serde_json::Value, String> {
@@ -1066,9 +1229,9 @@ impl LCUAPI {
         Err("Failed to detect connection".to_string())
     }
 
-    pub async fn set_connection_with_websocket(&self, _connection: LCUConnection) -> Result<(), String> {
-        // This would typically set the connection and notify websocket
-        // For now, just a placeholder
+    pub async fn set_connection_with_websocket(&self, connection: LCUConnection) -> Result<(), String> {
+        // Connection is stored on the shared LCUAPI instance by the caller.
+        let _ = connection;
         Ok(())
     }
 

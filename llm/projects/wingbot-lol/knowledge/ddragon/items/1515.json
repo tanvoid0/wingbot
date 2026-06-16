@@ -1,0 +1,16 @@
+{
+  "id": "1515",
+  "name": "Turret Plating",
+  "plaintext": "",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Armor"
+  ],
+  "stats": {}
+}

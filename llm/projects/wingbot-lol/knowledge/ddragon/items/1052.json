@@ -1,0 +1,18 @@
+{
+  "id": "1052",
+  "name": "Amplifying Tome",
+  "plaintext": "Slightly increases Ability Power",
+  "description": "<mainText><stats><attention>20</attention> Ability Power</stats><br><br></mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 400,
+    "sell": 280
+  },
+  "tags": [
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 20
+  }
+}

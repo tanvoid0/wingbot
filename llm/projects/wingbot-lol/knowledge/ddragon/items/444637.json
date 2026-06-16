@@ -1,0 +1,20 @@
+{
+  "id": "444637",
+  "name": "Demonic Embrace",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>80</attention> Ability Power<br><attention>700</attention> Health</stats><br><br><passive>Sinister Pact</passive><br>Gain <scaleAP>+1.5% Ability Power</scaleAP> and <speed>1.5% Move Speed</speed> per <scaleHealth>100 Missing Health</scaleHealth>, up to 45%.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 700,
+    "FlatMagicDamageMod": 80
+  }
+}

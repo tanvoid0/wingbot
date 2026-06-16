@@ -1,0 +1,14 @@
+{
+  "id": "9273",
+  "name": "Explosive Embrace",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Damages nearby enemies, scaling with your Max Health. Enemies killed within the burn zone explode.<br><br><rules>Damage, Area Size, Max Health</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

@@ -1,0 +1,23 @@
+{
+  "id": "3095",
+  "name": "Deprecated item",
+  "plaintext": "Tremendously empower other Energized effects.",
+  "description": "<mainText><stats><attention>50</attention> Attack Damage<br><attention>20%</attention> Attack Speed<br><attention>25%</attention> Critical Strike Chance</stats><br><br><passive>Energized</passive><br>Moving and Attacking generates an <keyword>Energized Attack</keyword>.<br><br><passive>Bolt</passive><br>Your <keyword>Energized Attack</keyword> applies <magicDamage> bonus magic damage</magicDamage> and grants <speed>45% Movement Speed</speed> for 1.5 seconds.<br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 3000,
+    "sell": 2100
+  },
+  "tags": [
+    "Damage",
+    "CriticalStrike",
+    "AttackSpeed",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 50,
+    "PercentAttackSpeedMod": 0.2
+  }
+}

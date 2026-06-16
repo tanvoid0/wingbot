@@ -1,0 +1,14 @@
+{
+  "id": "1501",
+  "name": "Fortification",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

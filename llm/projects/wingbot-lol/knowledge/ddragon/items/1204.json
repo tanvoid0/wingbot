@@ -1,0 +1,16 @@
+{
+  "id": "1204",
+  "name": "Jungle Quest",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Upgrade your <font color = '#DBA12C'>Jungle Pet</font> to complete your quest. Earn points by killing jungle monsters.<br><br><font color = '#00FF00'>Rewards</font><br>\u2022 Upgraded jungle pet and Smite<br>\u2022 Increased gold and XP from large monsters<br>\u2022 Bonus movement speed in the jungle</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

@@ -1,0 +1,19 @@
+{
+  "id": "4630",
+  "name": "Blighting Jewel",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>25</attention> Ability Power<br><attention>13%</attention> Magic Penetration</stats><br><br></mainText>",
+  "gold": {
+    "base": 700,
+    "purchasable": true,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "MagicPenetration",
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 25
+  }
+}

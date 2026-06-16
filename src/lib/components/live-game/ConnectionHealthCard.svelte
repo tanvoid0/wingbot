@@ -1,35 +1,37 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { ChevronDown, ChevronUp, RefreshCw } from '@lucide/svelte';
   import { wsConnectionHealth, wsLCUWebSocketConnected, wsLCUWebSocketEvents } from '$lib/stores/websocketStore';
   import { wsActions } from '$lib/stores/websocketStore';
+  import { formatTimestamp } from '$lib/utils/timestamp';
+  import { Button } from '$lib/components/ui/button';
+  import { Badge } from '$lib/components/ui/badge';
 
   let healthInfo: any = null;
   let lcuWebSocketConnected = false;
   let lcuEvents: any[] = [];
-  let refreshInterval: number | null = null;
+  let refreshInterval: ReturnType<typeof setInterval> | null = null;
+  let expanded = $state(false);
 
-  // Subscribe to stores
-  const unsubscribeHealth = wsConnectionHealth.subscribe(value => {
+  const unsubscribeHealth = wsConnectionHealth.subscribe((value) => {
     healthInfo = value;
   });
 
-  const unsubscribeLCUConnected = wsLCUWebSocketConnected.subscribe(value => {
+  const unsubscribeLCUConnected = wsLCUWebSocketConnected.subscribe((value) => {
     lcuWebSocketConnected = value;
   });
 
-  const unsubscribeLCUEvents = wsLCUWebSocketEvents.subscribe(value => {
+  const unsubscribeLCUEvents = wsLCUWebSocketEvents.subscribe((value) => {
     lcuEvents = value;
   });
 
   onMount(async () => {
-    // Get initial health info
     try {
       await wsActions.getConnectionHealthInfo();
     } catch (error) {
       console.error('Failed to get initial health info:', error);
     }
 
-    // Set up periodic health checks
     refreshInterval = setInterval(async () => {
       try {
         await wsActions.checkConnectionHealth();
@@ -37,20 +39,16 @@
       } catch (error) {
         console.error('Health check failed:', error);
       }
-    }, 10000); // Check every 10 seconds
+    }, 10000);
   });
 
   onDestroy(() => {
     unsubscribeHealth();
     unsubscribeLCUConnected();
     unsubscribeLCUEvents();
-    
-    if (refreshInterval) {
-      clearInterval(refreshInterval);
-    }
+    if (refreshInterval) clearInterval(refreshInterval);
   });
 
-  /** Align Tauri `check_connection_health` payload with WebSocket `ConnectionHealthUpdate`. */
   function normalizedHealth(h: any) {
     if (!h) return null;
     const isHealthy = h.is_healthy ?? h.healthy ?? false;
@@ -90,157 +88,121 @@
     return 'Poor';
   }
 
-  function getHealthColor() {
-    const status = getHealthStatus(asNormHealth(healthInfo));
-    switch (status) {
-      case 'Excellent': return 'text-green-500';
-      case 'Good': return 'text-blue-500';
-      case 'Degraded': return 'text-yellow-500';
-      case 'Poor': return 'text-red-500';
-      default: return 'text-gray-500';
-    }
-  }
-
-  function formatTimestamp(timestamp: unknown) {
-    if (timestamp == null || timestamp === '') return '—';
-    const n = Number(timestamp);
-    if (Number.isFinite(n) && n > 0) {
-      const ms = n > 1_000_000_000_000 ? n : n * 1000;
-      const d = new Date(ms);
-      return Number.isNaN(d.getTime()) ? '—' : d.toLocaleTimeString();
-    }
-    const d = new Date(String(timestamp));
-    return Number.isNaN(d.getTime()) ? '—' : d.toLocaleTimeString();
+  function getHealthVariant(h: NormHealth): 'default' | 'secondary' | 'destructive' | 'outline' {
+    const status = getHealthStatus(h);
+    if (status === 'Excellent' || status === 'Good') return 'default';
+    if (status === 'Degraded') return 'secondary';
+    return 'destructive';
   }
 
   function getEventTypeColor(eventType: string) {
     switch (eventType.toLowerCase()) {
-      case 'create': return 'text-green-500';
-      case 'update': return 'text-blue-500';
-      case 'delete': return 'text-red-500';
-      default: return 'text-gray-500';
+      case 'create':
+        return 'text-green-500';
+      case 'update':
+        return 'text-blue-500';
+      case 'delete':
+        return 'text-red-500';
+      default:
+        return 'text-muted-foreground';
     }
+  }
+
+  function dot(ok: boolean | undefined) {
+    return ok ? 'bg-green-500' : 'bg-red-500';
   }
 </script>
 
-<div class="connection-health-card bg-gray-800 rounded-lg p-4 mb-4">
-  <div class="flex items-center justify-between mb-3">
-    <h3 class="text-lg font-semibold text-white">Connection Health</h3>
-    <div class="flex items-center space-x-2">
-      <div class="flex items-center space-x-1">
-        <div class="w-2 h-2 rounded-full {lcuWebSocketConnected ? 'bg-green-500' : 'bg-red-500'}"></div>
-        <span class="text-sm text-gray-300">
-          LCU WebSocket {lcuWebSocketConnected ? 'Connected' : 'Disconnected'}
-        </span>
-      </div>
-      <button 
-        on:click={() => wsActions.getConnectionHealthInfo()}
-        class="px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
-        title="Refresh Health Info"
-      >
-        Refresh
-      </button>
-    </div>
-  </div>
-
+<div class="border-b border-border bg-muted/30 px-3 py-1.5 text-xs">
   {#if healthInfo}
     {@const h = asNormHealth(healthInfo)}
     {@const wsOk = lcuWebSocketConnected || h.websocket_connected}
-    <div class="grid grid-cols-2 gap-4 mb-4">
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-400">Status:</span>
-          <span class="text-sm font-medium {getHealthColor()}">{getHealthStatus(h)}</span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-400" title="True if LCU HTTPS or Live Client API (2999) responds">
-            LCU / live client:
-          </span>
-          <span class="text-sm {h.is_healthy ? 'text-green-500' : 'text-red-500'}">
-            {h.is_healthy ? 'Reachable' : 'Unreachable'}
-          </span>
-        </div>
-        {#if h.lcu_connected !== undefined}
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-400">LCU session:</span>
-            <span class="text-sm {h.lcu_connected ? 'text-green-500' : 'text-red-500'}">
-              {h.lcu_connected ? 'Active' : 'None'}
-            </span>
-          </div>
-        {/if}
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
+        <span class="text-muted-foreground font-medium">Health</span>
+        <Badge variant={getHealthVariant(h)} class="text-[10px] px-1.5 py-0 h-5">
+          {getHealthStatus(h)}
+        </Badge>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full {dot(h.is_healthy)}"></span>
+          LCU
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full {dot(wsOk)}"></span>
+          WS
+        </span>
         {#if h.live_client_available !== undefined}
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-400">Live client API:</span>
-            <span class="text-sm {h.live_client_available ? 'text-green-500' : 'text-red-500'}">
-              {h.live_client_available ? 'Reachable' : 'Unreachable'}
-            </span>
-          </div>
+          <span class="inline-flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full {dot(h.live_client_available)}"></span>
+            Live
+          </span>
         {/if}
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-400">WebSocket:</span>
-          <span class="text-sm {wsOk ? 'text-green-500' : 'text-red-500'}">
-            {wsOk ? 'Connected' : 'Disconnected'}
-          </span>
-        </div>
-      </div>
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-400">Failures:</span>
-          <span class="text-sm {h.consecutive_failures > 0 ? 'text-red-500' : 'text-green-500'}">
-            {h.consecutive_failures}
-          </span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-gray-400">Last Check:</span>
-          <span class="text-sm text-gray-300">
-            {formatTimestamp(h.last_check)}
-          </span>
-        </div>
-        {#if h.last_error}
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-400">Last Error:</span>
-            <span class="text-sm text-red-500 truncate max-w-32" title={h.last_error}>
-              {h.last_error}
-            </span>
-          </div>
+        {#if h.consecutive_failures > 0}
+          <span class="text-destructive">{h.consecutive_failures} failures</span>
         {/if}
       </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          class="h-6 w-6 p-0"
+          onclick={() => wsActions.getConnectionHealthInfo()}
+          title="Refresh health"
+        >
+          <RefreshCw class="w-3 h-3" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          class="h-6 w-6 p-0"
+          onclick={() => (expanded = !expanded)}
+          title={expanded ? 'Collapse' : 'Expand details'}
+        >
+          {#if expanded}
+            <ChevronUp class="w-3 h-3" />
+          {:else}
+            <ChevronDown class="w-3 h-3" />
+          {/if}
+        </Button>
+      </div>
     </div>
-  {:else}
-    <div class="text-center py-4">
-      <div class="text-gray-400">Loading health information...</div>
-    </div>
-  {/if}
 
-  <!-- LCU WebSocket Events -->
-  <div class="mt-4">
-    <div class="flex items-center justify-between mb-2">
-      <h4 class="text-sm font-medium text-white">Recent LCU Events</h4>
-      <span class="text-xs text-gray-400">{lcuEvents.length} events</span>
-    </div>
-    
-    {#if lcuEvents.length > 0}
-      <div class="max-h-32 overflow-y-auto space-y-1">
-        {#each lcuEvents.slice(0, 10) as event}
-          <div class="flex items-center justify-between text-xs bg-gray-700 rounded px-2 py-1">
-            <div class="flex items-center space-x-2">
-              <span class="{getEventTypeColor(event.event_type || 'unknown')}">
-                {event.event_type || 'Unknown'}
-              </span>
-              <span class="text-gray-400 truncate max-w-32" title={event.uri}>
-                {event.uri?.split('/').pop() || 'Unknown URI'}
-              </span>
-            </div>
-            <span class="text-gray-500">
-              {new Date(event.timestamp).toLocaleTimeString()}
-            </span>
-          </div>
-        {/each}
+    {#if expanded}
+      <div class="mt-2 pt-2 border-t border-border/60 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1 text-muted-foreground">
+        <div>LCU session: <span class={h.lcu_connected ? 'text-green-600' : 'text-red-500'}>{h.lcu_connected ? 'Active' : 'None'}</span></div>
+        <div>Last check: {formatTimestamp(h.last_check)}</div>
+        {#if h.last_error}
+          <div class="col-span-2 truncate text-red-500" title={h.last_error}>Error: {h.last_error}</div>
+        {/if}
       </div>
-    {:else}
-      <div class="text-center py-2 text-gray-400 text-sm">
-        No LCU WebSocket events received
+
+      <div class="mt-2">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-muted-foreground">Recent LCU events</span>
+          <span class="text-muted-foreground">{lcuEvents.length}</span>
+        </div>
+        {#if lcuEvents.length > 0}
+          <div class="max-h-20 overflow-y-auto space-y-0.5">
+            {#each lcuEvents.slice(0, 8) as event}
+              <div class="flex items-center justify-between gap-2 bg-background/60 rounded px-1.5 py-0.5">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span class="{getEventTypeColor(event.event_type || 'unknown')} shrink-0">
+                    {event.event_type || '?'}
+                  </span>
+                  <span class="truncate text-muted-foreground" title={event.uri}>
+                    {event.uri?.split('/').pop() || 'Unknown'}
+                  </span>
+                </div>
+                <span class="text-muted-foreground shrink-0">{formatTimestamp(event.timestamp)}</span>
+              </div>
+            {/each}
+          </div>
+        {:else}
+          <div class="text-muted-foreground py-1">No events yet</div>
+        {/if}
       </div>
     {/if}
-  </div>
+  {:else}
+    <div class="text-muted-foreground">Loading connection health…</div>
+  {/if}
 </div>

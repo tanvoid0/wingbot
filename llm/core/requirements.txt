@@ -1,0 +1,25 @@
+# Core training and pipeline dependencies.
+#
+# IMPORTANT: Install CUDA PyTorch FIRST (CPU torch from PyPI breaks training):
+#   pip install torch --index-url https://download.pytorch.org/whl/cu128
+# Then install the rest:
+#   pip install -r requirements.txt
+#
+# Verify: python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+# Should show +cu128 (or +cu124) and True — NOT 2.x.x+cpu
+
+pyyaml>=6.0
+requests>=2.31
+jsonschema>=4.21
+
+# Do NOT list torch here — pip would install the CPU wheel from PyPI.
+# Install manually from https://download.pytorch.org/whl/ (cu128 for RTX 50xx, cu124 for older GPUs).
+transformers>=4.45.0
+datasets>=2.18.0
+peft>=0.13.0
+trl>=0.11.0
+accelerate>=0.34.0
+bitsandbytes>=0.44.0; platform_system != "Darwin"
+
+# Eval / optional judge
+# ollama Python client not required — uses HTTP

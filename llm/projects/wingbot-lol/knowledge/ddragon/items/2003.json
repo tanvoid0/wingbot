@@ -1,0 +1,19 @@
+{
+  "id": "2003",
+  "name": "Health Potion",
+  "plaintext": "Consume to restore Health over time",
+  "description": "<mainText><stats></stats><br><br><active>Consume</active><br>Restores <healing>120 Health</healing> over 15 seconds.</mainText>",
+  "gold": {
+    "base": 50,
+    "purchasable": true,
+    "total": 50,
+    "sell": 20
+  },
+  "tags": [
+    "HealthRegen",
+    "Consumable",
+    "Lane",
+    "Jungle"
+  ],
+  "stats": {}
+}

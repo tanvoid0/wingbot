@@ -1,0 +1,22 @@
+{
+  "id": "3112",
+  "name": "Guardian's Orb",
+  "plaintext": "Good starting item for mages",
+  "description": "<mainText><stats><attention>50</attention> Ability Power<br><attention>150</attention> Health</stats><br><br><br><li><passive>Recovery:</passive> Restores <scaleMana>10 Mana</scaleMana> every 5 seconds. If you can't gain mana, restores <healing>15 Health</healing> instead.<br></mainText>",
+  "gold": {
+    "base": 950,
+    "purchasable": true,
+    "total": 950,
+    "sell": 665
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "ManaRegen",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 150,
+    "FlatMagicDamageMod": 50
+  }
+}

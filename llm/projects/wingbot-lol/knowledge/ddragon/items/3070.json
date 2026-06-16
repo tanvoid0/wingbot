@@ -1,0 +1,19 @@
+{
+  "id": "3070",
+  "name": "Tear of the Goddess",
+  "plaintext": "Increases maximum Mana as Mana is spent",
+  "description": "<mainText><stats><attention>240</attention> Mana</stats><br><br><passive>Manaflow</passive> (8s, max 4 charges)<br>Landing Abilities grants <scaleMana>3 max Mana</scaleMana> (doubled vs. champions), up to <scaleMana>360</scaleMana>.<br><br><passive>Helping Hand</passive><br>Attacks deal an additional <physicalDamage>5 physical damage</physicalDamage> to minions.</mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 400,
+    "sell": 280
+  },
+  "tags": [
+    "Mana",
+    "ManaRegen"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 240
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "3876",
+  "name": "Solstice Sleigh",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>75%</attention> Base Health Regen<br><attention>75%</attention> Base Mana Regen<br><attention>9</attention> Gold Per 10 Seconds</stats><br><br><passive>Going Sledding</passive><br><keyword>Slowing</keyword> or <keyword>Immobilizing</keyword> an enemy champion near allies restores <healing>Health</healing> and grants <speed>20% decaying Move Speed</speed> for 2.5 seconds to you and a nearby ally. <active>Active</active> (4 charges)<br>Places an <keyword>Invisible</keyword> Stealth Ward that grants vision.</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 400,
+    "sell": 160
+  },
+  "tags": [
+    "Health",
+    "HealthRegen",
+    "ManaRegen",
+    "Vision",
+    "GoldPer",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 200
+  }
+}

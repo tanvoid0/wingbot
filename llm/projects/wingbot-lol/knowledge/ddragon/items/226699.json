@@ -1,0 +1,22 @@
+{
+  "id": "226699",
+  "name": "Voltaic Cyclosword",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>60</attention> Attack Damage<br><attention>20</attention> Lethality<br><attention>20</attention> Ability Haste</stats><br><br><passive>Galvanize</passive><br>Damaging an Enemy Champions with an ability triggers <keyword>Energized</keyword> if it is ready.<br><br><passive>Firmament</passive><br>Your <keyword>Energized Attack</keyword> deals <physicalDamage>%</physicalDamage> target's Current Health as <physicalDamage>bonus physical damage</physicalDamage> and grants you <scaleLethality> Lethality</scaleLethality> for 4 seconds.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Damage",
+    "Active",
+    "CooldownReduction",
+    "ArmorPenetration",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 60
+  }
+}

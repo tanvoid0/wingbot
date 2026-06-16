@@ -1,0 +1,21 @@
+{
+  "id": "3036",
+  "name": "Lord Dominik's Regards",
+  "plaintext": "Overcomes enemies with high health and armor",
+  "description": "<mainText><stats><attention>35</attention> Attack Damage<br><attention>35%</attention> Armor Penetration<br><attention>25%</attention> Critical Strike Chance</stats><br><br><passive>Giant Slayer</passive><br>Deal up to 15% bonus damage against champions based on their bonus Health. Maximum damage bonus reached at 1500 bonus Health.</mainText>",
+  "gold": {
+    "base": 550,
+    "purchasable": true,
+    "total": 3300,
+    "sell": 2310
+  },
+  "tags": [
+    "Damage",
+    "CriticalStrike",
+    "ArmorPenetration"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 35
+  }
+}

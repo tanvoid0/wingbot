@@ -1,0 +1,39 @@
+{
+  "id": "777",
+  "name": "Yone",
+  "title": "the Unforgotten",
+  "tags": [
+    "Fighter",
+    "Assassin"
+  ],
+  "partype": "Flow",
+  "info": {
+    "attack": 8,
+    "defense": 4,
+    "magic": 4,
+    "difficulty": 8
+  },
+  "stats": {
+    "hp": 620,
+    "hpperlevel": 105,
+    "mp": 500,
+    "mpperlevel": 0,
+    "movespeed": 345,
+    "armor": 33,
+    "armorperlevel": 4.6,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 175,
+    "hpregen": 7.5,
+    "hpregenperlevel": 0.75,
+    "mpregen": 0,
+    "mpregenperlevel": 0,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 62,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 3.5,
+    "attackspeed": 0.625
+  },
+  "blurb": "In life, he was Yone\u2014half-brother of Yasuo, and renowned student of his village's sword school. But upon his death at the hands of his brother, he found himself hunted by a malevolent entity of the spirit realm, and was forced to slay it with its own..."
+}

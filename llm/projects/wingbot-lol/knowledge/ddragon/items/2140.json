@@ -1,0 +1,19 @@
+{
+  "id": "2140",
+  "name": "Elixir of Wrath",
+  "plaintext": "Temporarily grants Attack Damage and heals you when dealing physical damage to champions.",
+  "description": "<mainText><stats></stats><br><br><active>Consume</active><br>Grants <scaleAD>30 Attack Damage</scaleAD> and <lifeSteal>12% Physical Vamp</lifeSteal> against champions for 3 minutes.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 200
+  },
+  "tags": [
+    "Consumable",
+    "Damage",
+    "LifeSteal",
+    "SpellVamp"
+  ],
+  "stats": {}
+}

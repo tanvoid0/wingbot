@@ -1,0 +1,21 @@
+{
+  "id": "223118",
+  "name": "Malignance",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>70</attention> Ability Power<br><attention>600</attention> Mana<br><attention>20</attention> Ability Haste</stats><br><br><passive>Scorn</passive><br>Your Ultimate spells gain Ability Haste.<br><br><passive>Hatefog</passive><br>Damaging a champion with your Ultimate <keywordMajor>Burns</keywordMajor> the ground beneath them, dealing damage and reducing their Magic Resist. </mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "SpellDamage",
+    "Mana",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 600,
+    "FlatMagicDamageMod": 70
+  }
+}

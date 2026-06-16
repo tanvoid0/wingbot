@@ -1,0 +1,21 @@
+{
+  "id": "3044",
+  "name": "Phage",
+  "plaintext": "Attacks and kills give a small burst of speed",
+  "description": "<mainText><stats><attention>15</attention> Attack Damage<br><attention>200</attention> Health</stats><br><br><passive>Rage</passive><br>Attacking grants <speed>Move Speed</speed> for 2 seconds.</mainText>",
+  "gold": {
+    "base": 350,
+    "purchasable": true,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 200,
+    "FlatPhysicalDamageMod": 15
+  }
+}

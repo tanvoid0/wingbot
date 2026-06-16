@@ -1,0 +1,16 @@
+{
+  "id": "1201",
+  "name": "Mid Lane Quest",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Takedown champions, minions, towers, plates, and epic monsters to complete your quest. Earn points much faster in mid lane!<br><br><font color = '#00FF00'>Rewards</font><br>\u2022 Upgrade boots to tier 3<br>\u2022 Increased Bonus AD and AP</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

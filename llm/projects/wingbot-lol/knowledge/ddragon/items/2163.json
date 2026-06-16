@@ -1,0 +1,17 @@
+{
+  "id": "2163",
+  "name": "Bandle Juice of Haste",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Drink to permanently gain <speed>10+ 5% Ability Haste</speed>. And a hat!<br><br><flavorText>For people who gotta go FAST. Made with lightning. REAL lightning!</flavorText></mainText>",
+  "gold": {
+    "base": 1000,
+    "purchasable": true,
+    "total": 1000,
+    "sell": 1000
+  },
+  "tags": [
+    "Consumable",
+    "CooldownReduction"
+  ],
+  "stats": {}
+}

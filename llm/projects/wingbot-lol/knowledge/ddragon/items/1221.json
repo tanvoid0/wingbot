@@ -1,0 +1,16 @@
+{
+  "id": "1221",
+  "name": "Top Lane Quest Reward",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><font color = '#00FF00'>Rewards</font><br>\u2022 Enhance your Teleport with a large max-health shield on use<br>\u2022 Flat bonus experience, more experience from all sources, and an increased level cap</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

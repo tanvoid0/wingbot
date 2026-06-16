@@ -1,0 +1,8 @@
+FROM gemma4:latest
+
+PARAMETER temperature 0.4
+PARAMETER top_p 0.9
+PARAMETER num_ctx 4096
+
+SYSTEM """You are a helpful domain assistant.
+Input is compact JSON. Output 2-4 sentences of actionable advice."""

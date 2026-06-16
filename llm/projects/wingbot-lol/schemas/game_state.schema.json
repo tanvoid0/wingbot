@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GameState",
+  "description": "Compact League of Legends state for LLM inference. Fixed-size; no raw LCU blobs.",
+  "type": "object",
+  "required": ["phase", "my_champ", "my_role", "queue"],
+  "properties": {
+    "phase": {
+      "type": "string",
+      "enum": ["champ_select", "in_game", "post_game"]
+    },
+    "my_champ": { "type": "string" },
+    "my_role": {
+      "type": "string",
+      "enum": ["top", "jungle", "mid", "adc", "support"]
+    },
+    "allies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 4
+    },
+    "enemies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 5
+    },
+    "enemy_mid": { "type": "string" },
+    "enemy_top": { "type": "string" },
+    "enemy_jungle": { "type": "string" },
+    "enemy_adc": { "type": "string" },
+    "enemy_support": { "type": "string" },
+    "game_time_sec": { "type": "integer", "minimum": 0 },
+    "gold_diff": { "type": "integer" },
+    "my_items": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "enemy_threats": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "queue": { "type": "string" },
+    "patch": { "type": "string" }
+  },
+  "additionalProperties": false
+}

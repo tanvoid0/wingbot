@@ -1,0 +1,16 @@
+{
+  "id": "3599",
+  "name": "Kalista's Black Spear",
+  "plaintext": "Kalista's spear that binds an Oathsworn Ally.",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Bind with an ally for the remainder of the game, becoming Oathsworn Allies. Oathsworn empowers you both while near one another.</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Consumable"
+  ],
+  "stats": {}
+}

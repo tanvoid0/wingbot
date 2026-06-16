@@ -1,0 +1,22 @@
+{
+  "id": "8010",
+  "name": "Bloodletter's Curse",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>65</attention> Ability Power<br><attention>400</attention> Health<br><attention>15</attention> Ability Haste</stats><br><br><passive>Vile Decay</passive><br>Dealing <magicDamage>magic damage</magicDamage> with abilities or passives to champions reduces their <scaleMR>Magic Resist by 7.5%</scaleMR> for 6 seconds. (Stacks 4 times).</mainText>",
+  "gold": {
+    "base": 750,
+    "purchasable": true,
+    "total": 2900,
+    "sell": 2030
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "CooldownReduction",
+    "MagicPenetration"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 400,
+    "FlatMagicDamageMod": 65
+  }
+}

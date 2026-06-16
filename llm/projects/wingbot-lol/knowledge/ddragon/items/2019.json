@@ -1,0 +1,20 @@
+{
+  "id": "2019",
+  "name": "Steel Sigil",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>15</attention> Attack Damage<br><attention>30</attention> Armor</stats><br><br></mainText>",
+  "gold": {
+    "base": 150,
+    "purchasable": true,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "Armor",
+    "Damage"
+  ],
+  "stats": {
+    "FlatArmorMod": 30,
+    "FlatPhysicalDamageMod": 15
+  }
+}

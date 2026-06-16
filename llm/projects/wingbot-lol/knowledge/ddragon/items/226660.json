@@ -1,0 +1,19 @@
+{
+  "id": "226660",
+  "name": "",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>550</attention> Health<br><attention>5</attention> Ability Haste</stats><br><br><passive>Immolate</passive><br>After taking or dealing damage, deal <magicDamage>magic damage</magicDamage> to nearby enemies for 3 seconds.</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Health",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 550
+  }
+}

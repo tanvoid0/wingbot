@@ -1,0 +1,18 @@
+{
+  "id": "223009",
+  "name": "Boots of Swiftness",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>70</attention> Move Speed</stats><br><br>The strength of movement <status>slowing</status> effects is reduced by 40%.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 350
+  },
+  "tags": [
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 70
+  }
+}

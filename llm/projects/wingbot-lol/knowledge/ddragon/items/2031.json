@@ -1,0 +1,20 @@
+{
+  "id": "2031",
+  "name": "Refillable Potion",
+  "plaintext": "Restores Health over time. Refills at shop.",
+  "description": "<mainText><stats></stats><br><br><active>Active</active> (2 charges)<br>Restores <healing>100 Health</healing> over 12 seconds. <br>Refills upon visiting the shop.</mainText>",
+  "gold": {
+    "base": 150,
+    "purchasable": true,
+    "total": 150,
+    "sell": 60
+  },
+  "tags": [
+    "HealthRegen",
+    "Consumable",
+    "Active",
+    "Lane",
+    "Jungle"
+  ],
+  "stats": {}
+}

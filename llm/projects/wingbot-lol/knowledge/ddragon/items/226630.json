@@ -1,0 +1,23 @@
+{
+  "id": "226630",
+  "name": "Goredrinker",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>55</attention> Attack Damage<br><attention>400</attention> Health<br><attention>20</attention> Ability Haste<br><attention>10%</attention> Omnivamp</stats><br><br><br><br><active>Active -</active> <active>Thirsting Slash:</active> Deal damage to nearby enemies. Restore Health for each champion hit.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "Active",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 400,
+    "FlatPhysicalDamageMod": 55
+  }
+}

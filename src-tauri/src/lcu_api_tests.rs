@@ -124,6 +124,16 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_command_line_ignores_riotclient_app_port() {
+        let cmdline = r#""LeagueClientUx.exe" --riotclient-auth-token=riot_token --riotclient-app-port=53313 --app-port=61964 --remoting-auth-token=league_token"#;
+        let result = LCUAPI::parse_league_client_command_line(cmdline);
+        assert!(result.is_ok());
+        let conn = result.unwrap();
+        assert_eq!(conn.port, 61964);
+        assert_eq!(conn.password, "league_token");
+    }
+
+    #[test]
     fn test_is_league_running_basic() {
         let api = LCUAPI::new();
         // This test would need to be modified to use the temp directory
@@ -148,6 +158,13 @@ mod tests {
         assert_eq!(api.get_connection_status(), "Connected");
     }
 
+    #[test]
+    fn test_live_client_uses_http() {
+        use crate::lcu_api::LIVE_CLIENT_BASE_URL;
+        assert!(LIVE_CLIENT_BASE_URL.starts_with("http://"));
+        assert!(LIVE_CLIENT_BASE_URL.contains(":2999"));
+    }
+
     // Test the comprehensive game state logic
     #[tokio::test]
     async fn test_get_comprehensive_game_state_no_connection() {
@@ -157,11 +174,10 @@ mod tests {
         assert!(result.is_ok());
         let state = result.unwrap();
         
-        // live_client_available might be true if a game is running!
-        // So we don't assert it's false.
-        assert_eq!(state.game_phase, "Unknown");
-        assert!(state.champion_select_state.is_none());
-        assert!(state.all_game_data.is_none() || state.all_game_data.is_some());
+        assert!(!state.lcu_connected);
+        assert_eq!(state.game_phase, "None");
+        assert!(state.champion_select.is_none());
+        assert!(state.live_game.is_none());
     }
 
     #[tokio::test]
@@ -172,8 +188,8 @@ mod tests {
         assert!(result.is_ok());
         let state = result.unwrap();
         
-        // When connection is set, it might still return "Unknown" for phase if it can't reach the LCU
-        assert!(state.game_phase == "Unknown" || state.game_phase == "in_game");
+        assert!(state.lcu_connected);
+        assert!(!state.game_phase.is_empty());
     }
 
     // Test game state detection logic

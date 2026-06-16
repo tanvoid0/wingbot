@@ -1,0 +1,14 @@
+{
+  "id": "9281",
+  "name": "Tempest's Gauntlet",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Fires two constant streams of missiles around you. The streams rotate in opposite directions.<br><br><rules>Damage, Crit Chance, Projectile Count</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

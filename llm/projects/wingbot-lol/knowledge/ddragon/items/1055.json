@@ -1,0 +1,23 @@
+{
+  "id": "1055",
+  "name": "Doran's Blade",
+  "plaintext": "Good starting item for attackers",
+  "description": "<mainText><stats><attention>10</attention> Attack Damage<br><attention>80</attention> Health<br><attention>2.5%</attention> Omnivamp</stats><br><br></mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 450,
+    "sell": 180
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "LifeSteal",
+    "SpellVamp",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 80,
+    "FlatPhysicalDamageMod": 10
+  }
+}

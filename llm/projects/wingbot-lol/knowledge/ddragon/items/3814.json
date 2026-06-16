@@ -1,0 +1,21 @@
+{
+  "id": "3814",
+  "name": "Edge of Night",
+  "plaintext": "Periodically blocks enemy abilities",
+  "description": "<mainText><stats><attention>50</attention> Attack Damage<br><attention>15</attention> Lethality<br><attention>250</attention> Health</stats><br><br><passive>Annul</passive><br>Grants a Spell Shield that blocks the next enemy Ability.</mainText>",
+  "gold": {
+    "base": 850,
+    "purchasable": true,
+    "total": 3000,
+    "sell": 2100
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "ArmorPenetration"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 250,
+    "FlatPhysicalDamageMod": 50
+  }
+}

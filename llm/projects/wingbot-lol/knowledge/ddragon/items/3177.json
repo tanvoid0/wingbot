@@ -1,0 +1,22 @@
+{
+  "id": "3177",
+  "name": "Guardian's Blade",
+  "plaintext": "Good starting item for attackers",
+  "description": "<mainText><stats><attention>30</attention> Attack Damage<br><attention>150</attention> Health<br><attention>15</attention> Ability Haste</stats><br><br></mainText>",
+  "gold": {
+    "base": 950,
+    "purchasable": true,
+    "total": 950,
+    "sell": 665
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "Lane",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 150,
+    "FlatPhysicalDamageMod": 30
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "9287",
+  "name": "T.I.B.B.E.R.S (B.E.E.G Edition)",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Summons Enraged Robo-Tibbers. Robo-Tibbers swipes, dealing area damage. Enraged Robo-Tibbers focuses on enemies with the most health and grows larger, faster and deals more damage over the duration.<br><br><rules>Damage, Ability Haste, Area Size, Duration, Movement Speed</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

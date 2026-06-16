@@ -1,0 +1,14 @@
+{
+  "id": "9401",
+  "name": "Light of the Lion",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Hits a larger area and applies Sunlight to enemies. Sunlight can be detonated by allies or other weapons for bonus damage.<br><br><rules>Damage, Ability Haste, Area Size, Crit Chance, Armor</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

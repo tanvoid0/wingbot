@@ -1,0 +1,18 @@
+{
+  "id": "1001",
+  "name": "Boots",
+  "plaintext": "Slightly increases Move Speed",
+  "description": "<mainText><stats><attention>25</attention> Move Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 300,
+    "purchasable": true,
+    "total": 300,
+    "sell": 210
+  },
+  "tags": [
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 25
+  }
+}

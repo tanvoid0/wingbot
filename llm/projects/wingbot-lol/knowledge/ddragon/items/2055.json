@@ -1,0 +1,19 @@
+{
+  "id": "2055",
+  "name": "Control Ward",
+  "plaintext": "Used to disable wards and invisible traps in an area.",
+  "description": "<mainText><stats></stats><br><br><active>Consume</active><br>Places a Control Ward that grants vision and reveals enemy Stealth Wards, traps and <keywordStealth>Camouflaged</keywordStealth> enemies.</mainText>",
+  "gold": {
+    "base": 75,
+    "purchasable": true,
+    "total": 75,
+    "sell": 30
+  },
+  "tags": [
+    "Consumable",
+    "Lane",
+    "Stealth",
+    "Vision"
+  ],
+  "stats": {}
+}

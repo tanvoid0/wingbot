@@ -1,0 +1,16 @@
+{
+  "id": "2146",
+  "name": "Enhanced Lucky Dice",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Roll to gain 5 additional rerolls.<br><br><flavorText>For when skill isn't enough.</flavorText></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Consumable"
+  ],
+  "stats": {}
+}

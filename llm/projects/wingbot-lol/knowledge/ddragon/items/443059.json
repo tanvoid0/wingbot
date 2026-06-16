@@ -1,0 +1,20 @@
+{
+  "id": "443059",
+  "name": "Cloak of Starry Night",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>300</attention> Health<br><attention>100</attention> Magic Resist</stats><br><br><passive>Limitless as the Stars</passive><br>Increase your <scaleMR>Magic Resist</scaleMR> by 20%. Reduce all damage you take from non-Basic Attack sources by a percentage, scaling with your <scaleMR>Magic Resist</scaleMR> up to a cap of 50%.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "SpellBlock"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 100,
+    "FlatHPPoolMod": 300
+  }
+}

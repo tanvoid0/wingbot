@@ -1,0 +1,14 @@
+{
+  "id": "9306",
+  "name": "Winged Dagger",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Xayah throws out a dagger infront of her that pierces through enemies, dealing less damage to subsequent enemies and leaves a Dagger in the ground.<br><br><status>Evolve: </status> Pickup Radius<br><br><rules>Damage, Ability Haste, Crit Chance, Projectile Count, Duration</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

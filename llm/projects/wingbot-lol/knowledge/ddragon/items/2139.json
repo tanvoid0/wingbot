@@ -1,0 +1,18 @@
+{
+  "id": "2139",
+  "name": "Elixir of Sorcery",
+  "plaintext": "Temporarily grants Ability Power and Bonus Damage to champions and turrets.",
+  "description": "<mainText><stats></stats><br><br><active>Consume</active><br>Grants <scaleAP>50 Ability Power</scaleAP> and <scaleMana>15% Mana Regen</scaleMana> for 3 minutes. While active, damaging a champion or turret deals <trueDamage>25 bonus true damage</trueDamage> (5s against champions).</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 200
+  },
+  "tags": [
+    "Consumable",
+    "ManaRegen",
+    "SpellDamage"
+  ],
+  "stats": {}
+}

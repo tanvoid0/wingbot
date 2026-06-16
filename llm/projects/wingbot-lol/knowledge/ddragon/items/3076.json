@@ -1,0 +1,18 @@
+{
+  "id": "3076",
+  "name": "Bramble Vest",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>30</attention> Armor</stats><br><br><passive>Thorns</passive><br>When hit by an Attack, deal <magicDamage> magic damage</magicDamage> to the attacker and apply <keyword>40% Wounds</keyword> for 3 seconds if they are a champion.</mainText>",
+  "gold": {
+    "base": 200,
+    "purchasable": true,
+    "total": 800,
+    "sell": 560
+  },
+  "tags": [
+    "Armor"
+  ],
+  "stats": {
+    "FlatArmorMod": 30
+  }
+}

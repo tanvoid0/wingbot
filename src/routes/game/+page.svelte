@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
   import { invoke } from '@tauri-apps/api/core';
-  import { RefreshCw, AlertCircle, Eye, Bug, Wifi, WifiOff, Gamepad2, Users, Target, Zap, Clock } from '@lucide/svelte';
+  import { RefreshCw, Eye, Bug, Wifi, Gamepad2, Users, Target, Clock } from '@lucide/svelte';
   import { Button } from '$lib/components/ui/button';
   import { Alert, AlertDescription } from '$lib/components/ui/alert';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { Card, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
-  
   // WebSocket Live Game Store
   import { 
     wsGameData,
@@ -28,11 +28,16 @@
     wsActions,
     wsSyncStatus,
     wsChampionSelectData,
+    wsIsChampionSelectActive,
     wsLCUConnecting,
-    startWebSocketListening,
-    stopWebSocketListening
+    isPostChampSelectPhase,
+    isInMatchOrLoadingPhase,
   } from '$lib/stores/websocketStore';
   
+  function matchLoadingStatus(phase: string): string {
+    return phase === 'GameStart' ? 'Loading game…' : 'In game (waiting for live data)';
+  }
+
   // Local state
   let isManualRefresh = $state(false);
   let lastUpdateTime = $state(Date.now());
@@ -41,6 +46,8 @@
   let isConnected = $state(false);
   let isLCUConnecting = $state(false);
   let connectionStatus = $state('Disconnected');
+  let effectivePhase = $state('unknown');
+  let loadingIntoGame = $state(false);
   
   // Game data
   let gameData: any = $state(null);
@@ -50,6 +57,7 @@
   
   // Debug Store
   import { isDebugModalOpen, openDebugModal, closeDebugModal } from '$lib/stores/debugStore';
+  import { openLauncherModal } from '$lib/stores/appModalsStore';
   
   // WebSocket Live Game Components
   import WebSocketGameStatus from '$lib/components/live-game/WebSocketGameStatus.svelte';
@@ -64,12 +72,11 @@
   import LobbyManagement from '$lib/components/live-game/LobbyManagement.svelte';
   import DebugModal from '$lib/components/live-game/DebugModal.svelte';
   import NoLiveGameMessage from '$lib/components/live-game/NoLiveGameMessage.svelte';
-  import ConnectionHealthCard from '$lib/components/live-game/ConnectionHealthCard.svelte';
+  import { appStatusBarContext, clearAppStatusBarPageState } from '$lib/stores/appStatusBarStore';
   
   // Champion Select Components
   import ChampionSelectOverlay from '$lib/components/champion-select/ChampionSelectOverlay.svelte';
   
-  // Reactive updates
   $effect(() => {
     gameData = $wsGameData || $wsLiveGameData;
     championSelectData = $wsChampionSelectData;
@@ -89,8 +96,23 @@
       wsConnected: $wsConnected
     });
     
-    // Determine current game state based on comprehensive game state
-    if (gameData) {
+    // Champion select wins unless LCU phase says the game has already started
+    effectivePhase =
+      ($wsGameState?.game_phase as string | undefined) ?? $wsGamePhase;
+    const hasChampSelectSession =
+      $wsIsChampionSelectActive || !!$wsChampionSelectData;
+    loadingIntoGame =
+      !hasChampSelectSession && isInMatchOrLoadingPhase(effectivePhase);
+    const inChampSelect =
+      !isPostChampSelectPhase(effectivePhase) && hasChampSelectSession;
+
+    if (inChampSelect) {
+      currentGameState = 'champion-select';
+      connectionStatus = 'In Champion Select';
+    } else if (loadingIntoGame) {
+      currentGameState = 'live-game';
+      connectionStatus = matchLoadingStatus(effectivePhase);
+    } else if (gameData) {
       // Debug logging for game state detection
       console.log('[Game State] Checking gameData:', {
         hasActivePlayer: !!gameData.activePlayer,
@@ -110,9 +132,9 @@
         console.log('[Game State] Primary detection: Full game data found, setting live-game state');
         currentGameState = 'live-game';
         connectionStatus = $wsIsSpectatorMode ? 'Spectating Game' : 'In Game';
-      } else if (gameData.champion_select && !gameData.champion_select.isNull) {
-        currentGameState = 'champion-select';
-        connectionStatus = 'In Champion Select';
+      } else if (isPostChampSelectPhase(effectivePhase)) {
+        currentGameState = 'live-game';
+        connectionStatus = matchLoadingStatus(effectivePhase);
       } else if (gameData.queue && gameData.queue.in_queue) {
         currentGameState = 'queue';
         connectionStatus = 'In Queue';
@@ -137,23 +159,48 @@
         connectionStatus = $wsIsSpectatorMode ? 'Spectating Game' : 'In Game';
       } else {
         console.log('[Game State] No game data or time detected, setting idle state');
-        currentGameState = 'idle';
-        connectionStatus = isConnected ? 'Connected' : 'Disconnected';
+        if (isPostChampSelectPhase(effectivePhase) || loadingIntoGame) {
+          currentGameState = 'live-game';
+          connectionStatus = matchLoadingStatus(effectivePhase);
+        } else if ($wsChampionSelectData) {
+          currentGameState = 'champion-select';
+          connectionStatus = 'In Champion Select';
+        } else {
+          currentGameState = 'idle';
+          connectionStatus = isConnected ? 'Connected' : 'Disconnected';
+        }
       }
     }
+
+    appStatusBarContext.set({
+      title: getPageTitle(),
+      badge: connectionStatus,
+      badgeClass: getStatusColor(),
+    });
   });
 
   onMount(() => {
-    // Start WebSocket listening
-    startWebSocketListening();
-    
-    // Initial connection attempt
-    wsActions.detectLeagueClientWithRetry(3).catch(error => {
-      console.error('Failed to detect League client:', error);
-    });
-    
+    let poll: ReturnType<typeof setInterval> | undefined;
+
+    void (async () => {
+      try {
+        await wsActions.detectLeagueClientWithRetry(3);
+        await wsActions.refreshGameStateFromBackend();
+      } catch (error) {
+        console.error('Failed to detect League client:', error);
+      }
+    })();
+
+    poll = setInterval(() => {
+      if (!get(wsConnected)) return;
+      // Keep polling until live game data arrives (Live Client API on port 2999)
+      if (get(wsLiveGameData)) return;
+      wsActions.refreshGameStateFromBackend().catch(() => {});
+    }, 2000);
+
     return () => {
-      stopWebSocketListening();
+      if (poll !== undefined) clearInterval(poll);
+      clearAppStatusBarPageState();
     };
   });
 
@@ -162,11 +209,9 @@
     lastUpdateTime = Date.now();
     
     try {
-      // Try to detect League client
       await wsActions.detectLeagueClientWithRetry(3);
-      
-      // Check connection health
       await wsActions.checkConnectionHealth();
+      await wsActions.refreshGameStateFromBackend();
     } catch (error) {
       console.error('Refresh failed:', error);
     } finally {
@@ -201,22 +246,7 @@
       case 'lobby':
         return 'Lobby';
       default:
-        return 'Game Assistant';
-    }
-  }
-
-  function getPageSubtitle(): string {
-    switch (currentGameState) {
-      case 'champion-select':
-        return 'Pick and ban recommendations with real-time analysis';
-      case 'live-game':
-        return 'Real-time game analysis with WebSocket connection';
-      case 'queue':
-        return 'Waiting for matchmaking - prepare for champion select';
-      case 'lobby':
-        return 'Lobby management and team coordination';
-      default:
-        return 'Connect to League of Legends for assistance';
+        return 'Game';
     }
   }
 
@@ -255,165 +285,75 @@
 </script>
 
 <div class="flex flex-col h-full bg-background">
-  <!-- Dynamic Header -->
-  <Card class="border-b border-border rounded-none">
-    <CardHeader class="pb-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-            {#if getStatusIcon()}
-              {@const StatusIcon = getStatusIcon()}
-              <StatusIcon class="w-5 h-5 text-primary-foreground" />
-            {/if}
-          </div>
-          <div>
-            <CardTitle class="text-xl">{getPageTitle()}</CardTitle>
-            <p class="text-sm text-muted-foreground">{getPageSubtitle()}</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <Badge variant="outline" class={getStatusColor()}>
-            {connectionStatus}
-          </Badge>
-          <Badge variant={wsConnected ? 'default' : 'destructive'}>
-            {wsConnected ? 'Connected' : 'Disconnected'}
-          </Badge>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onclick={handleDetectLeagueClient}
-            disabled={isLCUConnecting}
-          >
-            <RefreshCw class="w-4 h-4" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onclick={handleCheckConnectionHealth}
-          >
-            <Wifi class="w-4 h-4" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onclick={openDebugModal}
-          >
-            <Bug class="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-    </CardHeader>
-  </Card>
-
-  <!-- Connection Health -->
-  <ConnectionHealthCard />
-
-  <!-- Debug Information -->
-  {#if currentGameState === 'idle' && isConnected}
-    <div class="p-4">
-      <Alert>
-        <AlertCircle class="w-4 h-4" />
-        <AlertDescription>
-          <strong>Debug Info:</strong> Connected but no game data detected. 
-          Game Data: {gameData ? 'Present' : 'Missing'}, 
-          Spectator Mode: {$wsIsSpectatorMode ? 'Yes' : 'No'},
-          Game Phase: {$wsGamePhase}
-          {#if gameData}
-            <br><strong>Data Structure:</strong> 
-            activePlayer: {gameData.activePlayer ? 'Yes' : 'No'}, 
-            allPlayers: {gameData.allPlayers ? 'Yes' : 'No'}, 
-            gameData: {gameData.gameData ? 'Yes' : 'No'}, 
-            events: {gameData.events ? 'Yes' : 'No'}, 
-            gameTime: {gameData.gameTime !== undefined ? 'Yes' : 'No'}
-          {/if}
-        </AlertDescription>
-      </Alert>
-    </div>
-  {/if}
-
   <!-- Dynamic Content Based on Game State -->
   {#if currentGameState === 'champion-select'}
-    <!-- Champion Select Mode -->
-    <div class="flex-1 p-4">
+    <div class="flex-1 p-3">
       <ChampionSelectOverlay />
     </div>
-    
+
   {:else if currentGameState === 'queue'}
-    <!-- Queue Mode -->
-    <div class="flex-1 p-4">
-      <div class="max-w-4xl mx-auto">
+    <div class="flex-1 p-3">
+      <div class="max-w-lg mx-auto">
         <Card>
-          <CardHeader>
-            <CardTitle class="flex items-center gap-2">
-              <Clock class="w-5 h-5" />
-              In Queue
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div class="text-center py-8">
-              <div class="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center mx-auto mb-4">
-                <Clock class="w-8 h-8 text-yellow-500" />
-              </div>
-              <h3 class="text-lg font-semibold mb-2">Waiting for Matchmaking</h3>
-              <p class="text-muted-foreground mb-4">
-                You're currently in queue. Prepare for champion select by reviewing your champion pool and strategies.
-              </p>
-              {#if gameData?.queue}
-                <Badge variant="outline" class="mb-4">
-                  Queue ID: {gameData.queue.queue_id}
-                </Badge>
-              {/if}
-              <div class="flex flex-wrap gap-2 justify-center">
-                <Button variant="outline" onclick={() => window.location.href = '/ai-chat'}>
-                  <Zap class="w-4 h-4 mr-2" />
-                  Get AI Advice
-                </Button>
-                <Button variant="outline" onclick={() => window.location.href = '/settings'}>
-                  <Users class="w-4 h-4 mr-2" />
-                  Review Settings
-                </Button>
-              </div>
-            </div>
+          <CardContent class="py-4 text-center">
+            <Clock class="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+            <h3 class="font-semibold mb-1">In Queue</h3>
+            <p class="text-sm text-muted-foreground mb-3">
+              Waiting for matchmaking.
+            </p>
+            {#if gameData?.queue}
+              <Badge variant="outline" class="text-xs">
+                Queue {gameData.queue.queue_id}
+              </Badge>
+            {/if}
           </CardContent>
         </Card>
       </div>
     </div>
-    
+
   {:else if currentGameState === 'live-game'}
-    <!-- Live Game Mode -->
-    <div class="flex-1 p-4 space-y-4">
-      <!-- Spectator Mode Indicator -->
-      {#if $wsIsSpectatorMode}
-        <Alert class="border-blue-500/30 bg-blue-500/10">
-          <Eye class="w-4 h-4" />
-          <AlertDescription>
-            <strong>Spectator Mode:</strong> You're currently spectating a game. Some features may be limited.
+    <div class="flex-1 p-3 space-y-3">
+      {#if !gameData && (isPostChampSelectPhase(effectivePhase) || loadingIntoGame)}
+        <Alert class="py-2 border-yellow-500/30 bg-yellow-500/10">
+          <Clock class="w-4 h-4" />
+          <AlertDescription class="text-sm">
+            {#if effectivePhase === 'GameStart' || loadingIntoGame}
+              Loading into game… Live stats appear once the match starts.
+            {:else}
+              In game, but Live Client Data (port 2999) is not responding yet. If this persists, enable
+              <strong>Live Client Data</strong> in League client settings (Settings → General).
+            {/if}
           </AlertDescription>
         </Alert>
       {/if}
-      
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <!-- Game Status and Team Comparison -->
-        <div class="space-y-4">
+
+      {#if $wsIsSpectatorMode}
+        <Alert class="py-2 border-blue-500/30 bg-blue-500/10">
+          <Eye class="w-4 h-4" />
+          <AlertDescription class="text-sm">
+            Spectator mode — some live features are limited.
+          </AlertDescription>
+        </Alert>
+      {/if}
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div class="space-y-3">
           <WebSocketGameStatus />
           <WebSocketTeamComparison />
         </div>
-        
-        <!-- Active Player Info and Events -->
-        <div class="space-y-4">
+
+        <div class="space-y-3">
           <WebSocketActivePlayerInfo />
           <WebSocketEventsTimeline />
         </div>
       </div>
-      
-      <!-- Live Stats and AI Recommendations -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <LiveStats />
         <AIRecommendations />
       </div>
-      
-      <!-- Item Tracking and Analysis -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <ItemTracking />
         <MatchHistoryAnalysis />
         <RuneAnalysis />
@@ -421,21 +361,22 @@
     </div>
     
   {:else if currentGameState === 'lobby'}
-    <!-- Lobby Mode -->
-    <div class="flex-1 p-4">
+    <div class="flex-1 p-3 space-y-3">
       <LobbyManagement />
+      <MatchHistoryAnalysis />
     </div>
-    
+
   {:else}
-    <!-- Idle/Disconnected State -->
-    <div class="flex-1 p-4">
+    <div class="flex-1 p-3 space-y-3">
       <NoLiveGameMessage 
         error={$wsError}
         isLoading={$wsIsLoading}
         isRefreshing={isManualRefresh}
         onRetry={handleRefresh}
         onViewDebug={openDebugModal}
+        onLaunchLeague={openLauncherModal}
       />
+      <MatchHistoryAnalysis />
     </div>
   {/if}
 

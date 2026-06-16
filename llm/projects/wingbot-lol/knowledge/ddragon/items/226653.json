@@ -1,0 +1,20 @@
+{
+  "id": "226653",
+  "name": "Liandry's Anguish",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>50</attention> Ability Power<br><attention>250</attention> Health</stats><br><br><passive>Torment</passive><br>Damaging Abilities <keywordMajor>Burn</keywordMajor> enemies for <magicDamage>2% max Health magic damage</magicDamage> per second for 3 seconds.<br><br><passive>Suffering</passive><br>For each second in combat with enemy champions, deal 2% bonus damage, up to 6%.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 250,
+    "FlatMagicDamageMod": 50
+  }
+}

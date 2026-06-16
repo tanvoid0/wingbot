@@ -1,0 +1,24 @@
+{
+  "id": "447114",
+  "name": "Reverberation",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>35</attention> Armor<br><attention>35</attention> Magic Resist<br><attention>40%</attention> Attack Speed</stats><br><br><passive>Reverberate</passive><br>At combat start gain <healing>50 max Health</healing> per <attackSpeed>10% bonus Attack Speed</attackSpeed>.<br><br><passive>Resonate</passive><br>Attacks deal <magicDamage> magic damage <OnHit>On-Hit</OnHit></magicDamage>.<br><br><passive>Rumble</passive><br><status>Immobilizing</status> or <status>Grounding</status> an enemy champion applies <OnHit>On-Hit</OnHit> effects 3 times.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "Armor",
+    "AttackSpeed",
+    "OnHit",
+    "MagicResist"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 35,
+    "FlatArmorMod": 35,
+    "PercentAttackSpeedMod": 0.4
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "3109",
+  "name": "Knight's Vow",
+  "plaintext": "Partner with an ally to protect each other",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>40</attention> Armor<br><attention>10</attention> Ability Haste<br><attention>100%</attention> Base Health Regen</stats><br><br><passive>Sacrifice</passive><br>While near your <attention>Worthy</attention> ally, take 14% of the damage they receive and <healing>heal for 12%</healing> of the damage they deal to champions.<active>Pledge</active> (0s)<br>Designate an ally as <attention>Worthy</attention>.</mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 2300,
+    "sell": 1610
+  },
+  "tags": [
+    "Health",
+    "HealthRegen",
+    "Armor",
+    "Aura",
+    "Active",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 200,
+    "FlatArmorMod": 40
+  }
+}

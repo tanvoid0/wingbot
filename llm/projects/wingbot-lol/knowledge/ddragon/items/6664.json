@@ -1,0 +1,24 @@
+{
+  "id": "6664",
+  "name": "Hollow Radiance",
+  "plaintext": "Immobilize enemies to gain a shield. Activate to run faster at opponents.",
+  "description": "<mainText><stats><attention>400</attention> Health<br><attention>40</attention> Magic Resist<br><attention>10</attention> Ability Haste<br><attention>100%</attention> Base Health Regen</stats><br><br><passive>Immolate</passive><br>After taking or dealing damage, deal <magicDamage>magic damage</magicDamage> per second to nearby enemies for 3 seconds. <br><br><passive>Desolate</passive><br>Killing an enemy deals <magicDamage>magic damage</magicDamage> around them.</mainText>",
+  "gold": {
+    "base": 650,
+    "purchasable": true,
+    "total": 2800,
+    "sell": 1960
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "HealthRegen",
+    "Aura",
+    "MagicResist",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 40,
+    "FlatHPPoolMod": 400
+  }
+}

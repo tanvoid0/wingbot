@@ -1,0 +1,39 @@
+{
+  "id": "82",
+  "name": "Mordekaiser",
+  "title": "the Iron Revenant",
+  "tags": [
+    "Fighter",
+    "Mage"
+  ],
+  "partype": "Shield",
+  "info": {
+    "attack": 4,
+    "defense": 6,
+    "magic": 7,
+    "difficulty": 4
+  },
+  "stats": {
+    "hp": 645,
+    "hpperlevel": 104,
+    "mp": 100,
+    "mpperlevel": 0,
+    "movespeed": 335,
+    "armor": 37,
+    "armorperlevel": 4.2,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 175,
+    "hpregen": 5,
+    "hpregenperlevel": 0.75,
+    "mpregen": 0,
+    "mpregenperlevel": 0,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 61,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 1,
+    "attackspeed": 0.625
+  },
+  "blurb": "Twice slain and thrice born, Mordekaiser is a brutal warlord from a foregone epoch who uses his necromantic sorcery to bind souls into an eternity of servitude. Few now remain who remember his earlier conquests, or know the true extent of his powers\u2014but..."
+}

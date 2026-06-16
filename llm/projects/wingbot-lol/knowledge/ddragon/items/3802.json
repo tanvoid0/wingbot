@@ -1,0 +1,23 @@
+{
+  "id": "3802",
+  "name": "Lost Chapter",
+  "plaintext": "Restores Mana upon levelling up.",
+  "description": "<mainText><stats><attention>40</attention> Ability Power<br><attention>300</attention> Mana<br><attention>10</attention> Ability Haste</stats><br><br><passive>Enlighten</passive><br>Levelling up restores <scaleMana>20% max Mana</scaleMana> over 3 seconds.</mainText>",
+  "gold": {
+    "base": 250,
+    "purchasable": true,
+    "total": 1200,
+    "sell": 840
+  },
+  "tags": [
+    "SpellDamage",
+    "Mana",
+    "ManaRegen",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 300,
+    "FlatMagicDamageMod": 40
+  }
+}

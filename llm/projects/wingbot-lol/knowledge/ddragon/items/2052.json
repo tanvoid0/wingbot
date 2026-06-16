@@ -1,0 +1,14 @@
+{
+  "id": "2052",
+  "name": "Poro-Snax",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Serves a scrumptious scoop to a nearby Poro, causing it to grow in size.<br><br><flavorText>This savory blend of Avarosan hen and local Freljordian herbs\u2014picked daily and flash-frozen\u2014contains the essential nutrients necessary to keep your Poro cool and calm.<br><br>All proceeds will be donated towards preserving the habitat of the endangered Spotted Poro.</flavorText></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

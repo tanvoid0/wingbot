@@ -1,0 +1,19 @@
+{
+  "id": "6029",
+  "name": "Ironspike Whip",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>30</attention> Attack Damage</stats><br><br><br><br><active>Active -</active> <active>Crescent:</active> Deal damage to nearby enemies.</mainText>",
+  "gold": {
+    "base": 225,
+    "purchasable": false,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "Damage",
+    "Active"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 30
+  }
+}

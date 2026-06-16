@@ -1,0 +1,7 @@
+# Single source of truth for LLM tooling defaults.
+# Each project must set base_model in projects/<name>/project.yaml (copy from here when scaffolding).
+
+base_model: google/gemma-3-4b-it
+
+# Ollama tag used in Modelfile when a custom GGUF is not yet available.
+ollama_base_model: gemma4:latest

@@ -1,0 +1,21 @@
+{
+  "id": "223112",
+  "name": "Guardian's Orb",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>55</attention> Ability Power<br><attention>25</attention> Ability Haste</stats><br><br><passive>Recovery</passive><br>Restores <scaleMana>10 Mana</scaleMana> every 5 seconds. If you can't gain mana, restores <healing>15 Health</healing> instead.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 250
+  },
+  "tags": [
+    "SpellDamage",
+    "ManaRegen",
+    "CooldownReduction",
+    "Lane"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 55
+  }
+}

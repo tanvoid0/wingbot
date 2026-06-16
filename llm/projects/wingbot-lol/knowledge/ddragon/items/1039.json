@@ -1,0 +1,18 @@
+{
+  "id": "1039",
+  "name": "Hailblade",
+  "plaintext": "Provides damage against Monsters and Mana Regen in the Jungle",
+  "description": "<mainText><stats></stats><br><br><passive>7%</passive> Omnivamp against jungle monsters<br><li><passive>Sear:</passive> Damaging jungle monsters burns them for <magicDamage> magic damage</magicDamage> over 5 seconds.<li><passive>Chilling Path:</passive> Smiting 5 times <status>consumes</status> this item and upgrades your Smite to <attention>Chilling Smite</attention>, increasing its damage to monsters to <trueDamage>900</trueDamage> and damage to minions to <trueDamage>500 +10% target max Health</trueDamage>. Chilling Smite deals <trueDamage> true damage</trueDamage> to champions and steals <speed>20% of their Move Speed</speed> for 2 seconds.<li><passive>Huntsman:</passive> Killing large jungle monsters grants bonus experience.<li><passive>Recoup:</passive> Regen up to <scaleMana> Mana</",
+  "gold": {
+    "base": 350,
+    "purchasable": false,
+    "total": 350,
+    "sell": 140
+  },
+  "tags": [
+    "LifeSteal",
+    "SpellVamp",
+    "Jungle"
+  ],
+  "stats": {}
+}

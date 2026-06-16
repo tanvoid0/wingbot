@@ -1,0 +1,18 @@
+{
+  "id": "3170",
+  "name": "Swiftmarch",
+  "plaintext": "Improves defense and reduces duration of disabling effects",
+  "description": "<mainText><stats><attention>65</attention> Move Speed</stats><br><br><passive>Fleetfooted</passive><br>Reduce the effectiveness of <keyword>Slows</keyword> by 40%.<br><br><passive>Noxian Fervor</passive><br>Gain 5% of your <speed>Move Speed</speed> as Adaptive Force.</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 1000,
+    "sell": 700
+  },
+  "tags": [
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 65
+  }
+}

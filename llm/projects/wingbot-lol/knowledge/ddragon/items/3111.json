@@ -1,0 +1,21 @@
+{
+  "id": "3111",
+  "name": "Mercury's Treads",
+  "plaintext": "Increases Move Speed and reduces duration of disabling effects",
+  "description": "<mainText><stats><attention>20</attention> Magic Resist<br><attention>45</attention> Move Speed<br><attention>30%</attention> Tenacity</stats><br><br></mainText>",
+  "gold": {
+    "base": 550,
+    "purchasable": true,
+    "total": 1250,
+    "sell": 875
+  },
+  "tags": [
+    "Boots",
+    "SpellBlock",
+    "Tenacity"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 20,
+    "FlatMovementSpeedMod": 45
+  }
+}

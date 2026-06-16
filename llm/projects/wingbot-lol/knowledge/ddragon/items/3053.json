@@ -1,0 +1,20 @@
+{
+  "id": "3053",
+  "name": "Sterak's Gage",
+  "plaintext": "Shields against large bursts of damage",
+  "description": "<mainText><stats><attention>400</attention> Health<br><attention>20%</attention> Tenacity</stats><br><br><passive>The Claws that Catch</passive><br>Gain <scaleAD>bonus Attack Damage</scaleAD>.<br><br><passive>Lifeline</passive><br>Taking damage that would reduce your Health below 30% grants a <shield>decaying Shield</shield> for 4.5 seconds.</mainText>",
+  "gold": {
+    "base": 775,
+    "purchasable": true,
+    "total": 3200,
+    "sell": 2240
+  },
+  "tags": [
+    "Health",
+    "Damage",
+    "Tenacity"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 400
+  }
+}

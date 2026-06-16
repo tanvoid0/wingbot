@@ -1,0 +1,18 @@
+{
+  "id": "1057",
+  "name": "Negatron Cloak",
+  "plaintext": "Moderately increases Magic Resist",
+  "description": "<mainText><stats><attention>45</attention> Magic Resist</stats><br><br></mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 850,
+    "sell": 595
+  },
+  "tags": [
+    "SpellBlock"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 45
+  }
+}

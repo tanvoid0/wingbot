@@ -1,0 +1,14 @@
+{
+  "id": "3901",
+  "name": "<rarityLegendary>Fire at Will</rarityLegendary><br><subtitleLeft><silver>500 Silver Serpents</silver></subtitleLeft>",
+  "plaintext": "Cannon Barrage fires at an increasing rate over time (additional 6 waves over the duration).",
+  "description": "",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

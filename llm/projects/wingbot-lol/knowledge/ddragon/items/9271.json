@@ -1,0 +1,14 @@
+{
+  "id": "9271",
+  "name": "Unceasing Cyclone",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Permanently orbiting projectiles damage and knock back enemies.<br><br><rules>Damage, Ability Haste, Projectile Count, Area Size, Duration</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

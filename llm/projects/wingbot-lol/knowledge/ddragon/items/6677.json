@@ -1,0 +1,19 @@
+{
+  "id": "6677",
+  "name": "Rageknife",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>25%</attention> Attack Speed</stats><br><br><br><li><passive>Wrath:</passive> Attacks apply <magicDamage>20 magic damage</magicDamage> <OnHit>On-Hit</OnHit>.<li><passive>Seething Strike:</passive> Basic attacks grant <attackSpeed>5% Attack Speed</attackSpeed>, stacking up to 3 times for a maximum of <attackSpeed> Attack Speed</attackSpeed>.</mainText>",
+  "gold": {
+    "base": 600,
+    "purchasable": false,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "AttackSpeed",
+    "OnHit"
+  ],
+  "stats": {
+    "PercentAttackSpeedMod": 0.25
+  }
+}

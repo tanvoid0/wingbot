@@ -1,0 +1,26 @@
+{
+  "id": "4638",
+  "name": "Watchful Wardstone",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>150</attention> Health<br><attention>10</attention> Ability Haste<br><attention>10</attention> Armor<br><attention>15</attention> Magic Resist</stats><br><br><passive>Arcane Cache</passive><br>This item can store up to 3 purchased Control Wards.</mainText>",
+  "gold": {
+    "base": 1100,
+    "purchasable": true,
+    "total": 1100,
+    "sell": 770
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "Armor",
+    "Vision",
+    "Active",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 15,
+    "FlatHPPoolMod": 150,
+    "FlatArmorMod": 10
+  }
+}

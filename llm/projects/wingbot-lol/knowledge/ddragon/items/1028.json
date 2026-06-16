@@ -1,0 +1,18 @@
+{
+  "id": "1028",
+  "name": "Ruby Crystal",
+  "plaintext": "Increases Health",
+  "description": "<mainText><stats><attention>150</attention> Health</stats><br><br></mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 400,
+    "sell": 280
+  },
+  "tags": [
+    "Health"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 150
+  }
+}

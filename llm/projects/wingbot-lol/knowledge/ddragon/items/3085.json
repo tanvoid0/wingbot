@@ -1,0 +1,23 @@
+{
+  "id": "3085",
+  "name": "Runaan's Hurricane",
+  "plaintext": "Ranged attacks fire two bolts at nearby enemies",
+  "description": "<mainText><stats><attention>40%</attention> Attack Speed<br><attention>25%</attention> Critical Strike Chance<br><attention>4%</attention> Move Speed</stats><br><br><passive>Wind's Fury</passive><br>Attacks fire bolts at 2 additional enemies near the target.<br>Each bolt deals <physicalDamage>physical damage</physicalDamage> and applies <OnHit>On-Hit</OnHit> effects.</mainText>",
+  "gold": {
+    "base": 850,
+    "purchasable": true,
+    "total": 2650,
+    "sell": 1855
+  },
+  "tags": [
+    "CriticalStrike",
+    "AttackSpeed",
+    "OnHit",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "PercentAttackSpeedMod": 0.4,
+    "PercentMovementSpeedMod": 0.04
+  }
+}

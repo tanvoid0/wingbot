@@ -1,0 +1,23 @@
+{
+  "id": "223124",
+  "name": "Guinsoo's Rageblade",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>20</attention> Attack Damage<br><attention>25</attention> Ability Power<br><attention>25%</attention> Attack Speed</stats><br><br>Attacks apply <magicDamage>30 magic damage <OnHit>On-Hit</OnHit></magicDamage>.<br><br><passive>Seething Strike</passive><br>Basic attacks grant <attackSpeed>8% Attack Speed</attackSpeed>, stacking up to 4 times for a maximum of <attackSpeed> Attack Speed</attackSpeed>. While fully stacked, every third Attack applies your <OnHit>On-Hit</OnHit> effects twice.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Damage",
+    "AttackSpeed",
+    "SpellDamage",
+    "OnHit"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 25,
+    "FlatPhysicalDamageMod": 20,
+    "PercentAttackSpeedMod": 0.25
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3853",
+  "name": "Shard of True Ice",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>40</attention> Ability Power<br><attention>75</attention> Health<br><attention>100%</attention> Base Mana Regen<br><attention>3</attention> Gold Per 10 Seconds</stats><br><br><br><br><rules>This item grants reduced gold from minions if anyone on your team with this item kill excessive numbers of them.</rules><br><br><br><br><active>ACTIVE</active><br><active>Ward</active> <br>Place an <keywordStealth>Invisible</keywordStealth> Stealth Ward that grants vision. Stores 0 Stealth Wards, which refill upon visiting the shop. </mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": false,
+    "total": 400,
+    "sell": 160
+  },
+  "tags": [
+    "GoldPer",
+    "Lane",
+    "ManaRegen",
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 75,
+    "FlatMagicDamageMod": 40
+  }
+}

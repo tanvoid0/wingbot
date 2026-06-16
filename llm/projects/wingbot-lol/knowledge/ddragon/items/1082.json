@@ -1,0 +1,21 @@
+{
+  "id": "1082",
+  "name": "Dark Seal",
+  "plaintext": "Provides Ability Power and Mana.  Increases in power as you kill enemies.",
+  "description": "<mainText><stats><attention>15</attention> Ability Power<br><attention>50</attention> Health</stats><br><br><passive>Glory</passive><br><keyword>Takedowns</keyword> grant <passive>Glory</passive>, up to 10. 5 <passive>Glory</passive> is lost on death.<br>Gain <scaleAP>4 Ability Power</scaleAP> per <passive>Glory</passive>.</mainText>",
+  "gold": {
+    "base": 350,
+    "purchasable": true,
+    "total": 350,
+    "sell": 140
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 50,
+    "FlatMagicDamageMod": 15
+  }
+}

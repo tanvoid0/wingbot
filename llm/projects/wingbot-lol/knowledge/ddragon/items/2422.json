@@ -1,0 +1,18 @@
+{
+  "id": "2422",
+  "name": "Slightly Magical Footwear",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>25</attention> Move Speed</stats><br><br>Grants an additional <speed>10 Move Speed</speed>. Boots that build from Slightly Magical Footwear retain this bonus Move Speed.</mainText>",
+  "gold": {
+    "base": 300,
+    "purchasable": false,
+    "total": 300,
+    "sell": 90
+  },
+  "tags": [
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 25
+  }
+}

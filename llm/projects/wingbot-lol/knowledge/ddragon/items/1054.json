@@ -1,0 +1,21 @@
+{
+  "id": "1054",
+  "name": "Doran's Shield",
+  "plaintext": "Good defensive starting item",
+  "description": "<mainText><stats><attention>110</attention> Health</stats><br><br><passive>Enduring Focus</passive><br>Restore <healing>4 Health</healing> every 5 seconds. <br>After taking damage from a champion, restore <healing>Health</healing> over 8 seconds.<br><br><passive>Helping Hand</passive><br>Attacks deal <physicalDamage>5 bonus physical damage</physicalDamage> to minions.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 450,
+    "sell": 180
+  },
+  "tags": [
+    "Health",
+    "HealthRegen",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 110,
+    "FlatHPRegenMod": 0.8
+  }
+}

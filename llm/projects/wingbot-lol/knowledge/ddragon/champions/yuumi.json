@@ -1,0 +1,39 @@
+{
+  "id": "350",
+  "name": "Yuumi",
+  "title": "the Magical Cat",
+  "tags": [
+    "Support",
+    "Mage"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 5,
+    "defense": 1,
+    "magic": 8,
+    "difficulty": 2
+  },
+  "stats": {
+    "hp": 500,
+    "hpperlevel": 69,
+    "mp": 440,
+    "mpperlevel": 45,
+    "movespeed": 330,
+    "armor": 25,
+    "armorperlevel": 4.2,
+    "spellblock": 25,
+    "spellblockperlevel": 1.1,
+    "attackrange": 425,
+    "hpregen": 5,
+    "hpregenperlevel": 0.55,
+    "mpregen": 10,
+    "mpregenperlevel": 0.4,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 49,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 1,
+    "attackspeed": 0.625
+  },
+  "blurb": "A magical cat from Bandle City, Yuumi was once the familiar of a yordle enchantress, Norra. When her master mysteriously disappeared, Yuumi became the Keeper of Norra's sentient Book of Thresholds, traveling through portals in its pages to search for..."
+}

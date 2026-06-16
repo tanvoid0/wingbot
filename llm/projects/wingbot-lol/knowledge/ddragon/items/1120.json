@@ -1,0 +1,23 @@
+{
+  "id": "1120",
+  "name": "Doran's Helm",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>140</attention> Health<br><attention>10</attention> Armor<br><attention>10</attention> Magic Resist</stats><br><br><passive>Helping Hand</passive><br>Attacks deal <physicalDamage>5 bonus physical damage</physicalDamage> to minions.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 450,
+    "sell": 180
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "Armor",
+    "Lane"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 10,
+    "FlatHPPoolMod": 140,
+    "FlatArmorMod": 10
+  }
+}

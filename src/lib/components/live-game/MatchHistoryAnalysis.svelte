@@ -1,279 +1,175 @@
 <script lang="ts">
-  import { Trophy, TrendingUp, Target, Users, Award, AlertCircle, CheckCircle, Clock } from '@lucide/svelte';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { Trophy, LayoutDashboard, Users, History, ChevronDown, Loader2 } from '@lucide/svelte';
   import { Badge } from '$lib/components/ui/badge';
-  import { Progress } from '$lib/components/ui/progress';
-  import { 
+  import { Button } from '$lib/components/ui/button';
+  import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
+  import {
     currentPlayerStats,
-    championPerformance,
-    recentMatches,
     matchHistoryActions,
+    matchHistoryLoading,
     matchHistorySummary,
-    playerInsights
+    MAX_MATCH_COUNT,
+    MATCH_COUNT_STEP,
+    playerInsights,
+    recentMatches,
   } from '$lib/stores/matchHistoryStore';
-  import { onMount } from 'svelte';
+  import MatchHistoryHeroBanner from './match-history/MatchHistoryHeroBanner.svelte';
+  import MatchHistoryStatGrid from './match-history/MatchHistoryStatGrid.svelte';
+  import MatchHistoryRoleGrid from './match-history/MatchHistoryRoleGrid.svelte';
+  import MatchHistoryInsights from './match-history/MatchHistoryInsights.svelte';
+  import MatchHistoryChampionList from './match-history/MatchHistoryChampionList.svelte';
+  import MatchHistoryRecentList from './match-history/MatchHistoryRecentList.svelte';
 
-  // Local state
-  let selectedTab = $state<'overview' | 'champions' | 'recent'>('overview');
-  let showInsights = $state(true);
-
-  // Derived values from stores
-  let summary = $derived($matchHistorySummary);
-  let insights = $derived($playerInsights);
-
-  function getInsightIcon(type: string) {
-    switch (type) {
-      case 'positive': return CheckCircle;
-      case 'negative': return AlertCircle;
-      case 'warning': return AlertCircle;
-      default: return Clock;
-    }
+  interface Props {
+    variant?: 'compact' | 'full';
+    showFullLink?: boolean;
   }
 
-  function getInsightColor(type: string) {
-    switch (type) {
-      case 'positive': return 'text-green-600';
-      case 'negative': return 'text-red-600';
-      case 'warning': return 'text-yellow-600';
-      default: return 'text-gray-600';
+  let { variant = 'compact', showFullLink = true }: Props = $props();
+
+  let summary = $derived($matchHistorySummary);
+  let insights = $derived($playerInsights);
+  let loadMoreError = $state<string | null>(null);
+
+  const championsForTab = $derived(
+    variant === 'full' ? summary.allChampions : summary.topChampions,
+  );
+  const canLoadMore = $derived(
+    summary.hasMoreMatches && summary.matchCountLoaded < MAX_MATCH_COUNT,
+  );
+
+  async function loadMoreMatches() {
+    try {
+      loadMoreError = null;
+      await matchHistoryActions.loadMoreMatches();
+    } catch (err) {
+      loadMoreError = err instanceof Error ? err.message : String(err);
     }
   }
 </script>
 
 {#if $currentPlayerStats}
-  <Card class="bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm border-border/50 shadow-lg">
-    <CardHeader class="pb-4">
-      <CardTitle class="flex items-center gap-3 text-lg">
-        <div class="p-2 rounded-lg bg-primary/10">
-          <Trophy class="w-5 h-5 text-primary" />
-        </div>
-        <div class="flex-1">
-          <div class="font-bold">Match History Analysis</div>
-          <div class="text-sm text-muted-foreground font-normal">
-            Performance insights and statistics
-          </div>
-        </div>
-        <Badge variant="outline" class="text-xs">
-          {summary.totalMatches} Matches
-        </Badge>
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div class="space-y-6">
-        <!-- Tab Navigation -->
-        <div class="flex space-x-1 bg-muted/30 p-1 rounded-lg">
-          <button
-            onclick={() => selectedTab = 'overview'}
-            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors
-              {selectedTab === 'overview' 
-                ? 'bg-background text-foreground shadow-sm' 
-                : 'text-muted-foreground hover:text-foreground'}"
-          >
-            Overview
-          </button>
-          <button
-            onclick={() => selectedTab = 'champions'}
-            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors
-              {selectedTab === 'champions' 
-                ? 'bg-background text-foreground shadow-sm' 
-                : 'text-muted-foreground hover:text-foreground'}"
-          >
-            Champions
-          </button>
-          <button
-            onclick={() => selectedTab = 'recent'}
-            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors
-              {selectedTab === 'recent' 
-                ? 'bg-background text-foreground shadow-sm' 
-                : 'text-muted-foreground hover:text-foreground'}"
-          >
-            Recent
-          </button>
-        </div>
+  <div
+    class="rounded-2xl border border-violet-100/80 dark:border-violet-900/30 bg-gradient-to-b from-violet-50/50 to-background dark:from-violet-950/15 dark:to-background shadow-sm overflow-hidden {variant === 'full' ? 'max-w-3xl' : ''}"
+  >
+    <div class="p-3 {variant === 'full' ? 'sm:p-4' : ''} space-y-3">
+      <MatchHistoryHeroBanner
+        playerStats={$currentPlayerStats}
+        {summary}
+        {variant}
+        showFullLink={showFullLink && variant === 'compact'}
+      />
 
-        <!-- Overview Tab -->
-        {#if selectedTab === 'overview'}
-          <div class="space-y-6">
-            <!-- Key Statistics -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="p-3 bg-muted/30 rounded-lg">
-                <div class="flex items-center gap-2 mb-2">
-                  <Trophy class="w-4 h-4 text-yellow-500" />
-                  <span class="text-sm font-medium">Win Rate</span>
-                </div>
-                <div class="text-2xl font-bold {matchHistoryActions.getWinRateColor(summary.winRate)}">
-                  {summary.winRate}%
-                </div>
-                <Progress value={summary.winRate} class="h-2 mt-2" />
-              </div>
-              
-              <div class="p-3 bg-muted/30 rounded-lg">
-                <div class="flex items-center gap-2 mb-2">
-                  <Target class="w-4 h-4 text-red-500" />
-                  <span class="text-sm font-medium">Avg KDA</span>
-                </div>
-                <div class="text-2xl font-bold {matchHistoryActions.getKDAColor(summary.avgKDA)}">
-                  {summary.avgKDA}
-                </div>
-                <div class="text-xs text-muted-foreground mt-1">
-                  {matchHistoryActions.formatKDA(
-                    $currentPlayerStats.avg_kills || 0,
-                    $currentPlayerStats.avg_deaths || 0,
-                    $currentPlayerStats.avg_assists || 0
-                  )}
-                </div>
-              </div>
-              
-              <div class="p-3 bg-muted/30 rounded-lg">
-                <div class="flex items-center gap-2 mb-2">
-                  <Award class="w-4 h-4 text-purple-500" />
-                  <span class="text-sm font-medium">Grade</span>
-                </div>
-                <div class="text-2xl font-bold {summary.performanceGrade.color}">
-                  {summary.performanceGrade.grade}
-                </div>
-                <div class="text-xs text-muted-foreground mt-1">
-                  Performance
-                </div>
-              </div>
+      <Tabs value="overview" class="space-y-3">
+        <TabsList
+          class="inline-flex h-auto w-auto max-w-full p-1 rounded-xl bg-white/70 dark:bg-card/60 border border-violet-100 dark:border-violet-900/30"
+        >
+          <TabsTrigger
+            value="overview"
+            class="gap-1 px-2.5 py-1.5 text-xs rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-purple-600 data-[state=active]:text-white border-0"
+          >
+            <LayoutDashboard class="w-3.5 h-3.5" />
+            <span>Overview</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="champions"
+            class="gap-1 px-2.5 py-1.5 text-xs rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-purple-600 data-[state=active]:text-white border-0"
+          >
+            <Users class="w-3.5 h-3.5" />
+            <span>Champs</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="recent"
+            class="gap-1 px-2.5 py-1.5 text-xs rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-purple-600 data-[state=active]:text-white border-0"
+          >
+            <History class="w-3.5 h-3.5" />
+            <span>Recent</span>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" class="space-y-3 mt-0">
+          <MatchHistoryStatGrid
+            {summary}
+            playerStats={$currentPlayerStats}
+            matches={$recentMatches}
+            {variant}
+          />
+          {#if variant === 'full'}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl">
+              <MatchHistoryRoleGrid roleStats={summary.roleStats} />
+              <MatchHistoryInsights insights={insights} />
             </div>
+          {:else}
+            <MatchHistoryRoleGrid roleStats={summary.roleStats} />
+            <MatchHistoryInsights insights={insights} />
+          {/if}
+        </TabsContent>
 
-            <!-- Performance Insights -->
-            {#if showInsights && insights.length > 0}
-              <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-sm font-medium">Performance Insights:</h4>
-                  <button
-                    onclick={() => showInsights = !showInsights}
-                    class="text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    Hide
-                  </button>
-                </div>
-                <div class="space-y-2">
-                  {#each insights as insight}
-                    {@const IconComponent = getInsightIcon(insight.type)}
-                    <div class="p-3 bg-muted/30 rounded-lg">
-                      <div class="flex items-start gap-2">
-                        <IconComponent class="w-4 h-4 mt-0.5 {getInsightColor(insight.type)}" />
-                        <div class="flex-1">
-                          <div class="text-sm font-medium {getInsightColor(insight.type)}">
-                            {insight.title}
-                          </div>
-                          <div class="text-xs text-muted-foreground mt-1">
-                            {insight.message}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  {/each}
-                </div>
-              </div>
-            {:else if !showInsights}
-              <button
-                onclick={() => showInsights = true}
-                class="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Show Performance Insights
-              </button>
-            {/if}
-          </div>
-        {/if}
+        <TabsContent value="champions" class="mt-0">
+          <MatchHistoryChampionList
+            champions={championsForTab}
+            totalCount={summary.allChampions.length}
+            {variant}
+          />
+        </TabsContent>
 
-        <!-- Champions Tab -->
-        {#if selectedTab === 'champions'}
-          <div class="space-y-4">
-            <h4 class="text-sm font-medium">Top Performing Champions:</h4>
-            {#if summary.topChampions.length > 0}
-              <div class="space-y-3">
-                {#each summary.topChampions as champion}
-                  <div class="p-3 bg-muted/30 rounded-lg">
-                    <div class="flex items-center justify-between mb-2">
-                      <div class="flex items-center gap-2">
-                        <span class="font-medium">Champion {champion.championId}</span>
-                        <Badge variant="outline" class="text-xs">
-                          {champion.games} games
-                        </Badge>
-                      </div>
-                      <div class="text-sm font-medium {matchHistoryActions.getWinRateColor(champion.winRate)}">
-                        {champion.winRate.toFixed(1)}% WR
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                      <div>KDA: {champion.avgKDA.toFixed(2)}</div>
-                      <div>Wins: {champion.wins}</div>
-                      <div>Losses: {champion.games - champion.wins}</div>
-                    </div>
-                  </div>
-                {/each}
-              </div>
-            {:else}
-              <div class="text-center py-8 text-muted-foreground">
-                <Users class="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p class="text-sm">No champion data available</p>
-              </div>
-            {/if}
-          </div>
-        {/if}
+        <TabsContent value="recent" class="mt-0">
+          <MatchHistoryRecentList
+            matches={$recentMatches}
+            recentTrend={summary.recentTrend}
+            {variant}
+          />
+        </TabsContent>
+      </Tabs>
 
-        <!-- Recent Tab -->
-        {#if selectedTab === 'recent'}
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <h4 class="text-sm font-medium">Recent Performance:</h4>
-              <Badge variant="outline" class="text-xs {summary.recentTrend.color}">
-                {summary.recentTrend.trend}
-              </Badge>
-            </div>
-            {#if $recentMatches.length > 0}
-              <div class="space-y-2">
-                {#each $recentMatches.slice(0, 5) as match, index}
-                  <div class="p-2 bg-muted/30 rounded-lg text-xs">
-                    <div class="flex items-center justify-between">
-                      <span>Match {index + 1}</span>
-                      <span class="text-muted-foreground">
-                        {new Date(match.gameCreation || Date.now()).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                {/each}
-              </div>
-            {:else}
-              <div class="text-center py-8 text-muted-foreground">
-                <Clock class="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p class="text-sm">No recent matches available</p>
-              </div>
+      {#if variant === 'full'}
+        <div class="space-y-1.5 pt-1 border-t border-violet-100 dark:border-violet-900/30">
+          <p class="text-[10px] text-muted-foreground text-center">
+            Stats from last {summary.matchCountLoaded} games
+            {#if summary.allChampions.length > 0}
+              · {summary.allChampions.length} champions
             {/if}
-          </div>
-        {/if}
-      </div>
-    </CardContent>
-  </Card>
+          </p>
+          {#if canLoadMore}
+            <Button
+              variant="outline"
+              size="sm"
+              class="w-full h-8 text-xs gap-1.5 border-violet-200 dark:border-violet-800"
+              onclick={loadMoreMatches}
+              disabled={$matchHistoryLoading}
+            >
+              {#if $matchHistoryLoading}
+                <Loader2 class="w-3.5 h-3.5 animate-spin" />
+                Loading…
+              {:else}
+                <ChevronDown class="w-3.5 h-3.5" />
+                Load {MATCH_COUNT_STEP} more games
+              {/if}
+            </Button>
+          {:else if summary.matchCountLoaded >= MAX_MATCH_COUNT}
+            <p class="text-[10px] text-muted-foreground text-center">Maximum sample loaded</p>
+          {/if}
+          {#if loadMoreError}
+            <p class="text-[10px] text-destructive text-center">{loadMoreError}</p>
+          {/if}
+        </div>
+      {/if}
+    </div>
+  </div>
 {:else}
-  <Card class="bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm border-border/50 shadow-lg opacity-60">
-    <CardHeader class="pb-4">
-      <CardTitle class="flex items-center gap-3 text-lg">
-        <div class="p-2 rounded-lg bg-muted/50">
-          <Trophy class="w-5 h-5 text-muted-foreground" />
-        </div>
-        <div class="flex-1">
-          <div class="font-bold text-muted-foreground">Match History Analysis</div>
-          <div class="text-sm text-muted-foreground font-normal">
-            No match data available
-          </div>
-        </div>
-        <Badge variant="outline" class="text-muted-foreground">
-          Inactive
-        </Badge>
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div class="text-center py-8 text-muted-foreground">
-        <div class="p-4 rounded-full bg-muted/50 w-fit mx-auto mb-4">
-          <Trophy class="w-8 h-8 text-muted-foreground/50" />
-        </div>
-        <p class="text-sm">Waiting for match history data...</p>
-      </div>
-    </CardContent>
-  </Card>
+  <div
+    class="rounded-2xl border border-dashed border-violet-200 dark:border-violet-900/40 bg-violet-50/30 dark:bg-violet-950/10 p-5 text-center max-w-sm"
+  >
+    <div class="p-3 rounded-xl bg-white/80 dark:bg-card/80 w-fit mx-auto mb-3 shadow-sm">
+      <Trophy class="w-7 h-7 text-violet-400" />
+    </div>
+    <p class="text-sm font-semibold text-foreground">Waiting for match history</p>
+    <p class="text-xs text-muted-foreground mt-0.5">Data loads when League is connected</p>
+    <Badge variant="outline" class="mt-2 text-[10px] text-muted-foreground">Inactive</Badge>
+    {#if showFullLink}
+      <a href="/match-history" class="block text-xs text-violet-600 hover:underline mt-2">
+        Open match history page
+      </a>
+    {/if}
+  </div>
 {/if}

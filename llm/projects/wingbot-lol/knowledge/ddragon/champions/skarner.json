@@ -1,0 +1,39 @@
+{
+  "id": "72",
+  "name": "Skarner",
+  "title": "the Primordial Sovereign",
+  "tags": [
+    "Tank",
+    "Fighter"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 7,
+    "defense": 8,
+    "magic": 5,
+    "difficulty": 5
+  },
+  "stats": {
+    "hp": 630,
+    "hpperlevel": 110,
+    "mp": 320,
+    "mpperlevel": 40,
+    "movespeed": 335,
+    "armor": 33,
+    "armorperlevel": 4.5,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 150,
+    "hpregen": 7.5,
+    "hpregenperlevel": 0.75,
+    "mpregen": 7.2,
+    "mpregenperlevel": 0.75,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 63,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2,
+    "attackspeed": 0.625
+  },
+  "blurb": "The ancient, colossal brackern Skarner is revered in Ixtal as one of the founding members of its ruling caste, the Yun Tal. Devoted to keeping his nation safe from the rest of the world, Skarner dwells in a chamber beneath Ixaocan where he can hear the..."
+}

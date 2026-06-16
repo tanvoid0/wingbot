@@ -1,0 +1,78 @@
+{
+  "counters": [
+    {
+      "your_champ": "Yasuo",
+      "enemy_champ": "Malphite",
+      "type": "counter",
+      "note": "Yasuo is countered by Malphite"
+    },
+    {
+      "your_champ": "Yasuo",
+      "enemy_champ": "Rammus",
+      "type": "counter",
+      "note": "Yasuo is countered by Rammus"
+    },
+    {
+      "your_champ": "Katarina",
+      "enemy_champ": "Malzahar",
+      "type": "counter",
+      "note": "Katarina is countered by Malzahar"
+    },
+    {
+      "your_champ": "Katarina",
+      "enemy_champ": "Lissandra",
+      "type": "counter",
+      "note": "Katarina is countered by Lissandra"
+    },
+    {
+      "your_champ": "Master Yi",
+      "enemy_champ": "Jax",
+      "type": "counter",
+      "note": "Master Yi is countered by Jax"
+    },
+    {
+      "your_champ": "Master Yi",
+      "enemy_champ": "Rammus",
+      "type": "counter",
+      "note": "Master Yi is countered by Rammus"
+    }
+  ],
+  "synergies": [
+    {
+      "your_champ": "Yasuo",
+      "ally_champ": "Malphite",
+      "type": "synergy",
+      "note": "Yasuo synergizes with Malphite"
+    },
+    {
+      "your_champ": "Yasuo",
+      "ally_champ": "Gragas",
+      "type": "synergy",
+      "note": "Yasuo synergizes with Gragas"
+    },
+    {
+      "your_champ": "Katarina",
+      "ally_champ": "Yuumi",
+      "type": "synergy",
+      "note": "Katarina synergizes with Yuumi"
+    },
+    {
+      "your_champ": "Katarina",
+      "ally_champ": "Lulu",
+      "type": "synergy",
+      "note": "Katarina synergizes with Lulu"
+    },
+    {
+      "your_champ": "Jinx",
+      "ally_champ": "Thresh",
+      "type": "synergy",
+      "note": "Jinx synergizes with Thresh"
+    },
+    {
+      "your_champ": "Jinx",
+      "ally_champ": "Blitzcrank",
+      "type": "synergy",
+      "note": "Jinx synergizes with Blitzcrank"
+    }
+  ]
+}

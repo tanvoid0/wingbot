@@ -1,0 +1,17 @@
+{
+  "id": "2152",
+  "name": "Elixir of Force",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Consume</active><br>Grants 25 Adaptive Force for 60 seconds. </mainText>",
+  "gold": {
+    "base": 50,
+    "purchasable": false,
+    "total": 50,
+    "sell": 20
+  },
+  "tags": [
+    "Consumable",
+    "Tenacity"
+  ],
+  "stats": {}
+}

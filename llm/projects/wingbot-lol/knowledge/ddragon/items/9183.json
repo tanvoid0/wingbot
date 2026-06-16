@@ -1,0 +1,14 @@
+{
+  "id": "9183",
+  "name": "Blade-o-rang",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Fires returning projectiles at the closest enemy.<br><br><status>Evolve:</status> Movement Speed<br><br><rules>Damage, Ability Haste, Crit Chance, Projectile Count</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

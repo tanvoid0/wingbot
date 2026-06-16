@@ -1,0 +1,14 @@
+{
+  "id": "2010",
+  "name": "Total Biscuit of Everlasting Will",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Eat the biscuit to restore <healing>Health</healing> over 5 seconds, increased based on missing health. Consuming or selling a biscuit permanently grants <healing>30 maximum Health</healing>. </mainText>",
+  "gold": {
+    "base": 50,
+    "purchasable": false,
+    "total": 50,
+    "sell": 5
+  },
+  "tags": [],
+  "stats": {}
+}

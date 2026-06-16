@@ -1,0 +1,19 @@
+{
+  "id": "221043",
+  "name": "Recurve Bow",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>15%</attention> Attack Speed</stats><br><br><passive>Sting</passive><br>Attacks deal <physicalDamage>15 bonus physical damage</physicalDamage> <OnHit>On-Hit</OnHit>.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": false,
+    "total": 500,
+    "sell": 350
+  },
+  "tags": [
+    "AttackSpeed",
+    "OnHit"
+  ],
+  "stats": {
+    "PercentAttackSpeedMod": 0.15
+  }
+}

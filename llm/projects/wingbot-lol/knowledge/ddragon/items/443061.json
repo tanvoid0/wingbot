@@ -1,0 +1,22 @@
+{
+  "id": "443061",
+  "name": "Force Of Entropy",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>900</attention> Health<br><attention>30</attention> Ability Haste<br><attention>25%</attention> Critical Strike Chance</stats><br><br><passive>Atrophy</passive><br>When you <status>Immobilizing</status> a target roll your <attention>Critical Chance</attention> to increase their duration by 0.25 +33% seconds.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "Armor",
+    "CriticalStrike"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 900,
+    "FlatCritChanceMod": 0.25
+  }
+}

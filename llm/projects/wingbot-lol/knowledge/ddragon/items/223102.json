@@ -1,0 +1,20 @@
+{
+  "id": "223102",
+  "name": "Banshee's Veil",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>80</attention> Ability Power<br><attention>40</attention> Magic Resist</stats><br><br><passive>Annul</passive><br>Grants a <shield>Spell Shield</shield> that blocks the next enemy Ability.<br><br><rules>Item cooldown is restarted if you take damage from champions before it is completed.</rules></mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "SpellBlock",
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 40,
+    "FlatMagicDamageMod": 80
+  }
+}

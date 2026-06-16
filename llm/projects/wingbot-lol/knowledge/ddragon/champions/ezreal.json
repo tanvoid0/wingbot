@@ -1,0 +1,39 @@
+{
+  "id": "81",
+  "name": "Ezreal",
+  "title": "the Prodigal Explorer",
+  "tags": [
+    "Marksman",
+    "Mage"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 7,
+    "defense": 2,
+    "magic": 6,
+    "difficulty": 7
+  },
+  "stats": {
+    "hp": 600,
+    "hpperlevel": 102,
+    "mp": 375,
+    "mpperlevel": 70,
+    "movespeed": 325,
+    "armor": 24,
+    "armorperlevel": 4.2,
+    "spellblock": 30,
+    "spellblockperlevel": 1.3,
+    "attackrange": 550,
+    "hpregen": 4,
+    "hpregenperlevel": 0.65,
+    "mpregen": 8.5,
+    "mpregenperlevel": 1,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 60,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2.5,
+    "attackspeed": 0.625
+  },
+  "blurb": "A dashing adventurer, unknowingly gifted in the magical arts, Ezreal raids long-lost catacombs, tangles with ancient curses, and overcomes seemingly impossible odds with ease. His courage and bravado knowing no bounds, he prefers to improvise his way..."
+}

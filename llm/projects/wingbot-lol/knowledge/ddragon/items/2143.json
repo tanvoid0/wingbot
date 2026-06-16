@@ -1,0 +1,17 @@
+{
+  "id": "2143",
+  "name": "Juice of Vitality",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><br><br><rules>Juices do not stack with themselves, but you can have multiple different ones active.</rules><active>Active - Consume:</active> Automatically activates on Combat Start. Drink to gain <healing>300+ 10% Health</healing> for the next round.<br><br><flavorText>Our specially formulated veggie blend is proven to harden your skin to resist even the strongest attacks!</flavorText></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 500
+  },
+  "tags": [
+    "Health",
+    "Consumable"
+  ],
+  "stats": {}
+}

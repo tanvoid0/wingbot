@@ -1,0 +1,14 @@
+{
+  "id": "9176",
+  "name": "Gatling Bunny-Guns",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Deals area damage over time in a cone.<br><br><status>Evolve:</status> Duration<br><br><rules>Damage, Ability Haste, Duration, Area Size</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

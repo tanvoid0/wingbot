@@ -1,0 +1,18 @@
+{
+  "id": "1506",
+  "name": "Reinforced Armor",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><mainText><unique>Reinforced</unique><br>Turrets take 80% reduced damage, including True Damage, when no enemy Lane Minions or Rift Herald are nearby.<br><br><unique>Melee Weakness</unique><br>Turrets take 20% increased damage from melee Champions.<br><br><unique>Regeneration</unique><br>Inhibitor turrets have health regeneration but cannot regenerate past their current segment at 30%, 75%, and 100% health.</mainText></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Armor",
+    "ManaRegen",
+    "OnHit"
+  ],
+  "stats": {}
+}

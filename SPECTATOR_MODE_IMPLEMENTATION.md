@@ -13,14 +13,7 @@ Successfully implemented fixes for spectator mode detection and added LCU WebSoc
 - `src-tauri/src/lcu_api.rs`
 - `src-tauri/src/lcu_api_new.rs`
 
-**Change**:
-```rust
-// Before
-pub const LIVE_CLIENT_BASE_URL: &str = "https://127.0.0.1:2999";
-
-// After
-pub const LIVE_CLIENT_BASE_URL: &str = "http://127.0.0.1:2999"; // Live Client Data API uses HTTP, not HTTPS
-```
+**Status**: Applied in `src-tauri/src/lcu_api.rs` — `LIVE_CLIENT_BASE_URL` is `http://127.0.0.1:2999`.
 
 **Impact**: This fixes live game data retrieval when actively playing. The API doesn't use SSL/TLS.
 

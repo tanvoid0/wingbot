@@ -1,0 +1,23 @@
+{
+  "id": "323110",
+  "name": "Frozen Heart",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>75</attention> Armor<br><attention>500</attention> Mana<br><attention>25</attention> Ability Haste</stats><br><br><passive>Winter's Caress</passive><br>Reduce the <attackSpeed>Attack Speed</attackSpeed> of nearby champions by <attackSpeed>20%</attackSpeed>.</mainText>",
+  "gold": {
+    "base": 800,
+    "purchasable": true,
+    "total": 2700,
+    "sell": 1890
+  },
+  "tags": [
+    "Armor",
+    "Mana",
+    "Aura",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 500,
+    "FlatArmorMod": 75
+  }
+}

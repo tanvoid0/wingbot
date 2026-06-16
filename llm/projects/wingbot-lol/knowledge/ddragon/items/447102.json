@@ -1,0 +1,22 @@
+{
+  "id": "447102",
+  "name": "Reality Fracture",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>80</attention> Ability Power<br><attention>40%</attention> Attack Speed<br><attention>300</attention> Health</stats><br><br><passive>ZZ'Rot</passive> (0s)<br>On Attack or when damaging an enemy with an ability, summon 8 Voidgrubs to Attack the target. Voidgrubs deal <magicDamage> magic damage</magicDamage> and live for up to 3 seconds.<br><br>When you die, spawn 6.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "AttackSpeed",
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 300,
+    "FlatMagicDamageMod": 80,
+    "PercentAttackSpeedMod": 0.4
+  }
+}

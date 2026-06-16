@@ -3,48 +3,27 @@
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { 
+    wsChampionSelect,
     wsChampionSelectPhase,
-    wsChampionSelectTimer,
     wsIsChampionSelectActive
   } from '$lib/stores/websocketStore';
-  import { onMount } from 'svelte';
+  import { champSelectTimerSec } from '$lib/utils/championSelectParser';
 
-  // Local state
   let timeRemaining = $state(0);
-  let intervalId: number | null = null;
 
-  // Update timer every second
   $effect(() => {
-    if ($wsIsChampionSelectActive && $wsChampionSelectTimer > 0) {
-      timeRemaining = $wsChampionSelectTimer;
-      
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-      
-      intervalId = setInterval(() => {
-        if (timeRemaining > 0) {
-          timeRemaining--;
-        } else {
-          clearInterval(intervalId!);
-          intervalId = null;
-        }
-      }, 1000);
-    } else {
-      if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = null;
-      }
+    const timer = $wsChampionSelect?.timer;
+    if (!$wsIsChampionSelectActive || !timer) {
       timeRemaining = 0;
+      return;
     }
-  });
 
-  onMount(() => {
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+    const tick = () => {
+      timeRemaining = champSelectTimerSec(timer);
     };
+    tick();
+    const intervalId = setInterval(tick, 100);
+    return () => clearInterval(intervalId);
   });
 
   function formatTime(seconds: number): string {

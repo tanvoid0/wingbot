@@ -1,0 +1,23 @@
+{
+  "id": "326620",
+  "name": "Echoes of Helia",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>35</attention> Ability Power<br><attention>250</attention> Health<br><attention>20</attention> Ability Haste<br><attention>150%</attention> Base Mana Regen</stats><br><br><passive>Soul Siphon</passive><br>Gain 30% of pre-mitigation damage dealt to champions as Soul Charges. Healing or Shielding an ally consumes all <passive>Soul Charges</passive> to restore <healing>Health</healing>.</mainText>",
+  "gold": {
+    "base": 900,
+    "purchasable": true,
+    "total": 2600,
+    "sell": 1820
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "ManaRegen",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 250,
+    "FlatMagicDamageMod": 35
+  }
+}

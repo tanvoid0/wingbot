@@ -1,0 +1,23 @@
+{
+  "id": "447100",
+  "name": "Mirage Blade",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>65</attention> Adaptive Force<br><attention>60%</attention> Attack Speed<br><attention>6%</attention> Move Speed</stats><br><br><passive>Blur</passive><br><OnHit>On-Hit</OnHit> reduce the remaining cooldowns of your Dash and Blink Abilities by 20% (reduced to 5% for Ultimates).</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Damage",
+    "AttackSpeed",
+    "SpellDamage",
+    "NonbootsMovement",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "PercentAttackSpeedMod": 0.6,
+    "PercentMovementSpeedMod": 0.06
+  }
+}

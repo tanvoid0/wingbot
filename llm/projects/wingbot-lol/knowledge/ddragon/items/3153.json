@@ -1,0 +1,24 @@
+{
+  "id": "3153",
+  "name": "Blade of The Ruined King",
+  "plaintext": "Deals damage based on target's Health, can steal Move Speed",
+  "description": "<mainText><stats><attention>40</attention> Attack Damage<br><attention>25%</attention> Attack Speed<br><attention>10%</attention> Life Steal</stats><br><br><passive>Mist's Edge</passive><br>Attacks deal <physicalDamage>a percentage</physicalDamage> of enemy's current Health as <physicalDamage>bonus physical damage</physicalDamage> <OnHit>On-Hit</OnHit>.<br><br><passive>Clawing Shadows</passive><br>Attacking a champion 3 times <status>Slows</status> them by 30% for 1 second.</mainText>",
+  "gold": {
+    "base": 725,
+    "purchasable": true,
+    "total": 3200,
+    "sell": 2240
+  },
+  "tags": [
+    "Damage",
+    "AttackSpeed",
+    "LifeSteal",
+    "Slow",
+    "OnHit"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 40,
+    "PercentAttackSpeedMod": 0.25,
+    "PercentLifeStealMod": 0.1
+  }
+}

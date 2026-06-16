@@ -26,6 +26,25 @@ impl DeltaDetector {
         }
     }
     
+    /// Detect changes in champion select session data.
+    pub fn detect_champion_select_changes(current: &Value, previous: &Option<Value>) -> Option<Value> {
+        if let Some(prev) = previous {
+            if current == prev {
+                return None;
+            }
+
+            let changes = Self::extract_champion_select_changes(current, prev);
+
+            if changes.is_empty() {
+                None
+            } else {
+                Some(Value::Object(changes))
+            }
+        } else {
+            Some(current.clone())
+        }
+    }
+
     /// Detect changes in live game data with focus on key fields
     pub fn detect_live_game_data_changes(current: &Value, previous: &Option<Value>) -> Option<Value> {
         if let Some(prev) = previous {
@@ -86,6 +105,41 @@ impl DeltaDetector {
         changes
     }
     
+    fn extract_champion_select_changes(current: &Value, previous: &Value) -> Map<String, Value> {
+        let mut changes = Map::new();
+
+        if let (Some(current_obj), Some(prev_obj)) = (current.as_object(), previous.as_object()) {
+            let key_fields = ["timer", "actions", "myTeam", "theirTeam", "bans", "localPlayerCellId"];
+
+            for field in &key_fields {
+                if let (Some(current_value), Some(prev_value)) =
+                    (current_obj.get(*field), prev_obj.get(*field))
+                {
+                    if current_value != prev_value {
+                        changes.insert(field.to_string(), current_value.clone());
+                    }
+                } else if let Some(current_value) = current_obj.get(*field) {
+                    changes.insert(field.to_string(), current_value.clone());
+                }
+            }
+
+            for (key, current_value) in current_obj {
+                if key_fields.contains(&key.as_str()) {
+                    continue;
+                }
+                if let Some(prev_value) = prev_obj.get(key) {
+                    if current_value != prev_value {
+                        changes.insert(key.clone(), current_value.clone());
+                    }
+                } else {
+                    changes.insert(key.clone(), current_value.clone());
+                }
+            }
+        }
+
+        changes
+    }
+
     /// Extract priority changes for live game data
     fn extract_priority_changes(current: &Value, previous: &Value) -> Map<String, Value> {
         let mut changes = Map::new();

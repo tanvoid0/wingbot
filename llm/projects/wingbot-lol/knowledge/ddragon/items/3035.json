@@ -1,0 +1,19 @@
+{
+  "id": "3035",
+  "name": "Last Whisper",
+  "plaintext": "Overcomes enemies with high Armor",
+  "description": "<mainText><stats><attention>20</attention> Attack Damage<br><attention>18%</attention> Armor Penetration</stats><br><br></mainText>",
+  "gold": {
+    "base": 750,
+    "purchasable": true,
+    "total": 1450,
+    "sell": 1015
+  },
+  "tags": [
+    "ArmorPenetration",
+    "Damage"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 20
+  }
+}

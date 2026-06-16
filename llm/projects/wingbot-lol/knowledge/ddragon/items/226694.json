@@ -1,0 +1,21 @@
+{
+  "id": "226694",
+  "name": "Serylda's Grudge",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>50</attention> Attack Damage<br><attention>40%</attention> Armor Penetration<br><attention>15</attention> Ability Haste</stats><br><br><passive>Bitter Cold</passive><br>Damaging Abilities <status>Slow</status> enemies <scaleHealth>below 50% Health</scaleHealth> by 50% for 1 second.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Damage",
+    "CooldownReduction",
+    "ArmorPenetration",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 50
+  }
+}

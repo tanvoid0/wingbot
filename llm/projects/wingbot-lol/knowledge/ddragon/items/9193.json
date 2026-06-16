@@ -1,0 +1,14 @@
+{
+  "id": "9193",
+  "name": "Iceblast Armor",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Blocks damage freezing enemies. Damage scales with Armor and Max Health.<br><br><status>Evolve:</status> Armor<br><br><rules>Damage, Ability Haste, Area Size, Duration, Armor</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

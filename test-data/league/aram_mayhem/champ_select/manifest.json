@@ -1,0 +1,8 @@
+{
+  "files": {
+    "champ_select_session": "aram_mayhem\\champ_select\\champ_select_session.json",
+    "game_snapshot": "aram_mayhem\\champ_select\\game_snapshot.json",
+    "gameflow_session": "aram_mayhem\\champ_select\\gameflow_session.json"
+  },
+  "updated_at": "2026-06-14T18:05:12.209354700+00:00"
+}

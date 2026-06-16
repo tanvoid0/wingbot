@@ -1,0 +1,19 @@
+{
+  "id": "224628",
+  "name": "Horizon Focus",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>90</attention> Ability Power<br><attention>25</attention> Ability Haste</stats><br><br><passive>Hypershot</passive><br>Dealing Ability damage to champions at 600 range or greater <keywordStealth>Reveals</keywordStealth> them for 6 seconds. <br><br><passive>Focus</passive><br>When <passive>Hypershot</passive> is triggered, <keywordStealth>Reveal</keywordStealth> all other enemy champions within 1400 range of them for 3 seconds.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "SpellDamage",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 90
+  }
+}

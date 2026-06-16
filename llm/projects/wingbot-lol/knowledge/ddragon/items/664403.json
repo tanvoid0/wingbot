@@ -1,0 +1,38 @@
+{
+  "id": "664403",
+  "name": "The Golden Spatula",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>90</attention> Attack Damage<br><attention>125</attention> Ability Power<br><attention>30%</attention> Attack Speed<br><attention>25%</attention> Critical Strike Chance<br><attention>250</attention> Health<br><attention>10</attention> Armor<br><attention>10</attention> Magic Resist<br><attention>250</attention> Mana<br><attention>20</attention> Ability Haste<br><attention>10%</attention> Life Steal<br><attention>100%</attention> Base Health Regen<br><attention>100%</attention> Base Mana Regen</stats><br><br><flavorText>\"It must do something...<br>Declined, it does EVERYTHING\"</flavorText></mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": false,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "HealthRegen",
+    "Armor",
+    "Damage",
+    "CriticalStrike",
+    "AttackSpeed",
+    "LifeSteal",
+    "SpellDamage",
+    "Mana",
+    "ManaRegen",
+    "CooldownReduction",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 10,
+    "FlatMPPoolMod": 250,
+    "FlatHPPoolMod": 250,
+    "FlatMagicDamageMod": 125,
+    "FlatArmorMod": 10,
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 90,
+    "PercentAttackSpeedMod": 0.3,
+    "PercentLifeStealMod": 0.1
+  }
+}

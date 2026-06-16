@@ -1,0 +1,23 @@
+{
+  "id": "444644",
+  "name": "Crown of the Shattered Queen",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>85</attention> Ability Power<br><attention>350</attention> Health<br><attention>600</attention> Mana<br><attention>25</attention> Ability Haste</stats><br><br><passive>Safeguard</passive><br>You are <keywordMajor>Safeguarded</keywordMajor>, reducing incoming champion damage by 90%. <keywordMajor>Safeguard</keywordMajor> persists for 1.25 seconds after taking champion damage. (0s). <br><br><rules>Item Cooldown is restarted when damage is taken from champions.</rules></mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "Mana",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 600,
+    "FlatHPPoolMod": 350,
+    "FlatMagicDamageMod": 85
+  }
+}

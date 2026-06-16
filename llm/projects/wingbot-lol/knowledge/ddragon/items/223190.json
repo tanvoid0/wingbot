@@ -1,0 +1,26 @@
+{
+  "id": "223190",
+  "name": "Locket of the Iron Solari",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>400</attention> Health<br><attention>25</attention> Armor<br><attention>35</attention> Magic Resist<br><attention>25</attention> Ability Haste</stats><br><br><active>Devotion</active><br>Grant nearby allies a <shield>Shield</shield>, decaying over time.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "Armor",
+    "Aura",
+    "Active",
+    "MagicResist",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 35,
+    "FlatHPPoolMod": 400,
+    "FlatArmorMod": 25
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "9187",
+  "name": "T.I.B.B.E.R.S",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Summons Robo-Tibbers. Robo-Tibbers swipes, dealing area damage. Robo-Tibbers focuses on enemies with the most health.<br><br><status>Evolve:</status> Duration<br><br><rules>Damage, Ability Haste, Area Size, Duration, Movement Speed</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

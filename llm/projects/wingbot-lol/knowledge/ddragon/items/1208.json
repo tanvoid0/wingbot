@@ -1,0 +1,16 @@
+{
+  "id": "1208",
+  "name": "Support Quest Reward",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><font color = '#00FF00'>Rewards</font><br>\u2022 A new slot for control wards<br>\u2022 Discounted control wards<br>\u2022 Bounty of Worlds item</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

@@ -1,0 +1,19 @@
+{
+  "id": "223135",
+  "name": "Void Staff",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>65</attention> Ability Power<br><attention>40%</attention> Magic Penetration</stats><br><br></mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "MagicPenetration",
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 65
+  }
+}

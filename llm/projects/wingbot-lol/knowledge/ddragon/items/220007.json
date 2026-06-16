@@ -1,0 +1,16 @@
+{
+  "id": "220007",
+  "name": "Prismatic Item",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Automatically open a semi-random selection for a Prismatic item.</mainText>",
+  "gold": {
+    "base": 4000,
+    "purchasable": true,
+    "total": 4000,
+    "sell": 4000
+  },
+  "tags": [
+    "Consumable"
+  ],
+  "stats": {}
+}

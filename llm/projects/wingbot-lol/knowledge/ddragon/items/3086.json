@@ -1,0 +1,22 @@
+{
+  "id": "3086",
+  "name": "Zeal",
+  "plaintext": "Slight bonuses to Critical Strike Chance, Move Speed and Attack Speed",
+  "description": "<mainText><stats><attention>15%</attention> Attack Speed<br><attention>15%</attention> Critical Strike Chance<br><attention>4%</attention> Move Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 350,
+    "purchasable": true,
+    "total": 1200,
+    "sell": 840
+  },
+  "tags": [
+    "CriticalStrike",
+    "AttackSpeed",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.15,
+    "PercentAttackSpeedMod": 0.15,
+    "PercentMovementSpeedMod": 0.04
+  }
+}

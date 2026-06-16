@@ -1,0 +1,39 @@
+{
+  "id": "2",
+  "name": "Olaf",
+  "title": "the Berserker",
+  "tags": [
+    "Fighter",
+    "Tank"
+  ],
+  "partype": "Mana",
+  "info": {
+    "attack": 9,
+    "defense": 5,
+    "magic": 3,
+    "difficulty": 3
+  },
+  "stats": {
+    "hp": 645,
+    "hpperlevel": 119,
+    "mp": 316,
+    "mpperlevel": 50,
+    "movespeed": 350,
+    "armor": 35,
+    "armorperlevel": 4.2,
+    "spellblock": 32,
+    "spellblockperlevel": 2.05,
+    "attackrange": 125,
+    "hpregen": 6.5,
+    "hpregenperlevel": 0.6,
+    "mpregen": 7.5,
+    "mpregenperlevel": 0.6,
+    "crit": 0,
+    "critperlevel": 0,
+    "attackdamage": 68,
+    "attackdamageperlevel": 0,
+    "attackspeedperlevel": 2.7,
+    "attackspeed": 0.72
+  },
+  "blurb": "An unstoppable force of destruction, the axe-wielding Olaf wants nothing but to die in glorious combat. Hailing from the brutal Freljordian peninsula of Lokfar, he once received a prophecy foretelling his peaceful passing\u2014a coward's fate, and a great..."
+}

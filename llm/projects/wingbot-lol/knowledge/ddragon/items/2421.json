@@ -1,0 +1,17 @@
+{
+  "id": "2421",
+  "name": "Shattered Armguard",
+  "plaintext": "Upgrades to stopwatch",
+  "description": "<mainText><stats><attention>40</attention> Ability Power<br><attention>25</attention> Armor</stats><br><br><passive>Shattered Time</passive><br>Armguard is broken, but can still be upgraded.<br><br><rules>After breaking one Armguard, the shopkeeper will only sell you <rarityGeneric>Shattered Armguard.</rarityGeneric></rules><br><br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 1600,
+    "sell": 640
+  },
+  "tags": [],
+  "stats": {
+    "FlatMagicDamageMod": 40,
+    "FlatArmorMod": 25
+  }
+}

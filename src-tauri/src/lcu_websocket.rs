@@ -1,8 +1,9 @@
-use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
+use tokio_tungstenite::{connect_async_tls_with_config, tungstenite::protocol::Message, Connector};
 use futures_util::{StreamExt, SinkExt};
 use tokio::sync::{broadcast, RwLock};
 use std::sync::Arc;
 use base64::{Engine as _, engine::general_purpose};
+use native_tls::TlsConnector;
 use serde_json::Value;
 
 use crate::lcu_api::LCUConnection;
@@ -53,8 +54,14 @@ impl LcuWebSocket {
             .body(())
             .map_err(|e| format!("Failed to create WebSocket request: {}", e))?;
         
-        // Connect to WebSocket with TLS
-        let (ws_stream, _) = connect_async(request)
+        // Connect to WebSocket with TLS (LCU uses self-signed certs)
+        let tls_connector = TlsConnector::builder()
+            .danger_accept_invalid_certs(true)
+            .build()
+            .map_err(|e| format!("Failed to build TLS connector: {}", e))?;
+        let connector = Connector::NativeTls(tls_connector);
+
+        let (ws_stream, _) = connect_async_tls_with_config(request, None, false, Some(connector))
             .await
             .map_err(|e| format!("Failed to connect to LCU WebSocket: {}", e))?;
         

@@ -1,0 +1,18 @@
+{
+  "id": "1026",
+  "name": "Blasting Wand",
+  "plaintext": "Moderately increases Ability Power",
+  "description": "<mainText><stats><attention>45</attention> Ability Power</stats><br><br></mainText>",
+  "gold": {
+    "base": 850,
+    "purchasable": true,
+    "total": 850,
+    "sell": 595
+  },
+  "tags": [
+    "SpellDamage"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 45
+  }
+}

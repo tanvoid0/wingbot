@@ -1,0 +1,14 @@
+{
+  "id": "220011",
+  "name": "Bravery Voucher",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Redeem during a Shopping Phase to gain a Stat Anvil and 1 bonus rerolls!</mainText>",
+  "gold": {
+    "base": 750,
+    "purchasable": false,
+    "total": 750,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

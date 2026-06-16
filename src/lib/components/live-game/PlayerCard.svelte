@@ -14,7 +14,7 @@
   } from '$lib/services/imageService';
   import { onMount, onDestroy } from 'svelte';
   import type { Player, Item } from '$lib/types/game';
-  import { gamePhase } from '$lib/stores/liveGameStore';
+  import { wsGamePhase } from '$lib/stores/websocketStore';
 
   interface Props {
     player: Player;
@@ -60,7 +60,7 @@
       timerInterval = setInterval(() => {
         // Check if game has ended
         let currentPhase = '';
-        const unsubscribe = gamePhase.subscribe(p => currentPhase = p);
+        const unsubscribe = wsGamePhase.subscribe(p => currentPhase = p);
         unsubscribe();
         
         if (currentPhase.includes('Victory') || currentPhase.includes('Game Ended')) {

@@ -1,0 +1,22 @@
+{
+  "id": "1086",
+  "name": "Doran's Bow",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>8</attention> Attack Damage<br><attention>15%</attention> Attack Speed<br><attention>1.5%</attention> Omnivamp</stats><br><br></mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 400,
+    "sell": 160
+  },
+  "tags": [
+    "Damage",
+    "AttackSpeed",
+    "SpellVamp",
+    "Lane"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 8,
+    "PercentAttackSpeedMod": 0.15
+  }
+}

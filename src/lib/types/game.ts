@@ -198,14 +198,16 @@ export interface LiveGameData {
 }
 
 export interface ComprehensiveGameState {
-  champion_select: null | object;
-  game_mode: string;
-  game_phase: 'unknown' | 'champion_select' | 'in_game';
   lcu_connected: boolean;
+  game_phase: string;
   live_client_available: boolean;
-  live_game: null | LiveGameData;
+  is_spectator_mode: boolean;
+  current_summoner: Record<string, unknown> | null;
+  champion_select: Record<string, unknown> | null;
+  live_game: LiveClientGameData | Record<string, unknown> | null;
+  live_stats: GameStats | null;
+  player_scores: PlayerScoresData | null;
   timestamp: number;
-  is_spectator_mode?: boolean;
 }
 
 export interface GameStats {

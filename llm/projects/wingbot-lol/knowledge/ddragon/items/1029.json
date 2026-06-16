@@ -1,0 +1,18 @@
+{
+  "id": "1029",
+  "name": "Cloth Armor",
+  "plaintext": "Slightly increases Armor",
+  "description": "<mainText><stats><attention>15</attention> Armor</stats><br><br></mainText>",
+  "gold": {
+    "base": 300,
+    "purchasable": true,
+    "total": 300,
+    "sell": 210
+  },
+  "tags": [
+    "Armor"
+  ],
+  "stats": {
+    "FlatArmorMod": 15
+  }
+}

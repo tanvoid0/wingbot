@@ -1,0 +1,8 @@
+{
+  "files": {
+    "champ_select_session": "other\\champ_select\\champ_select_session.json",
+    "game_snapshot": "other\\champ_select\\game_snapshot.json",
+    "gameflow_session": "other\\champ_select\\gameflow_session.json"
+  },
+  "updated_at": "2026-06-14T17:42:26.050829200+00:00"
+}

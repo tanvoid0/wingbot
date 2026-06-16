@@ -1,0 +1,21 @@
+{
+  "id": "663039",
+  "name": "Atma's Reckoning",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>500</attention> Health<br><attention>20%</attention> Critical Strike Chance</stats><br><br><passive>Big Hands</passive><br>Gain 0-30% Critical Strike Chance, scaling with your <scaleHealth>bonus Health</scaleHealth>.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "CriticalStrike",
+    "Lane"
+  ],
+  "stats": {
+    "FlatHPPoolMod": 500,
+    "FlatCritChanceMod": 0.2
+  }
+}

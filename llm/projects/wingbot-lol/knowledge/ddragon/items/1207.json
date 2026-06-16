@@ -1,0 +1,16 @@
+{
+  "id": "1207",
+  "name": "Bot Lane Quest Reward",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><font color = '#00FF00'>Rewards</font><br>\u2022 +300immediately and Boots move to a 7th slot, freeing up your inventory for 6 items<br>\u2022 +2from Minion kills<br>\u2022 +40from Champion takedowns</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

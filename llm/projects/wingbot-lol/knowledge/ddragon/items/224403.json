@@ -1,0 +1,38 @@
+{
+  "id": "224403",
+  "name": "The Golden Spatula",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>90</attention> Attack Damage<br><attention>125</attention> Ability Power<br><attention>60%</attention> Attack Speed<br><attention>25%</attention> Critical Strike Chance<br><attention>250</attention> Health<br><attention>30</attention> Armor<br><attention>30</attention> Magic Resist<br><attention>250</attention> Mana<br><attention>20</attention> Ability Haste<br><attention>10%</attention> Move Speed<br><attention>10%</attention> Omnivamp<br><attention>100%</attention> Base Health Regen<br><attention>100%</attention> Base Mana Regen</stats><br><br><passive>Doing Something</passive><br>You are permanently On Fire!<br><br><flavorText>\"It must do something...<br>Declined, it does EVERYTHING\"</flavorText></mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "HealthRegen",
+    "Armor",
+    "Damage",
+    "CriticalStrike",
+    "AttackSpeed",
+    "LifeSteal",
+    "SpellDamage",
+    "Mana",
+    "ManaRegen",
+    "CooldownReduction",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 30,
+    "FlatMPPoolMod": 250,
+    "FlatHPPoolMod": 250,
+    "FlatMagicDamageMod": 125,
+    "FlatArmorMod": 30,
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 90,
+    "PercentAttackSpeedMod": 0.6,
+    "PercentMovementSpeedMod": 0.1
+  }
+}

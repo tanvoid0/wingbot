@@ -1,0 +1,16 @@
+{
+  "id": "1004",
+  "name": "Faerie Charm",
+  "plaintext": "Slightly increases Mana Regen",
+  "description": "<mainText><stats><attention>50%</attention> Base Mana Regen</stats><br><br></mainText>",
+  "gold": {
+    "base": 200,
+    "purchasable": true,
+    "total": 200,
+    "sell": 140
+  },
+  "tags": [
+    "ManaRegen"
+  ],
+  "stats": {}
+}

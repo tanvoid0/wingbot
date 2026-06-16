@@ -1,0 +1,21 @@
+{
+  "id": "223111",
+  "name": "Mercury's Treads",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>30</attention> Magic Resist<br><attention>30</attention> Move Speed<br><attention>30%</attention> Tenacity</stats><br><br></mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 500,
+    "sell": 350
+  },
+  "tags": [
+    "Boots",
+    "SpellBlock",
+    "Tenacity"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 30,
+    "FlatMovementSpeedMod": 30
+  }
+}

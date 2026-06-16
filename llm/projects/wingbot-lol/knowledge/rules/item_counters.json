@@ -1,0 +1,254 @@
+{
+  "champions": [
+    {
+      "champion": "Yasuo",
+      "items": [
+        {
+          "item": "Randuin's Omen",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Thornmail",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Yone",
+      "items": [
+        {
+          "item": "Randuin's Omen",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Thornmail",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Fiora",
+      "items": [
+        {
+          "item": "Bramble Vest",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Ninja Tabi",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Camille",
+      "items": [
+        {
+          "item": "Bramble Vest",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Ninja Tabi",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Katarina",
+      "items": [
+        {
+          "item": "Spirit Visage",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Banshee's Veil",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Akali",
+      "items": [
+        {
+          "item": "Spirit Visage",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Banshee's Veil",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Zed",
+      "items": [
+        {
+          "item": "Zhonya's Hourglass",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Seeker's Armguard",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Adaptive Helm",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Talon",
+      "items": [
+        {
+          "item": "Zhonya's Hourglass",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Seeker's Armguard",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Adaptive Helm",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Tank",
+      "items": [
+        {
+          "item": "Lord Dominik's Regards",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Void Staff",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Assassin",
+      "items": [
+        {
+          "item": "Guardian Angel",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Stopwatch",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "champion": "Mage",
+      "items": [
+        {
+          "item": "Mercury's Treads",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Maw of Malmortius",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Thornmail",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Randuin's Omen",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Spirit Visage",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Adaptive Helm",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Frozen Heart",
+          "reason": "",
+          "priority": "medium"
+        },
+        {
+          "item": "Guardian Angel",
+          "reason": "",
+          "priority": "medium"
+        }
+      ]
+    }
+  ],
+  "team_comp": [
+    {
+      "condition": "ad_heavy",
+      "description": "3+ AD champions on enemy team",
+      "items": [
+        {
+          "item": "Thornmail",
+          "reason": "Reflects damage against AD-heavy teams",
+          "priority": "high"
+        },
+        {
+          "item": "Randuin's Omen",
+          "reason": "Reduces critical strike damage",
+          "priority": "high"
+        }
+      ]
+    },
+    {
+      "condition": "ap_heavy",
+      "description": "3+ AP champions on enemy team",
+      "items": [
+        {
+          "item": "Spirit Visage",
+          "reason": "Magic resist and healing",
+          "priority": "high"
+        },
+        {
+          "item": "Adaptive Helm",
+          "reason": "Reduces repeated magic damage",
+          "priority": "medium"
+        }
+      ]
+    },
+    {
+      "condition": "assassin_heavy",
+      "description": "2+ assassins on enemy team",
+      "items": [
+        {
+          "item": "Guardian Angel",
+          "reason": "Protection against multiple assassins",
+          "priority": "high"
+        }
+      ]
+    }
+  ]
+}

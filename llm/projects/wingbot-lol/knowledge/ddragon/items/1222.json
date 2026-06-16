@@ -1,0 +1,16 @@
+{
+  "id": "1222",
+  "name": "Top Lane Quest",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>Takedown champions, minions, towers, plates, and epic monsters to complete your quest. Earn points much faster in top lane!<br><br><font color = '#00FF00'>Rewards</font><br>\u2022 Enhance your Teleport with a large max-health shield on use<br>\u2022 Flat bonus experience, more experience from all sources, and increased level cap</mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": false,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [
+    "Lane"
+  ],
+  "stats": {}
+}

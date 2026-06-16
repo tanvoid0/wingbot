@@ -1,0 +1,24 @@
+{
+  "id": "226035",
+  "name": "Silvermere Dawn",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>40</attention> Attack Damage<br><attention>300</attention> Health<br><attention>40</attention> Magic Resist</stats><br><br><br><br><active>Active -</active> <active>Quicksilver:</active> Remove all crowd control debuffs and gain Tenacity and Slow Resistance.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": false,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "Damage",
+    "Active",
+    "Tenacity"
+  ],
+  "stats": {
+    "FlatSpellBlockMod": 40,
+    "FlatHPPoolMod": 300,
+    "FlatPhysicalDamageMod": 40
+  }
+}

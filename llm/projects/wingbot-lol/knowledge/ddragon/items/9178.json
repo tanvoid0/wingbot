@@ -1,0 +1,14 @@
+{
+  "id": "9178",
+  "name": "The Annihilator",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br>A massive explosion that kills all normal enemies and heavily damages Elites. Long cooldown.<br><br><status>Evolve:</status> EXP<br><br><rules>Damage, Ability Haste, Area Size</rules></mainText>",
+  "gold": {
+    "base": 0,
+    "purchasable": true,
+    "total": 0,
+    "sell": 0
+  },
+  "tags": [],
+  "stats": {}
+}

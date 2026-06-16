@@ -1,0 +1,19 @@
+{
+  "id": "2056",
+  "name": "Stealth Ward",
+  "plaintext": "Use to temporarily provide vision in an area",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Places a Stealth Ward on the ground that lasts 60 seconds, is <keywordStealth>Invisible</keywordStealth> to enemies but grants your team vision of the surrounding area. </mainText>",
+  "gold": {
+    "base": 40,
+    "purchasable": false,
+    "total": 40,
+    "sell": 16
+  },
+  "tags": [
+    "Consumable",
+    "Lane",
+    "Stealth",
+    "Vision"
+  ],
+  "stats": {}
+}

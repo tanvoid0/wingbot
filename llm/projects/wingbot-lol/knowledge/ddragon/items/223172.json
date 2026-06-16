@@ -1,0 +1,23 @@
+{
+  "id": "223172",
+  "name": "Zephyr",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>50%</attention> Attack Speed<br><attention>10%</attention> Move Speed<br><attention>30</attention> Ability Haste<br><attention>20%</attention> Tenacity</stats><br><br><passive>Like the Wind</passive><br>Gain 5% Move Speed <OnHit>On-Hit</OnHit> for 6 seconds, stacking up to 25% Move Speed.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "AttackSpeed",
+    "CooldownReduction",
+    "OnHit",
+    "NonbootsMovement",
+    "Tenacity"
+  ],
+  "stats": {
+    "PercentAttackSpeedMod": 0.5,
+    "PercentMovementSpeedMod": 0.1
+  }
+}

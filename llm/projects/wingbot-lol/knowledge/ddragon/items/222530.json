@@ -1,0 +1,22 @@
+{
+  "id": "222530",
+  "name": "Diadem of Songs",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>8%</attention> Heal and Shield Power<br><attention>1000</attention> Mana<br><attention>100%</attention> Base Mana Regen</stats><br><br><passive>Harmony</passive><br>Gain % Heal and Shield Power.<br><br><passive>Consonance</passive><br>While you or any ally you've healed or shielded in the last 3 seconds is in combat with champions, each second, heal the lowest health nearby ally champion for .</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": false,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "Health",
+    "Mana",
+    "ManaRegen",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 1000,
+    "FlatHPPoolMod": 200
+  }
+}

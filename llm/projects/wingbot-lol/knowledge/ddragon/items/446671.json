@@ -1,0 +1,25 @@
+{
+  "id": "446671",
+  "name": "Galeforce",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>65</attention> Attack Damage<br><attention>30%</attention> Attack Speed<br><attention>25%</attention> Critical Strike Chance<br><attention>6%</attention> Move Speed</stats><br><br><active>Cloudburst II</active> <br>Dash in target direction over terrain, firing three missiles at the lowest Health enemy near your destination. Deals physical damage, increased against low Health targets.</mainText>",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Damage",
+    "CriticalStrike",
+    "AttackSpeed",
+    "Active",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatCritChanceMod": 0.25,
+    "FlatPhysicalDamageMod": 65,
+    "PercentAttackSpeedMod": 0.3,
+    "PercentMovementSpeedMod": 0.06
+  }
+}

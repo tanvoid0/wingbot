@@ -1,0 +1,20 @@
+{
+  "id": "6690",
+  "name": "Rectrix",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>15</attention> Attack Damage<br><attention>4%</attention> Move Speed</stats><br><br></mainText>",
+  "gold": {
+    "base": 425,
+    "purchasable": true,
+    "total": 775,
+    "sell": 543
+  },
+  "tags": [
+    "Damage",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 15,
+    "PercentMovementSpeedMod": 0.04
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "323504",
+  "name": "Ardent Censer",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>55</attention> Ability Power<br><attention>10%</attention> Heal and Shield Power<br><attention>150%</attention> Base Mana Regen<br><attention>6%</attention> Move Speed</stats><br><br><passive>Sanctify</passive><br>Healing or Shielding an ally enhances you both for 6 seconds, granting <attackSpeed>25% Attack Speed</attackSpeed> and <magicDamage>20 magic damage</magicDamage> <OnHit>On-Hit</OnHit>.</mainText>",
+  "gold": {
+    "base": 700,
+    "purchasable": true,
+    "total": 2600,
+    "sell": 1820
+  },
+  "tags": [
+    "AttackSpeed",
+    "SpellDamage",
+    "ManaRegen",
+    "NonbootsMovement"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 55,
+    "PercentMovementSpeedMod": 0.06
+  }
+}

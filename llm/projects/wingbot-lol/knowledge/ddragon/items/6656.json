@@ -1,0 +1,26 @@
+{
+  "id": "6656",
+  "name": "Everfrost",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>70</attention> Ability Power<br><attention>250</attention> Health<br><attention>600</attention> Mana<br><attention>20</attention> Ability Haste</stats><br><br><br><br><rarityMythic>Mythic Passive:</rarityMythic> Grants all other <rarityLegendary>Legendary</rarityLegendary> items <attention>10</attention> Ability Power. <br><br><br><active>Active -</active> <active>Glaciate:</active> Deal damage in a cone, <status>Slowing</status> enemies hit. Enemies at the center of the cone are <status>Rooted</status> instead.</mainText>",
+  "gold": {
+    "base": 465,
+    "purchasable": false,
+    "total": 2865,
+    "sell": 2006
+  },
+  "tags": [
+    "Health",
+    "SpellDamage",
+    "Mana",
+    "Active",
+    "CooldownReduction",
+    "Slow",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 600,
+    "FlatHPPoolMod": 250,
+    "FlatMagicDamageMod": 70
+  }
+}

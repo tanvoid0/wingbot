@@ -1,0 +1,34 @@
+{
+  "id": "443064",
+  "name": "Talisman Of Ascension",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><attention>?</attention> Attack Damage<br><attention>?</attention> Attack Speed<br><attention>?</attention> Critical Strike Chance<br><attention>?</attention> Critical Strike Damage<br><br><attention>? </attention> Ability Power<br><attention>?</attention> Ability Haste<br><br><attention>?</attention> Health<br><attention>?%</attention> Base Health Regen<br><attention>?</attention> Mana<br><attention>?%</attention> Base Mana Regen<br><attention>?</attention> Armor<br><attention>?</attention> Magic Resist<br><br><attention>? || ?%</attention> Lethality and Armor Penetration<br><attention>? || ?%</attention> Magic Penetration<br><attention>?%</attention> Lifesteal<br><attention>?%</attention> Omnivamp<br><attention>? || ?%</attention> Move Speed<br><attention",
+  "gold": {
+    "base": 2750,
+    "purchasable": true,
+    "total": 2750,
+    "sell": 1100
+  },
+  "tags": [
+    "Health",
+    "SpellBlock",
+    "HealthRegen",
+    "Armor",
+    "Damage",
+    "CriticalStrike",
+    "AttackSpeed",
+    "LifeSteal",
+    "SpellDamage",
+    "Mana",
+    "ManaRegen",
+    "Active",
+    "CooldownReduction",
+    "SpellVamp",
+    "NonbootsMovement",
+    "MagicPenetration",
+    "ArmorPenetration",
+    "MagicResist",
+    "AbilityHaste"
+  ],
+  "stats": {}
+}

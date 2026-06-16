@@ -1,0 +1,20 @@
+{
+  "id": "2020",
+  "name": "The Brutalizer",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>25</attention> Attack Damage<br><attention>10</attention> Ability Haste<br><attention>5</attention> Lethality</stats><br><br></mainText>",
+  "gold": {
+    "base": 212,
+    "purchasable": true,
+    "total": 1337,
+    "sell": 936
+  },
+  "tags": [
+    "Damage",
+    "CooldownReduction",
+    "ArmorPenetration"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 25
+  }
+}

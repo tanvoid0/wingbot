@@ -1,0 +1,14 @@
+{
+  "id": "220006",
+  "name": "Legendary Support Item",
+  "plaintext": "",
+  "description": "<mainText><stats></stats><br><br><active>Active - Consume:</active> Automatically open a semi-random selection for a Legendary Support item.</mainText>",
+  "gold": {
+    "base": 2250,
+    "purchasable": true,
+    "total": 2250,
+    "sell": 2250
+  },
+  "tags": [],
+  "stats": {}
+}

@@ -1,0 +1,21 @@
+{
+  "id": "222526",
+  "name": "Whispering Circlet",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>200</attention> Health<br><attention>8%</attention> Heal and Shield Power<br><attention>75%</attention> Base Mana Regen<br><attention>300</attention> Mana</stats><br><br><passive>Holy</passive><br>Gain <scaleMana> Heal and Shield Power.</scaleMana><br><br><passive>Mana Charge</passive><br><buffedStat>After 2 combat rounds</buffedStat>, this item transforms into <rarityLegendary>Diadem of Songs</rarityLegendary>.</mainText>",
+  "gold": {
+    "base": 2500,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1250
+  },
+  "tags": [
+    "Health",
+    "Mana",
+    "ManaRegen"
+  ],
+  "stats": {
+    "FlatMPPoolMod": 300,
+    "FlatHPPoolMod": 200
+  }
+}

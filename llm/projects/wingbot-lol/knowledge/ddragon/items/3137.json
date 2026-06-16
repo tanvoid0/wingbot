@@ -1,0 +1,20 @@
+{
+  "id": "3137",
+  "name": "Cryptbloom",
+  "plaintext": "Activate to remove all debuffs and grant massive Move Speed",
+  "description": "<mainText><stats><attention>75</attention> Ability Power<br><attention>30%</attention> Magic Penetration<br><attention>20</attention> Ability Haste</stats><br><br><passive>Life from Death</passive><br>When a champion that you damaged within 3 seconds dies, a nova spreads from their corpse that <healing>heals</healing>.</mainText>",
+  "gold": {
+    "base": 200,
+    "purchasable": true,
+    "total": 3000,
+    "sell": 2100
+  },
+  "tags": [
+    "SpellDamage",
+    "MagicPenetration",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 75
+  }
+}

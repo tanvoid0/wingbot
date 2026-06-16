@@ -1,0 +1,18 @@
+{
+  "id": "3082",
+  "name": "Warden's Mail",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>40</attention> Armor</stats><br><br><passive>Rock Solid</passive><br>Reduce incoming damage from Attacks.</mainText>",
+  "gold": {
+    "base": 400,
+    "purchasable": true,
+    "total": 1000,
+    "sell": 700
+  },
+  "tags": [
+    "Armor"
+  ],
+  "stats": {
+    "FlatArmorMod": 40
+  }
+}

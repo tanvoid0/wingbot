@@ -1,0 +1,21 @@
+{
+  "id": "6616",
+  "name": "Staff of Flowing Water",
+  "plaintext": "Your heals and shields reduce crowd control and grant Move Speed",
+  "description": "<mainText><stats><attention>35</attention> Ability Power<br><attention>10%</attention> Heal and Shield Power<br><attention>125%</attention> Base Mana Regen<br><attention>10</attention> Ability Haste</stats><br><br><passive>Rapids</passive><br>Healing or Shielding an ally grants you both <magicDamage>40 Ability Power</magicDamage> and <attention>15 Ability Haste</attention> for 6 seconds.</mainText>",
+  "gold": {
+    "base": 800,
+    "purchasable": true,
+    "total": 2250,
+    "sell": 1575
+  },
+  "tags": [
+    "SpellDamage",
+    "ManaRegen",
+    "CooldownReduction",
+    "AbilityHaste"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 35
+  }
+}

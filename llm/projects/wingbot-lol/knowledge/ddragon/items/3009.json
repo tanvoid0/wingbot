@@ -1,0 +1,18 @@
+{
+  "id": "3009",
+  "name": "Boots of Swiftness",
+  "plaintext": "Enhances Move Speed and reduces the effect of slows",
+  "description": "<mainText><stats><attention>55</attention> Move Speed</stats><br><br><passive>Fleetfooted</passive><br>Reduce the effectiveness of <keyword>Slows</keyword> by 25%.</mainText>",
+  "gold": {
+    "base": 700,
+    "purchasable": true,
+    "total": 1000,
+    "sell": 700
+  },
+  "tags": [
+    "Boots"
+  ],
+  "stats": {
+    "FlatMovementSpeedMod": 55
+  }
+}

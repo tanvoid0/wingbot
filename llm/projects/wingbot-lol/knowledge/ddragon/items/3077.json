@@ -1,0 +1,19 @@
+{
+  "id": "3077",
+  "name": "Tiamat",
+  "plaintext": "Melee attacks hit nearby enemies",
+  "description": "<mainText><stats><attention>20</attention> Attack Damage</stats><br><br><passive>Cleave</passive><br>Attacks deal <physicalDamage>physical damage</physicalDamage> to nearby enemies.<br><active>Crescent</active><br>Deal <physicalDamage>physical damage</physicalDamage> to enemies around you.</mainText>",
+  "gold": {
+    "base": 500,
+    "purchasable": true,
+    "total": 1200,
+    "sell": 840
+  },
+  "tags": [
+    "Damage",
+    "OnHit"
+  ],
+  "stats": {
+    "FlatPhysicalDamageMod": 20
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "6621",
+  "name": "Dawncore",
+  "plaintext": "",
+  "description": "<mainText><stats><attention>45</attention> Ability Power<br><attention>16%</attention> Heal and Shield Power<br><attention>100%</attention> Base Mana Regen</stats><br><br><passive>First Light</passive><br>Gain <healing>2% Heal and Shield Power</healing> and <scaleAP>10 Ability Power</scaleAP> per 100% Base Mana Regen.</mainText>",
+  "gold": {
+    "base": 450,
+    "purchasable": true,
+    "total": 2500,
+    "sell": 1750
+  },
+  "tags": [
+    "SpellDamage",
+    "ManaRegen"
+  ],
+  "stats": {
+    "FlatMagicDamageMod": 45
+  }
+}
