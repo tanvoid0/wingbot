@@ -35,7 +35,7 @@
 
   // Respawn timer state
   let respawnTimer = $state(player.respawnTimer || 0);
-  let timerInterval: number | null = null;
+  let timerInterval: ReturnType<typeof setInterval> | null = null;
 
   const teamGradients = {
     blue: 'from-blue-50/50 to-transparent dark:from-blue-950/20',

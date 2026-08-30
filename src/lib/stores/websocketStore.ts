@@ -97,7 +97,10 @@ export const wsLastErrorState = writable<string | null>(null);
 export const wsErrorStable = writable(false);
 
 // Game Info
+/** Formatted "MM:SS", for display only. Never compare this numerically. */
 export const wsGameTime = writable('00:00');
+/** Elapsed game time in seconds — the one to compare against thresholds. */
+export const wsGameSeconds = writable(0);
 export const wsGamePhase = writable('No Live Game');
 export const wsGameMode = writable('Unknown');
 export const wsIsSpectatorMode = writable(false);
@@ -227,6 +230,7 @@ function updateGameTime() {
   const elapsed = Math.floor((Date.now() - wsGameStartTime) / 1000);
   const formatted = formatGameTime(elapsed);
   wsGameTime.set(formatted);
+  wsGameSeconds.set(elapsed);
 }
 
 function syncGameTimeWithApi(apiGameTime: number) {
@@ -1111,6 +1115,7 @@ export function stopWebSocketListening() {
   wsGameState.set(null);
   wsError.set(null);
   wsGameTime.set('00:00');
+  wsGameSeconds.set(0);
   wsGamePhase.set('No Live Game');
   wsGameMode.set('Unknown');
   wsIsSpectatorMode.set(false);

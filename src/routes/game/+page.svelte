@@ -17,7 +17,8 @@
     wsIsLoading, 
     wsError,
     wsErrorStable,
-    wsGameTime, 
+    wsGameTime,
+    wsGameSeconds,
     wsGamePhase, 
     wsGameMode, 
     wsIsSpectatorMode,
@@ -146,7 +147,7 @@
         connectionStatus = 'In Lobby';
       } else {
         // Fallback: Check if we have game time updates (indicates live game)
-        if ($wsGameTime && Number($wsGameTime) > 0) {
+        if ($wsGameSeconds > 0) {
           currentGameState = 'live-game';
           connectionStatus = $wsIsSpectatorMode ? 'Spectating Game' : 'In Game';
         } else {
@@ -156,7 +157,7 @@
       }
     } else {
       // Fallback: Check if we have game time updates (indicates live game)
-      if ($wsGameTime && Number($wsGameTime) > 0) {
+      if ($wsGameSeconds > 0) {
         console.log('[Game State] Fallback detection: Game time detected, setting live-game state');
         currentGameState = 'live-game';
         connectionStatus = $wsIsSpectatorMode ? 'Spectating Game' : 'In Game';
@@ -331,7 +332,7 @@
         </Alert>
       {/if}
 
-      {#if effectivePhase === 'GameStart' || loadingIntoGame || ($wsGameTime ?? 0) < 180}
+      {#if effectivePhase === 'GameStart' || loadingIntoGame || $wsGameSeconds < 180}
         <EnemyScoutPanel mode="loading" hideWhenEmpty={true} />
       {/if}
 

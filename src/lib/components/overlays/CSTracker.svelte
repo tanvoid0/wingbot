@@ -9,7 +9,7 @@
   let config = $derived($overlayConfigs.csTracker);
   let csData = $derived($csTrackerData);
   let gameTime = $state('00:00');
-  let gameTimeInterval: number | null = null;
+  let gameTimeInterval: ReturnType<typeof setInterval> | null = null;
 
   // Extract CS data from WebSocket data
   $effect(() => {

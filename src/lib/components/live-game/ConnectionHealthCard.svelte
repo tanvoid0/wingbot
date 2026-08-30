@@ -7,9 +7,11 @@
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
 
-  let healthInfo: any = null;
-  let lcuWebSocketConnected = false;
-  let lcuEvents: any[] = [];
+  // $state, or the store subscriptions below mutate plain locals in runes mode
+  // and the card renders its initial values forever. AppStatusBar does this right.
+  let healthInfo: any = $state(null);
+  let lcuWebSocketConnected = $state(false);
+  let lcuEvents: any[] = $state([]);
   let refreshInterval: ReturnType<typeof setInterval> | null = null;
   let expanded = $state(false);
 

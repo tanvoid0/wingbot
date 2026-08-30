@@ -9,7 +9,7 @@
     wsGameData,
     wsLiveGameData,
     wsGamePhase,
-    wsGameTime,
+    wsGameSeconds,
   } from '$lib/stores/websocketStore';
   import {
     scoutProfiles,
@@ -53,7 +53,7 @@
 
   const loadingPhase = $derived(
     $wsGamePhase === 'GameStart' ||
-      $wsGamePhase === 'InProgress' && ($wsGameTime ?? 0) < 180,
+      $wsGamePhase === 'InProgress' && $wsGameSeconds < 180,
   );
 
   const activeMode = $derived(

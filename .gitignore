@@ -28,3 +28,12 @@ src-tauri/target/
 llm/projects/*/export/merged/
 llm/projects/*/adapters/*/
 llm/core/*.log
+# Editor config (was tracked by mistake)
+.idea/
+
+# Abandoned trees, removed 2026-08-30 (Flutter client, Tauri 1 scaffold,
+# Python backend, llama.cpp clone). Ignored so they cannot creep back.
+/wingbot_client/
+/wingbot_invalid_setup/
+/wingbot_server/
+/llama.cpp/
