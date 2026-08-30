@@ -37,6 +37,7 @@
   // WebSocket Live Game Components
   import WebSocketGameStatus from '$lib/components/live-game/WebSocketGameStatus.svelte';
   import WebSocketTeamComparison from '$lib/components/live-game/WebSocketTeamComparison.svelte';
+  import SpectatorTeamPanel from '$lib/components/live-game/SpectatorTeamPanel.svelte';
   import WebSocketEventsTimeline from '$lib/components/live-game/WebSocketEventsTimeline.svelte';
   import WebSocketActivePlayerInfo from '$lib/components/live-game/WebSocketActivePlayerInfo.svelte';
   import LiveStats from '$lib/components/live-game/LiveStats.svelte';
@@ -279,9 +280,8 @@ import LobbyManagement from '$lib/components/live-game/LobbyManagement.svelte';
           </div>
         </AlertDescription>
       </Alert>
+      <SpectatorTeamPanel />
     {/if}
-
-    <!-- Debug Modal -->
     {#if $isDebugModalOpen}
       <DebugModal 
         isOpen={$isDebugModalOpen}

@@ -56,6 +56,10 @@ export const championSelectActions = {
 
   getPhaseDisplayName: (phase: string) => {
     switch (phase) {
+      case 'BAN':
+        return 'Ban Phase';
+      case 'PICK':
+        return 'Pick Phase';
       case 'BAN_PICK':
         return 'Ban & Pick Phase';
       case 'FINALIZATION':
@@ -73,6 +77,9 @@ export const championSelectActions = {
 
   getPhaseColor: (phase: string) => {
     switch (phase) {
+      case 'BAN':
+        return 'text-red-600';
+      case 'PICK':
       case 'BAN_PICK':
         return 'text-blue-600';
       case 'FINALIZATION':

@@ -1,4 +1,6 @@
-# Merged Data Dragon snapshots (large). Re-fetch with extract_ddragon.py
+# Downloaded external datasets (re-fetch with ingest_external.py / fetch_riot_matches.py)
+**/datasets/external/raw/
+**/datasets/external/*.jsonl
 **/knowledge/_merged/
 **/knowledge/ddragon/champions/
 **/knowledge/ddragon/items/

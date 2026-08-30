@@ -15,7 +15,7 @@
   import { Card, CardContent, CardHeader } from '$lib/components/ui/card';
   import AppModals from '$lib/components/AppModals.svelte';
   import { initializeImageService } from '$lib/services/imageService';
-  import { startWebSocketListening } from '$lib/stores/websocketStore';
+  import { startWebSocketListening, wsIsChampionSelectActive } from '$lib/stores/websocketStore';
   import { matchHistoryActions } from '$lib/stores/matchHistoryStore';
   import { openLauncherModal, openOverlaysModal } from '$lib/stores/appModalsStore';
   import AppStatusBar from '$lib/components/AppStatusBar.svelte';
@@ -42,6 +42,17 @@
       openOverlaysModal();
       void goto('/', { replaceState: true, keepFocus: true });
     }
+  });
+
+  // Entering champ select pulls you to the session view. Rising edge only, so
+  // navigating away mid-champ-select does not yank you back on the next update.
+  let wasChampSelectActive = false;
+  $effect(() => {
+    const active = $wsIsChampionSelectActive;
+    if (active && !wasChampSelectActive && $page.url.pathname !== '/game') {
+      void goto('/game', { keepFocus: true });
+    }
+    wasChampSelectActive = active;
   });
 
   onMount(() => {
@@ -89,9 +100,7 @@
       <div class="flex items-center justify-between">
         {#if isExpanded}
           <div class="flex items-center gap-1.5 min-w-0">
-            <div class="w-7 h-7 rounded-md bg-primary flex items-center justify-center shrink-0">
-              <span class="text-primary-foreground font-bold text-xs">WB</span>
-            </div>
+            <img src="/logo.svg" alt="" class="w-7 h-7 rounded-md shrink-0" />
             <h1 class="font-semibold text-sm text-foreground truncate">WingBot</h1>
           </div>
         {/if}

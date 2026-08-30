@@ -26,8 +26,15 @@ mod types;
 mod league_session;
 mod riot_api;
 mod riot_api_cache;
+mod scout_cache;
+mod player_scout;
+mod spectator_service;
 mod match_history_service;
 mod llm_service;
+mod match_history_llm;
+mod scout_llm;
+mod rune_llm;
+mod lobby_llm;
 mod compact_game_state;
 #[cfg(test)]
 mod websocket_tests;
@@ -247,6 +254,50 @@ async fn get_player_scores(riot_id: String) -> Result<Value, String> {
 }
 
 #[tauri::command]
+async fn get_rune_pages() -> Result<Value, String> {
+    let lcu_api = { get_lcu_api().lock().await.clone() };
+    lcu_api.get_rune_pages().await
+}
+
+#[tauri::command]
+async fn get_current_rune_page() -> Result<Value, String> {
+    let lcu_api = { get_lcu_api().lock().await.clone() };
+    lcu_api.get_current_rune_page().await
+}
+
+/// Writes a rune page to the player's account and selects it.
+#[tauri::command]
+async fn apply_rune_page(
+    name: String,
+    primary_style_id: u64,
+    sub_style_id: u64,
+    selected_perk_ids: Vec<u64>,
+) -> Result<Value, String> {
+    let lcu_api = { get_lcu_api().lock().await.clone() };
+    lcu_api
+        .apply_rune_page(&name, primary_style_id, sub_style_id, &selected_perk_ids)
+        .await
+}
+
+#[tauri::command]
+async fn get_death_timers() -> Result<Value, String> {
+    let lcu_api = {
+        let api = get_lcu_api().lock().await;
+        api.clone()
+    };
+    lcu_api.get_death_timers().await
+}
+
+#[tauri::command]
+async fn get_game_event_feed() -> Result<Value, String> {
+    let lcu_api = {
+        let api = get_lcu_api().lock().await;
+        api.clone()
+    };
+    lcu_api.get_game_event_feed().await
+}
+
+#[tauri::command]
 async fn get_all_game_data() -> Result<Value, String> {
     // Clone the LCU API instance to avoid holding the mutex across await
     let lcu_api = {
@@ -421,18 +472,103 @@ async fn get_ai_recommendations() -> Result<String, String> {
         return Err("AI recommendations are disabled — enable Ollama in Settings".to_string());
     }
 
-    llm_service::check_rate_limit(&ollama_config)?;
+    if !ollama_config.live_coach {
+        return Err("Live AI coach is disabled in Settings".to_string());
+    }
+
+    let rate_limit = llm_service::check_rate_limit(&ollama_config)?;
 
     let snapshot = LeagueSession::build_snapshot().await?;
-    let lcu_api = get_lcu_api().lock().await;
-    let compact = compact_game_state::build_compact_game_state(&snapshot, &lcu_api)
-        .await
-        .ok_or("No game data available — join champ select or start a game")?;
+    // Scoped so the global LCU mutex is released before the model call below,
+    // which can run for the full 120s timeout.
+    let compact = {
+        let lcu_api = get_lcu_api().lock().await;
+        compact_game_state::build_compact_game_state(&snapshot, &lcu_api)
+            .await
+            .ok_or("No game data available — join champ select or start a game")?
+    };
 
     let user_content =
         serde_json::to_string(&compact).map_err(|e| format!("Failed to encode game state: {}", e))?;
 
-    llm_service::query(&ollama_config, &user_content).await
+    let result = llm_service::query(&ollama_config, &user_content).await;
+    if result.is_ok() {
+        rate_limit.commit();
+    }
+    result
+}
+
+#[tauri::command]
+async fn get_match_history_ai_insights(analysis: Value) -> Result<Value, String> {
+    let ollama_config = {
+        let config_manager = get_config_manager().lock().map_err(|e| e.to_string())?;
+        config_manager.get_config().ollama.clone()
+    };
+
+    if !ollama_config.enabled {
+        return Err("AI insights are disabled — enable Ollama in Settings".to_string());
+    }
+
+    if !ollama_config.insights_match_history {
+        return Err("Match history AI insights are disabled in Settings".to_string());
+    }
+
+    match_history_llm::generate_ai_insights(&ollama_config, &analysis).await
+}
+
+#[tauri::command]
+async fn get_scout_ai_insights(payload: Value) -> Result<Value, String> {
+    let ollama_config = {
+        let config_manager = get_config_manager().lock().map_err(|e| e.to_string())?;
+        config_manager.get_config().ollama.clone()
+    };
+
+    if !ollama_config.enabled {
+        return Err("AI insights are disabled — enable Ollama in Settings".to_string());
+    }
+
+    if !ollama_config.insights_scout {
+        return Err("Scout AI insights are disabled in Settings".to_string());
+    }
+
+    scout_llm::generate_ai_insights(&ollama_config, &payload).await
+}
+
+#[tauri::command]
+async fn get_rune_ai_insights(payload: Value) -> Result<Value, String> {
+    let ollama_config = {
+        let config_manager = get_config_manager().lock().map_err(|e| e.to_string())?;
+        config_manager.get_config().ollama.clone()
+    };
+
+    if !ollama_config.enabled {
+        return Err("AI insights are disabled — enable Ollama in Settings".to_string());
+    }
+
+    let analysis = payload
+        .get("analysis")
+        .cloned()
+        .ok_or("Missing rune analysis payload")?;
+    let team_trees = payload
+        .get("team_trees")
+        .cloned()
+        .unwrap_or_else(|| serde_json::json!([]));
+
+    rune_llm::generate_ai_insights(&ollama_config, &analysis, &team_trees).await
+}
+
+#[tauri::command]
+async fn get_lobby_ai_insights(analysis: Value) -> Result<Value, String> {
+    let ollama_config = {
+        let config_manager = get_config_manager().lock().map_err(|e| e.to_string())?;
+        config_manager.get_config().ollama.clone()
+    };
+
+    if !ollama_config.enabled {
+        return Err("AI insights are disabled — enable Ollama in Settings".to_string());
+    }
+
+    lobby_llm::generate_ai_insights(&ollama_config, &analysis).await
 }
 
 // WebSocket server management
@@ -586,6 +722,11 @@ async fn get_player_match_analysis(
 async fn get_ranked_stats() -> Result<Value, String> {
     let lcu_api = get_lcu_api().lock().await.clone();
     lcu_api.get_ranked_stats().await
+}
+
+#[tauri::command]
+async fn scout_players(players: Vec<player_scout::ScoutPlayerInput>) -> Result<Value, String> {
+    player_scout::scout_players(players).await
 }
 
 #[tauri::command]
@@ -871,6 +1012,11 @@ pub fn run() {
             get_comprehensive_game_state,
             get_live_game_stats,
             get_player_scores,
+            get_death_timers,
+            get_rune_pages,
+            get_current_rune_page,
+            apply_rune_page,
+            get_game_event_feed,
             get_all_game_data,
             debug_lcu_connection,
 
@@ -887,6 +1033,10 @@ pub fn run() {
             update_ollama_config,
             test_ollama_connection,
             get_ai_recommendations,
+            get_match_history_ai_insights,
+            get_scout_ai_insights,
+            get_rune_ai_insights,
+            get_lobby_ai_insights,
 
             // System information
             get_system_info,
@@ -897,6 +1047,7 @@ pub fn run() {
             get_match_history,
             get_player_match_analysis,
             get_ranked_stats,
+            scout_players,
             get_match_data_status,
             test_riot_api_connection,
             get_lobby,
@@ -958,16 +1109,15 @@ async fn get_cs_tracker_data() -> Result<serde_json::Value, String> {
     // Get live game data
     let live_data = lcu_api.get_all_game_data().await?;
     
-    // Extract active player and game time
-    let active_player = live_data.get("activePlayer")
-        .ok_or("No active player data")?;
+    // Extract game time
+    live_data.get("activePlayer").ok_or("No active player data")?;
     let game_time = live_data.get("gameData")
         .and_then(|gd| gd.get("gameTime"))
         .and_then(|gt| gt.as_f64())
         .unwrap_or(0.0);
-    
+
     // Use GameDataShaper to extract CS data
-    let cs_data = GameDataShaper::extract_cs_data(active_player, game_time);
+    let cs_data = GameDataShaper::extract_cs_data(&live_data, game_time);
     
     Ok(cs_data)
 }

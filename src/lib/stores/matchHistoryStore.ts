@@ -1,5 +1,6 @@
 import { writable, derived, get } from 'svelte/store';
 import { invoke } from '@tauri-apps/api/core';
+import { ollamaEnabled, isOllamaFeatureEnabled } from './ollamaStatusStore';
 
 export const DEFAULT_MATCH_COUNT = 20;
 export const MATCH_COUNT_STEP = 20;
@@ -12,11 +13,16 @@ export const championPerformance = writable<Record<string, any>>({});
 export const recentMatches = writable<any[]>([]);
 export const matchHistoryMatchCount = writable(DEFAULT_MATCH_COUNT);
 export const matchHistoryLoading = writable(false);
+export const matchHistoryAiInsights = writable<any[]>([]);
+export const matchHistoryAiInsightsLoading = writable(false);
+export const matchHistoryAiInsightsError = writable<string | null>(null);
+
+let aiInsightsCacheKey = '';
 
 // Match History Actions
 export const matchHistoryActions = {
   // Update match history data
-  updateMatchHistory: (playerId: string, analysis: any) => {
+  updateMatchHistory: (playerId: string, analysis: any, options?: { fetchAi?: boolean }) => {
     matchHistoryData.update(current => ({
       ...current,
       [playerId]: analysis
@@ -40,6 +46,54 @@ export const matchHistoryActions = {
       if (analysis.raw_matches && Array.isArray(analysis.raw_matches)) {
         recentMatches.set(analysis.raw_matches);
       }
+
+      if (options?.fetchAi !== false) {
+        void matchHistoryActions.fetchAiInsights(analysis);
+      }
+    }
+  },
+
+  buildAiInsightsCacheKey: (analysis: any) => {
+    return [
+      analysis.total_matches,
+      analysis.wins,
+      analysis.losses,
+      analysis.win_rate?.toFixed?.(1) ?? analysis.win_rate,
+      analysis.requested_match_count,
+    ].join(':');
+  },
+
+  fetchAiInsights: async (analysis?: any, options?: { force?: boolean }) => {
+    const stats = analysis ?? get(currentPlayerStats);
+    if (!stats || !isOllamaFeatureEnabled('matchHistory')) {
+      matchHistoryAiInsights.set([]);
+      matchHistoryAiInsightsError.set(null);
+      return [];
+    }
+
+    const cacheKey = matchHistoryActions.buildAiInsightsCacheKey(stats);
+    const force = options?.force ?? false;
+    if (!force && cacheKey === aiInsightsCacheKey && get(matchHistoryAiInsights).length > 0) {
+      return get(matchHistoryAiInsights);
+    }
+
+    matchHistoryAiInsightsLoading.set(true);
+    matchHistoryAiInsightsError.set(null);
+
+    try {
+      const insights = await invoke<any[]>('get_match_history_ai_insights', { analysis: stats });
+      aiInsightsCacheKey = cacheKey;
+      matchHistoryAiInsights.set(Array.isArray(insights) ? insights : []);
+      return get(matchHistoryAiInsights);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      matchHistoryAiInsightsError.set(message);
+      if (force) {
+        matchHistoryAiInsights.set([]);
+      }
+      return get(matchHistoryAiInsights);
+    } finally {
+      matchHistoryAiInsightsLoading.set(false);
     }
   },
 
@@ -49,14 +103,18 @@ export const matchHistoryActions = {
     puuid?: string;
   }) => {
     const matchCount = options?.matchCount ?? get(matchHistoryMatchCount);
+    const forceRefresh = options?.forceRefresh ?? false;
     matchHistoryLoading.set(true);
     try {
       const analysis = await invoke('get_player_match_analysis', {
         puuid: options?.puuid ?? null,
-        forceRefresh: options?.forceRefresh ?? false,
+        forceRefresh,
         matchCount,
       });
-      matchHistoryActions.updateMatchHistory('current', analysis);
+      matchHistoryActions.updateMatchHistory('current', analysis, { fetchAi: !forceRefresh });
+      if (forceRefresh) {
+        void matchHistoryActions.fetchAiInsights(analysis, { force: true });
+      }
       return analysis;
     } finally {
       matchHistoryLoading.set(false);
@@ -205,66 +263,58 @@ export const matchHistorySummary = derived(
   }
 );
 
-// Current player performance insights (backend insights + legacy fallbacks)
+// Current player performance insights (core stats + optional AI extras)
 export const playerInsights = derived(
-  [currentPlayerStats, championPerformance],
-  ([stats, champions]) => {
+  [currentPlayerStats, championPerformance, matchHistoryAiInsights],
+  ([stats, champions, aiInsights]) => {
     if (!stats) return [];
 
+    const core: Array<{ type: string; title: string; message: string; source?: string }> = [];
+
     if (Array.isArray(stats.insights) && stats.insights.length > 0) {
-      return stats.insights;
+      core.push(...stats.insights);
+    } else {
+      // Legacy fallbacks when backend insights are missing
+      const winRate = stats.win_rate || 0;
+      if (winRate >= 60) {
+        core.push({
+          type: 'positive',
+          title: 'Strong Performance',
+          message: `Excellent ${winRate.toFixed(1)}% win rate!`,
+        });
+      } else if (winRate < 40) {
+        core.push({
+          type: 'negative',
+          title: 'Improvement Needed',
+          message: `Win rate of ${winRate.toFixed(1)}% suggests room for improvement.`,
+        });
+      }
+
+      const avgKDA = (stats.avg_kills + stats.avg_assists) / Math.max(stats.avg_deaths, 1);
+      if (avgKDA >= 2.5) {
+        core.push({
+          type: 'positive',
+          title: 'Excellent KDA',
+          message: `Outstanding ${avgKDA.toFixed(2)} KDA ratio!`,
+        });
+      } else if (avgKDA < 1.0) {
+        core.push({
+          type: 'negative',
+          title: 'KDA Concerns',
+          message: `KDA of ${avgKDA.toFixed(2)} indicates need for better positioning.`,
+        });
+      }
+
+      const championCount = Object.keys(champions).length;
+      if (championCount <= 3) {
+        core.push({
+          type: 'warning',
+          title: 'Limited Pool',
+          message: `Only ${championCount} champions played. Consider expanding your champion pool.`,
+        });
+      }
     }
 
-    const insights = [];
-    
-    // Win rate insight
-    const winRate = stats.win_rate || 0;
-    if (winRate >= 60) {
-      insights.push({
-        type: 'positive',
-        title: 'Strong Performance',
-        message: `Excellent ${winRate.toFixed(1)}% win rate!`
-      });
-    } else if (winRate < 40) {
-      insights.push({
-        type: 'negative',
-        title: 'Improvement Needed',
-        message: `Win rate of ${winRate.toFixed(1)}% suggests room for improvement.`
-      });
-    }
-
-    // KDA insight
-    const avgKDA = (stats.avg_kills + stats.avg_assists) / Math.max(stats.avg_deaths, 1);
-    if (avgKDA >= 2.5) {
-      insights.push({
-        type: 'positive',
-        title: 'Excellent KDA',
-        message: `Outstanding ${avgKDA.toFixed(2)} KDA ratio!`
-      });
-    } else if (avgKDA < 1.0) {
-      insights.push({
-        type: 'negative',
-        title: 'KDA Concerns',
-        message: `KDA of ${avgKDA.toFixed(2)} indicates need for better positioning.`
-      });
-    }
-
-    // Champion diversity insight
-    const championCount = Object.keys(champions).length;
-    if (championCount >= 10) {
-      insights.push({
-        type: 'neutral',
-        title: 'Champion Diversity',
-        message: `Playing ${championCount} different champions shows good adaptability.`
-      });
-    } else if (championCount <= 3) {
-      insights.push({
-        type: 'warning',
-        title: 'Limited Pool',
-        message: `Only ${championCount} champions played. Consider expanding your champion pool.`
-      });
-    }
-
-    return insights;
+    return [...core, ...(Array.isArray(aiInsights) ? aiInsights : [])];
   }
 );

@@ -7,12 +7,15 @@
     currentPlayerStats,
     matchHistoryActions,
     matchHistoryLoading,
+    matchHistoryAiInsightsLoading,
+    matchHistoryAiInsightsError,
     matchHistorySummary,
     MAX_MATCH_COUNT,
     MATCH_COUNT_STEP,
     playerInsights,
     recentMatches,
   } from '$lib/stores/matchHistoryStore';
+  import { ollamaEnabled, ollamaFeatureFlags } from '$lib/stores/ollamaStatusStore';
   import MatchHistoryHeroBanner from './match-history/MatchHistoryHeroBanner.svelte';
   import MatchHistoryStatGrid from './match-history/MatchHistoryStatGrid.svelte';
   import MatchHistoryRoleGrid from './match-history/MatchHistoryRoleGrid.svelte';
@@ -46,6 +49,18 @@
       loadMoreError = err instanceof Error ? err.message : String(err);
     }
   }
+
+  function retryAiInsights() {
+    if ($currentPlayerStats) {
+      void matchHistoryActions.fetchAiInsights($currentPlayerStats, { force: true });
+    }
+  }
+
+  $effect(() => {
+    if ($ollamaEnabled && $ollamaFeatureFlags.matchHistory && $currentPlayerStats) {
+      void matchHistoryActions.fetchAiInsights($currentPlayerStats);
+    }
+  });
 </script>
 
 {#if $currentPlayerStats}
@@ -97,11 +112,21 @@
           {#if variant === 'full'}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl">
               <MatchHistoryRoleGrid roleStats={summary.roleStats} />
-              <MatchHistoryInsights insights={insights} />
+              <MatchHistoryInsights
+                {insights}
+                aiLoading={$matchHistoryAiInsightsLoading}
+                aiError={$matchHistoryAiInsightsError}
+                onRetryAi={retryAiInsights}
+              />
             </div>
           {:else}
             <MatchHistoryRoleGrid roleStats={summary.roleStats} />
-            <MatchHistoryInsights insights={insights} />
+            <MatchHistoryInsights
+              {insights}
+              aiLoading={$matchHistoryAiInsightsLoading}
+              aiError={$matchHistoryAiInsightsError}
+              onRetryAi={retryAiInsights}
+            />
           {/if}
         </TabsContent>
 

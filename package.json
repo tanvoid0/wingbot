@@ -9,7 +9,21 @@
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "llm:setup": "node llm/scripts/run-pipeline.mjs setup",
+    "llm:prepare": "node llm/scripts/run-pipeline.mjs prepare --project wingbot-lol",
+    "llm:sync": "node llm/scripts/run-pipeline.mjs sync --project wingbot-lol",
+    "llm:ingest": "node llm/scripts/run-pipeline.mjs ingest --project wingbot-lol",
+    "llm:ingest:curated": "node llm/scripts/run-pipeline.mjs ingest --project wingbot-lol --require-matchup",
+    "llm:fetch-riot": "node llm/scripts/run-pipeline.mjs fetch-riot --project wingbot-lol",
+    "llm:fetch-riot:large": "node llm/scripts/run-pipeline.mjs fetch-riot --project wingbot-lol --players 100 --matches-per-player 20",
+    "llm:train": "node llm/scripts/run-pipeline.mjs train --project wingbot-lol",
+    "llm:eval": "node llm/scripts/run-pipeline.mjs eval --project wingbot-lol",
+    "llm:eval:offline": "node llm/scripts/run-pipeline.mjs eval --project wingbot-lol --offline-eval",
+    "llm:wingbot-lol": "node llm/scripts/run-pipeline.mjs all --project wingbot-lol --train",
+    "llm:wingbot-lol:prepare": "node llm/scripts/run-pipeline.mjs all --project wingbot-lol",
+    "train": "node llm/scripts/run-pipeline.mjs all --project wingbot-lol --train",
+    "eval": "node llm/scripts/run-pipeline.mjs eval --project wingbot-lol"
   },
   "license": "MIT",
   "dependencies": {

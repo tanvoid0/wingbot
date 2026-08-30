@@ -34,8 +34,11 @@
 
   function getPhaseIcon(phase: string) {
     switch (phase) {
+      case 'BAN':
       case 'BAN_PICK':
         return Shield;
+      case 'PICK':
+        return Sword;
       case 'FINALIZATION':
         return Target;
       case 'GAME_STARTING':

@@ -7,7 +7,11 @@ import type {
   PlayerScoresData, 
   ComprehensiveGameState 
 } from '$lib/types/game';
-import { champSelectTimerSec } from '$lib/utils/championSelectParser';
+import {
+  champSelectTimerSec,
+  activeChampSelectActionType,
+  refineChampSelectPhase,
+} from '$lib/utils/championSelectParser';
 
 /** Phases where champ-select session data from LCU is stale and must be ignored. */
 export const POST_CHAMP_SELECT_PHASES = new Set([
@@ -46,7 +50,12 @@ function setChampionSelectStores(cs: Record<string, unknown>) {
   wsChampionSelect.set(cs);
   wsChampionSelectData.set(cs);
   wsIsChampionSelectActive.set(true);
-  wsChampionSelectPhase.set((cs.timer as { phase?: string } | undefined)?.phase ?? 'Active');
+  const timerPhase = (cs.timer as { phase?: string } | undefined)?.phase;
+  wsChampionSelectPhase.set(
+    timerPhase
+      ? refineChampSelectPhase(timerPhase, activeChampSelectActionType(cs.actions))
+      : 'Active',
+  );
   wsChampionSelectTimer.set(champSelectTimerSec(cs.timer as Parameters<typeof champSelectTimerSec>[0]));
 }
 
@@ -404,6 +413,11 @@ function applyGameSnapshot(data: ComprehensiveGameState) {
     champSelectEndedAt = null;
     wsLiveGameData.set(data.live_game as LiveClientGameData);
     wsGameData.set(data.live_game as LiveClientGameData);
+  } else if (data.is_spectator_mode && data.spectator_game) {
+    champSelectEndedAt = null;
+    const spectator = data.spectator_game as LiveClientGameData;
+    wsLiveGameData.set(spectator);
+    wsGameData.set(spectator);
   } else if (!data.live_client_available) {
     wsLiveGameData.set(null);
     wsGameData.set(null);
@@ -453,6 +467,9 @@ function handleWebSocketMessage(message: WebSocketMessage) {
     if (changes.live_game) {
       wsLiveGameData.set(changes.live_game);
       wsGameData.set(changes.live_game);
+    } else if (changes.spectator_game) {
+      wsLiveGameData.set(changes.spectator_game);
+      wsGameData.set(changes.spectator_game);
     }
     
     // Update game phase and mode

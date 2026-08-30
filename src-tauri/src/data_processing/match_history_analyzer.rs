@@ -354,10 +354,6 @@ impl MatchHistoryAnalyzer {
             total_kills as f64 / n,
             total_deaths as f64 / n,
             total_assists as f64 / n,
-            total_cs as f64 / n,
-            total_damage as f64 / n,
-            avg_impact,
-            champion_perf.len(),
             &matches,
         );
 
@@ -491,10 +487,6 @@ fn build_insights(
     avg_kills: f64,
     avg_deaths: f64,
     avg_assists: f64,
-    avg_cs: f64,
-    avg_damage: f64,
-    avg_impact: f64,
-    champion_count: usize,
     matches: &[Value],
 ) -> Value {
     let mut insights = Vec::new();
@@ -525,50 +517,6 @@ fn build_insights(
             "type": "negative",
             "title": "Deaths Costing Games",
             "message": format!("{:.2} KDA — safer positioning may help.", avg_kda)
-        }));
-    }
-
-    if avg_damage >= 20_000.0 {
-        insights.push(json!({
-            "type": "positive",
-            "title": "Damage Threat",
-            "message": format!("Averaging {:.0} damage to champions per game.", avg_damage)
-        }));
-    }
-
-    if avg_cs >= 150.0 {
-        insights.push(json!({
-            "type": "positive",
-            "title": "Good Farm",
-            "message": format!("{:.0} CS per game on average.", avg_cs)
-        }));
-    }
-
-    if avg_impact >= 70.0 {
-        insights.push(json!({
-            "type": "positive",
-            "title": "High Game Impact",
-            "message": format!("Impact score {:.0}/100 — consistently influencing outcomes.", avg_impact)
-        }));
-    } else if avg_impact < 45.0 {
-        insights.push(json!({
-            "type": "warning",
-            "title": "Low Impact Games",
-            "message": format!("Impact score {:.0}/100 — more map pressure could help.", avg_impact)
-        }));
-    }
-
-    if champion_count <= 3 {
-        insights.push(json!({
-            "type": "neutral",
-            "title": "Focused Champion Pool",
-            "message": format!("{} champions in sample.", champion_count)
-        }));
-    } else if champion_count >= 8 {
-        insights.push(json!({
-            "type": "neutral",
-            "title": "Wide Champion Pool",
-            "message": format!("{} different champions played.", champion_count)
         }));
     }
 

@@ -58,7 +58,10 @@ mod integration_tests {
         // So we'll just verify the structure is correct
         assert!(state.lcu_connected);
         assert!(state.champion_select.is_none());
-        assert!(state.live_game.is_none());
+        // Live game data comes from the Live Client API on 2999, independent of
+        // this fake LCU connection, so assert consistency rather than absence:
+        // a real game may well be running on the machine executing the test.
+        assert_eq!(state.live_game.is_some(), state.live_client_available);
     }
 
     // Test lockfile detection with various scenarios
@@ -312,5 +315,95 @@ mod integration_tests {
         assert_eq!(state["live_game"], serde_json::Value::Null);
         assert_eq!(state["game_mode"], "Unknown");
         assert_eq!(state["timestamp"], 1234567890);
+    }
+
+    /// End-to-end smoke test against a real running League client.
+    /// Ignored by default; run with `cargo test -- --ignored live_lcu`.
+    #[test]
+    #[ignore]
+    fn test_live_lcu_detection_and_request() {
+        tokio_test::block_on(async {
+            let mut api = LCUAPI::new();
+            let connection = api
+                .detect_league_client()
+                .await
+                .expect("League client not detected - is it running?");
+
+            println!("detected LCU on port {}", connection.port);
+            assert!(connection.port > 0);
+            assert!(!connection.password.is_empty());
+
+            api.set_connection(connection);
+            let phase = api
+                .resolve_game_phase()
+                .await
+                .expect("gameflow phase request failed - wrong credentials?");
+            println!("gameflow phase: {}", phase);
+            assert!(!phase.is_empty());
+        });
+    }
+
+    /// Exercises the whole AI-recommendation input path against a live client:
+    /// detect -> snapshot -> compact game state. This is what
+    /// `get_ai_recommendations` feeds to the model, and a None here is the
+    /// "No game data available" error users actually see.
+    /// Run with `cargo test -- --ignored live_ai_input`.
+    #[test]
+    #[ignore]
+    fn test_live_ai_input_pipeline() {
+        tokio_test::block_on(async {
+            let mut api = LCUAPI::new();
+            let connection = api
+                .detect_league_client()
+                .await
+                .expect("League client not detected - is it running?");
+            api.set_connection(connection);
+
+            let snapshot = api.get_game_snapshot().await.expect("snapshot");
+            println!(
+                "phase={} live_client={} spectator_game={}",
+                snapshot.game_phase,
+                snapshot.live_client_available,
+                snapshot.spectator_game.is_some()
+            );
+
+            let compact = crate::compact_game_state::build_compact_game_state(&snapshot, &api).await;
+
+            match compact {
+                Some(state) => {
+                    let encoded = serde_json::to_string(&state).expect("encode");
+                    println!("compact state ({} bytes): {}", encoded.len(), encoded);
+                    assert!(!encoded.is_empty());
+                }
+                None => panic!(
+                    "build_compact_game_state returned None for phase {} - this is the \
+                     'No game data available' error path",
+                    snapshot.game_phase
+                ),
+            }
+        });
+    }
+
+    /// Run with `cargo test -- --ignored live_new_feeds`.
+    #[test]
+    #[ignore]
+    fn test_live_new_feeds() {
+        tokio_test::block_on(async {
+            let mut api = LCUAPI::new();
+            let conn = api.detect_league_client().await.expect("client");
+            api.set_connection(conn);
+
+            let timers = api.get_death_timers().await.expect("death timers");
+            println!("DEATH TIMERS: {}", serde_json::to_string(&timers).unwrap());
+            assert!(timers.get("enemies").and_then(|v| v.as_array()).is_some());
+
+            let feed = api.get_game_event_feed().await.expect("event feed");
+            let count = feed.get("count").and_then(|v| v.as_u64()).unwrap_or(0);
+            println!("EVENT COUNT: {}", count);
+            let events = feed.get("events").and_then(|v| v.as_array()).expect("events");
+            for e in events.iter().rev().take(6) {
+                println!("  {}", serde_json::to_string(e).unwrap());
+            }
+        });
     }
 }

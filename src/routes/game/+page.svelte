@@ -65,17 +65,20 @@
   import WebSocketEventsTimeline from '$lib/components/live-game/WebSocketEventsTimeline.svelte';
   import WebSocketActivePlayerInfo from '$lib/components/live-game/WebSocketActivePlayerInfo.svelte';
   import LiveStats from '$lib/components/live-game/LiveStats.svelte';
+  import EnemyDeathTimers from '$lib/components/live-game/EnemyDeathTimers.svelte';
   import AIRecommendations from '$lib/components/live-game/AIRecommendations.svelte';
   import ItemTracking from '$lib/components/live-game/ItemTracking.svelte';
   import MatchHistoryAnalysis from '$lib/components/live-game/MatchHistoryAnalysis.svelte';
   import RuneAnalysis from '$lib/components/live-game/RuneAnalysis.svelte';
   import LobbyManagement from '$lib/components/live-game/LobbyManagement.svelte';
+  import SpectatorTeamPanel from '$lib/components/live-game/SpectatorTeamPanel.svelte';
   import DebugModal from '$lib/components/live-game/DebugModal.svelte';
   import NoLiveGameMessage from '$lib/components/live-game/NoLiveGameMessage.svelte';
   import { appStatusBarContext, clearAppStatusBarPageState } from '$lib/stores/appStatusBarStore';
   
   // Champion Select Components
   import ChampionSelectOverlay from '$lib/components/champion-select/ChampionSelectOverlay.svelte';
+  import EnemyScoutPanel from '$lib/components/champion-select/EnemyScoutPanel.svelte';
   
   $effect(() => {
     gameData = $wsGameData || $wsLiveGameData;
@@ -287,7 +290,8 @@
 <div class="flex flex-col h-full bg-background">
   <!-- Dynamic Content Based on Game State -->
   {#if currentGameState === 'champion-select'}
-    <div class="flex-1 p-3">
+    <div class="flex-1 p-3 space-y-3">
+      <EnemyScoutPanel />
       <ChampionSelectOverlay />
     </div>
 
@@ -327,13 +331,18 @@
         </Alert>
       {/if}
 
+      {#if effectivePhase === 'GameStart' || loadingIntoGame || ($wsGameTime ?? 0) < 180}
+        <EnemyScoutPanel mode="loading" hideWhenEmpty={true} />
+      {/if}
+
       {#if $wsIsSpectatorMode}
         <Alert class="py-2 border-blue-500/30 bg-blue-500/10">
           <Eye class="w-4 h-4" />
           <AlertDescription class="text-sm">
-            Spectator mode — some live features are limited.
+            Spectator mode — live stats are limited; roster data comes from Riot Spectator API.
           </AlertDescription>
         </Alert>
+        <SpectatorTeamPanel />
       {/if}
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -344,6 +353,7 @@
 
         <div class="space-y-3">
           <WebSocketActivePlayerInfo />
+          <EnemyDeathTimers />
           <WebSocketEventsTimeline />
         </div>
       </div>

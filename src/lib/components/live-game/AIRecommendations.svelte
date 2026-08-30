@@ -11,7 +11,7 @@
     wsIsChampionSelectActive,
     wsGamePhase,
   } from '$lib/stores/websocketStore';
-  import { ollamaEnabled } from '$lib/stores/ollamaStatusStore';
+  import { ollamaEnabled, ollamaFeatureFlags } from '$lib/stores/ollamaStatusStore';
 
   interface RecommendationCard {
     title: string;
@@ -54,7 +54,7 @@
   const CARD_TITLES = ['Strategy', 'Combat Advice', 'Game Plan'];
 
   let gameMode = $derived($wsGameMode);
-  let ollamaOn = $derived($ollamaEnabled);
+  let ollamaOn = $derived($ollamaEnabled && $ollamaFeatureFlags.liveCoach);
   let loading = $state(false);
   let error = $state<string | null>(null);
   let recommendations = $state<RecommendationCard[]>([]);

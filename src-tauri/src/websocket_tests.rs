@@ -83,27 +83,50 @@ async fn test_websocket_message_types() {
     }
     
     // Test Ping/Pong messages
-    let ping_msg = WebSocketMessage::Ping;
+    let ping_msg = WebSocketMessage::Ping {};
     let serialized = serde_json::to_string(&ping_msg).unwrap();
     let deserialized: WebSocketMessage = serde_json::from_str(&serialized).unwrap();
     
     match deserialized {
-        WebSocketMessage::Ping => {
+        WebSocketMessage::Ping {} => {
             // Success
         }
         _ => panic!("Wrong message type"),
     }
     
-    let pong_msg = WebSocketMessage::Pong;
+    let pong_msg = WebSocketMessage::Pong {};
     let serialized = serde_json::to_string(&pong_msg).unwrap();
     let deserialized: WebSocketMessage = serde_json::from_str(&serialized).unwrap();
     
     match deserialized {
-        WebSocketMessage::Pong => {
+        WebSocketMessage::Pong {} => {
             // Success
         }
         _ => panic!("Wrong message type"),
     }
+}
+
+/// Pins the wire format against the literal bytes the frontend sends and reads,
+/// rather than round-tripping through our own serializer — a round-trip passes
+/// whatever shape we happen to emit, which is how the heartbeat broke unnoticed.
+/// websocketStore.ts sends `{"Ping":{}}` and dispatches on `message.Pong`.
+#[test]
+fn test_heartbeat_matches_frontend_wire_format() {
+    // The client's heartbeat must deserialize. As a unit variant this was
+    // `Err("invalid type: map, expected unit")`, so last_ping never refreshed
+    // and ping_clients evicted every client 60s after it connected.
+    let parsed: WebSocketMessage = serde_json::from_str(r#"{"Ping":{}}"#)
+        .expect("frontend heartbeat {\"Ping\":{}} must deserialize");
+    assert!(matches!(parsed, WebSocketMessage::Ping {}));
+
+    // The reply must be an object the client can dispatch on, not the bare
+    // string "Pong" — `message.Pong` is undefined on a string.
+    let pong = serde_json::to_string(&WebSocketMessage::Pong {}).unwrap();
+    assert_eq!(pong, r#"{"Pong":{}}"#);
+
+    // Every other variant is already object-shaped; keep it that way.
+    let update = serde_json::to_string(&WebSocketMessage::GameTimeUpdate { game_time: 1.0 }).unwrap();
+    assert!(update.starts_with(r#"{"GameTimeUpdate":"#));
 }
 
 #[tokio::test]
@@ -283,7 +306,7 @@ async fn test_websocket_integration() {
             let (mut ws_sender, mut ws_receiver) = ws_stream.split();
             
             // Send a ping message
-            let ping_msg = WebSocketMessage::Ping;
+            let ping_msg = WebSocketMessage::Ping {};
             let ping_json = serde_json::to_string(&ping_msg).unwrap();
             ws_sender.send(Message::Text(ping_json)).await.unwrap();
             
@@ -293,7 +316,7 @@ async fn test_websocket_integration() {
                     Message::Text(text) => {
                         let response: WebSocketMessage = serde_json::from_str(&text).unwrap();
                         match response {
-                            WebSocketMessage::Pong => {
+                            WebSocketMessage::Pong {} => {
                                 println!("Received pong response");
                             }
                             _ => panic!("Expected pong, got {:?}", response),

@@ -5,12 +5,12 @@
       "items": [
         {
           "item": "Randuin's Omen",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Reduces critical strike damage",
+          "priority": "high"
         },
         {
           "item": "Thornmail",
-          "reason": "",
+          "reason": "Reflects damage and reduces healing",
           "priority": "medium"
         }
       ]
@@ -20,12 +20,12 @@
       "items": [
         {
           "item": "Randuin's Omen",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Reduces critical strike damage",
+          "priority": "high"
         },
         {
           "item": "Thornmail",
-          "reason": "",
+          "reason": "Reflects damage and reduces healing",
           "priority": "medium"
         }
       ]
@@ -35,12 +35,12 @@
       "items": [
         {
           "item": "Bramble Vest",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Reduces healing and reflects damage",
+          "priority": "high"
         },
         {
           "item": "Ninja Tabi",
-          "reason": "",
+          "reason": "Reduces basic attack damage",
           "priority": "medium"
         }
       ]
@@ -50,12 +50,12 @@
       "items": [
         {
           "item": "Bramble Vest",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Reduces healing and reflects damage",
+          "priority": "high"
         },
         {
           "item": "Ninja Tabi",
-          "reason": "",
+          "reason": "Reduces basic attack damage",
           "priority": "medium"
         }
       ]
@@ -65,12 +65,12 @@
       "items": [
         {
           "item": "Spirit Visage",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Magic resist and healing",
+          "priority": "high"
         },
         {
           "item": "Banshee's Veil",
-          "reason": "",
+          "reason": "Magic resist and spell shield",
           "priority": "medium"
         }
       ]
@@ -80,12 +80,12 @@
       "items": [
         {
           "item": "Spirit Visage",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Magic resist and healing",
+          "priority": "high"
         },
         {
           "item": "Banshee's Veil",
-          "reason": "",
+          "reason": "Magic resist and spell shield",
           "priority": "medium"
         }
       ]
@@ -95,18 +95,18 @@
       "items": [
         {
           "item": "Zhonya's Hourglass",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Invulnerability against burst",
+          "priority": "high"
         },
         {
           "item": "Seeker's Armguard",
-          "reason": "",
+          "reason": "Armor and AP for early game",
           "priority": "medium"
         },
         {
           "item": "Adaptive Helm",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Reduces repeated magic damage",
+          "priority": "low"
         }
       ]
     },
@@ -115,18 +115,18 @@
       "items": [
         {
           "item": "Zhonya's Hourglass",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Invulnerability against burst",
+          "priority": "high"
         },
         {
           "item": "Seeker's Armguard",
-          "reason": "",
+          "reason": "Armor and AP for early game",
           "priority": "medium"
         },
         {
           "item": "Adaptive Helm",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Reduces repeated magic damage",
+          "priority": "low"
         }
       ]
     },
@@ -135,13 +135,13 @@
       "items": [
         {
           "item": "Lord Dominik's Regards",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Armor penetration against tanks",
+          "priority": "high"
         },
         {
           "item": "Void Staff",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Magic penetration against tanks",
+          "priority": "high"
         }
       ]
     },
@@ -150,12 +150,12 @@
       "items": [
         {
           "item": "Guardian Angel",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Revival against assassins",
+          "priority": "high"
         },
         {
           "item": "Stopwatch",
-          "reason": "",
+          "reason": "Temporary invulnerability",
           "priority": "medium"
         }
       ]
@@ -165,43 +165,53 @@
       "items": [
         {
           "item": "Mercury's Treads",
-          "reason": "",
+          "reason": "Magic resist and tenacity",
           "priority": "medium"
         },
         {
           "item": "Maw of Malmortius",
-          "reason": "",
+          "reason": "Magic resist and shield",
           "priority": "medium"
         },
         {
           "item": "Thornmail",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Reflects damage against AD-heavy teams",
+          "priority": "high"
         },
         {
           "item": "Randuin's Omen",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Reduces critical strike damage",
+          "priority": "high"
         },
         {
           "item": "Spirit Visage",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Magic resist and healing",
+          "priority": "high"
         },
         {
           "item": "Adaptive Helm",
-          "reason": "",
+          "reason": "Reduces repeated magic damage",
           "priority": "medium"
         },
         {
           "item": "Frozen Heart",
-          "reason": "",
+          "reason": "Reduces attack speed",
           "priority": "medium"
         },
         {
+          "item": "Thornmail",
+          "reason": "Essential against AD-heavy teams",
+          "priority": "critical"
+        },
+        {
+          "item": "Spirit Visage",
+          "reason": "Essential against AP-heavy teams",
+          "priority": "critical"
+        },
+        {
           "item": "Guardian Angel",
-          "reason": "",
-          "priority": "medium"
+          "reason": "Protection against multiple assassins",
+          "priority": "high"
         }
       ]
     }

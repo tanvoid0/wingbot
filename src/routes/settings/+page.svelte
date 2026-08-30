@@ -80,6 +80,11 @@
   let ollamaBaseUrl = $state('http://127.0.0.1:11434');
   let ollamaModelName = $state('wingbot-lol');
   let ollamaPollInterval = $state(30);
+  let ollamaLiveCoach = $state(true);
+  let ollamaInsightsMatchHistory = $state(true);
+  let ollamaInsightsScout = $state(true);
+  let ollamaInsightsRune = $state(true);
+  let ollamaInsightsLobby = $state(true);
   let ollamaTestStatus = $state<string | null>(null);
   let ollamaTestLoading = $state(false);
 
@@ -131,6 +136,11 @@
         ollamaBaseUrl = config.ollama?.base_url || 'http://127.0.0.1:11434';
         ollamaModelName = config.ollama?.model_name || 'wingbot-lol';
         ollamaPollInterval = config.ollama?.poll_interval_sec ?? 30;
+        ollamaLiveCoach = config.ollama?.live_coach ?? true;
+        ollamaInsightsMatchHistory = config.ollama?.insights_match_history ?? true;
+        ollamaInsightsScout = config.ollama?.insights_scout ?? true;
+        ollamaInsightsRune = config.ollama?.insights_rune ?? true;
+        ollamaInsightsLobby = config.ollama?.insights_lobby ?? true;
       }
     } catch (error) {
       console.error('Failed to load config:', error);
@@ -231,6 +241,11 @@
         ollamaBaseUrl = 'http://127.0.0.1:11434';
         ollamaModelName = 'wingbot-lol';
         ollamaPollInterval = 30;
+        ollamaLiveCoach = true;
+        ollamaInsightsMatchHistory = true;
+        ollamaInsightsScout = true;
+        ollamaInsightsRune = true;
+        ollamaInsightsLobby = true;
         hasChanges = true;
       } catch (error) {
         console.error('Failed to reset config:', error);
@@ -275,6 +290,11 @@
       base_url: ollamaBaseUrl.trim() || 'http://127.0.0.1:11434',
       model_name: ollamaModelName.trim() || 'wingbot-lol',
       poll_interval_sec: Math.max(5, Number(ollamaPollInterval) || 30),
+      live_coach: ollamaLiveCoach,
+      insights_match_history: ollamaInsightsMatchHistory,
+      insights_scout: ollamaInsightsScout,
+      insights_rune: ollamaInsightsRune,
+      insights_lobby: ollamaInsightsLobby,
     };
   }
 
@@ -603,6 +623,47 @@
                   min="5"
                   max="300"
                 />
+              </div>
+            </div>
+
+            <div class="space-y-3 rounded-lg border border-border/60 p-3">
+              <p class="text-sm font-medium">AI features</p>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <Label>Live coach</Label>
+                    <p class="text-xs text-muted-foreground">In-game and champ select advice cards</p>
+                  </div>
+                  <Switch bind:checked={ollamaLiveCoach} onCheckedChange={markAsChanged} />
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <Label>Match history insights</Label>
+                    <p class="text-xs text-muted-foreground">Performance patterns from recent games</p>
+                  </div>
+                  <Switch bind:checked={ollamaInsightsMatchHistory} onCheckedChange={markAsChanged} />
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <Label>Enemy scout insights</Label>
+                    <p class="text-xs text-muted-foreground">Draft notes from enemy rank and mastery</p>
+                  </div>
+                  <Switch bind:checked={ollamaInsightsScout} onCheckedChange={markAsChanged} />
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <Label>Rune insights</Label>
+                    <p class="text-xs text-muted-foreground">Rune page optimization tips</p>
+                  </div>
+                  <Switch bind:checked={ollamaInsightsRune} onCheckedChange={markAsChanged} />
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <Label>Lobby insights</Label>
+                    <p class="text-xs text-muted-foreground">Premade readiness and role coverage</p>
+                  </div>
+                  <Switch bind:checked={ollamaInsightsLobby} onCheckedChange={markAsChanged} />
+                </div>
               </div>
             </div>
 

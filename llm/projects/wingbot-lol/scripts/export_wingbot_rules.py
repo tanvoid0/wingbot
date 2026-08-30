@@ -17,48 +17,38 @@ ITEM_ANALYZER = REPO_ROOT / "src-tauri" / "src" / "data_processing" / "item_anal
 GAME_RS = REPO_ROOT / "src-tauri" / "src" / "game.rs"
 
 
-def parse_item_counters(source: str) -> list[dict]:
+def parse_item_counters(source: str) -> tuple[list[dict], list[dict]]:
     """Extract champion -> item mappings from item_analyzer.rs match arms."""
-    counters: list[dict] = []
-    # Match champion groups like "yasuo" | "yone" =>
-    champ_block = re.findall(
-        r'"([^"]+)"(?:\s*\|\s*"([^"]+)")*\s*=>\s*\{([^}]+(?:\{[^}]*\}[^}]*)*)\}',
-        source,
-        re.DOTALL,
+    counters_map: dict[str, list[dict]] = {}
+
+    arm_pattern = re.compile(
+        r'"(?P<champs>[^"]+)"(?:\s*\|\s*"(?P<champ2>[^"]+)")?\s*=>\s*\{',
     )
-    seen_champs: set[str] = set()
+    json_block = re.compile(
+        r'\{\s*"item":\s*"([^"]+)"\s*,\s*"reason":\s*"([^"]*)"\s*,\s*"priority":\s*"([^"]+)"\s*\}',
+    )
 
-    # Simpler line-by-line extraction for item json blocks after champion match
-    current_champs: list[str] = []
-    for line in source.splitlines():
-        m = re.match(r'\s*"([^"]+)"(?:\s*\|\s*"([^"]+)")*\s*=>\s*\{', line)
-        if m:
-            current_champs = [g for g in m.groups() if g]
+    positions = [(m.start(), m.group("champs"), m.group("champ2")) for m in arm_pattern.finditer(source)]
+    for idx, (start, c1, c2) in enumerate(positions):
+        end = positions[idx + 1][0] if idx + 1 < len(positions) else len(source)
+        block = source[start:end]
+        champs = [c1]
+        if c2:
+            champs.append(c2)
+        items = [
+            {"item": item, "reason": reason, "priority": priority}
+            for item, reason, priority in json_block.findall(block)
+        ]
+        if not items:
             continue
-        if '"item":' in line and current_champs:
-            item_m = re.search(r'"item":\s*"([^"]+)"', line)
-            reason_m = re.search(r'"reason":\s*"([^"]+)"', line)
-            priority_m = re.search(r'"priority":\s*"([^"]+)"', line)
-            if item_m:
-                entry = {
-                    "item": item_m.group(1),
-                    "reason": reason_m.group(1) if reason_m else "",
-                    "priority": priority_m.group(1) if priority_m else "medium",
-                }
-                for champ in current_champs:
-                    key = champ.title() if champ.islower() else champ
-                    if key in seen_champs:
-                        # append to existing
-                        for c in counters:
-                            if c["champion"] == key:
-                                if not any(i["item"] == entry["item"] for i in c["items"]):
-                                    c["items"].append(entry)
-                                break
-                    else:
-                        seen_champs.add(key)
-                        counters.append({"champion": key, "items": [entry]})
+        for champ in champs:
+            key = champ.title() if champ.islower() else champ
+            if key in ("Tank", "Assassin", "Mage"):
+                counters_map[key] = items
+            elif key not in counters_map:
+                counters_map[key] = items
 
-    # Team comp rules from comments + push patterns
+    counters = [{"champion": k, "items": v} for k, v in counters_map.items()]
     team_rules: list[dict] = []
     if "ad_champions >= 3" in source:
         team_rules.append({

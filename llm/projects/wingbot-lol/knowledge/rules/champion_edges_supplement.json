@@ -1,0 +1,90 @@
+{
+  "counters": [
+    {
+      "your_champ": "Zed",
+      "enemy_champ": "Lissandra",
+      "type": "counter",
+      "note": "Zed is countered by Lissandra"
+    },
+    {
+      "your_champ": "Fizz",
+      "enemy_champ": "Lissandra",
+      "type": "counter",
+      "note": "Fizz is countered by Lissandra"
+    },
+    {
+      "your_champ": "Vayne",
+      "enemy_champ": "Malphite",
+      "type": "counter",
+      "note": "Vayne is countered by Malphite"
+    },
+    {
+      "your_champ": "Draven",
+      "enemy_champ": "Caitlyn",
+      "type": "counter",
+      "note": "Draven is countered by Caitlyn"
+    },
+    {
+      "your_champ": "Kog'Maw",
+      "enemy_champ": "Draven",
+      "type": "counter",
+      "note": "Kog'Maw is countered by Draven"
+    },
+    {
+      "your_champ": "Kayle",
+      "enemy_champ": "Darius",
+      "type": "counter",
+      "note": "Kayle is countered by Darius"
+    }
+  ],
+  "synergies": [
+    {
+      "your_champ": "Jinx",
+      "ally_champ": "Lulu",
+      "type": "synergy",
+      "note": "Jinx synergizes with Lulu"
+    },
+    {
+      "your_champ": "Kog'Maw",
+      "ally_champ": "Lulu",
+      "type": "synergy",
+      "note": "Kog'Maw synergizes with Lulu"
+    },
+    {
+      "your_champ": "Orianna",
+      "ally_champ": "Malphite",
+      "type": "synergy",
+      "note": "Orianna synergizes with Malphite"
+    },
+    {
+      "your_champ": "Samira",
+      "ally_champ": "Nautilus",
+      "type": "synergy",
+      "note": "Samira synergizes with Nautilus"
+    },
+    {
+      "your_champ": "Twitch",
+      "ally_champ": "Lulu",
+      "type": "synergy",
+      "note": "Twitch synergizes with Lulu"
+    },
+    {
+      "your_champ": "Aphelios",
+      "ally_champ": "Thresh",
+      "type": "synergy",
+      "note": "Aphelios synergizes with Thresh"
+    },
+    {
+      "your_champ": "Graves",
+      "ally_champ": "Twisted Fate",
+      "type": "synergy",
+      "note": "Graves synergizes with Twisted Fate"
+    },
+    {
+      "your_champ": "Hecarim",
+      "ally_champ": "Orianna",
+      "type": "synergy",
+      "note": "Hecarim synergizes with Orianna"
+    }
+  ]
+}

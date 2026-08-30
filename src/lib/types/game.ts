@@ -207,6 +207,7 @@ export interface ComprehensiveGameState {
   live_game: LiveClientGameData | Record<string, unknown> | null;
   live_stats: GameStats | null;
   player_scores: PlayerScoresData | null;
+  spectator_game?: LiveClientGameData | Record<string, unknown> | null;
   timestamp: number;
 }
 

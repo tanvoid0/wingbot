@@ -9,8 +9,12 @@
     currentPlayerRunes,
     runeAnalysisActions,
     runeAnalysisSummary,
-    runeInsights
+    runeInsights,
+    runeAiInsightsLoading,
+    runeAiInsightsError,
   } from '$lib/stores/runeAnalysisStore';
+  import { ollamaEnabled, ollamaFeatureFlags } from '$lib/stores/ollamaStatusStore';
+  import MatchHistoryInsights from './match-history/MatchHistoryInsights.svelte';
   import { onMount } from 'svelte';
 
   // Local state
@@ -20,6 +24,18 @@
   // Derived values from stores
   let summary = $derived($runeAnalysisSummary);
   let insights = $derived($runeInsights);
+
+  function retryRuneAi() {
+    if ($currentPlayerRunes) {
+      void runeAnalysisActions.fetchAiInsights($currentPlayerRunes, { force: true });
+    }
+  }
+
+  $effect(() => {
+    if ($ollamaEnabled && $ollamaFeatureFlags.rune && $currentPlayerRunes) {
+      void runeAnalysisActions.fetchAiInsights($currentPlayerRunes);
+    }
+  });
 
   function getInsightIcon(type: string) {
     switch (type) {
@@ -184,44 +200,12 @@
             {/if}
 
             <!-- Performance Insights -->
-            {#if showInsights && insights.length > 0}
-              <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-sm font-medium">Rune Insights:</h4>
-                  <button
-                    onclick={() => showInsights = !showInsights}
-                    class="text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    Hide
-                  </button>
-                </div>
-                <div class="space-y-2">
-                  {#each insights as insight}
-                    {@const IconComponent = getInsightIcon(insight.type)}
-                    <div class="p-3 bg-muted/30 rounded-lg">
-                      <div class="flex items-start gap-2">
-                        <IconComponent class="w-4 h-4 mt-0.5 {getInsightColor(insight.type)}" />
-                        <div class="flex-1">
-                          <div class="text-sm font-medium {getInsightColor(insight.type)}">
-                            {insight.title}
-                          </div>
-                          <div class="text-xs text-muted-foreground mt-1">
-                            {insight.message}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  {/each}
-                </div>
-              </div>
-            {:else if !showInsights}
-              <button
-                onclick={() => showInsights = true}
-                class="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Show Rune Insights
-              </button>
-            {/if}
+            <MatchHistoryInsights
+              {insights}
+              aiLoading={$runeAiInsightsLoading}
+              aiError={$runeAiInsightsError}
+              onRetryAi={retryRuneAi}
+            />
           </div>
         {/if}
 

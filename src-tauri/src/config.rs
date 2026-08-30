@@ -20,6 +20,21 @@ pub struct OllamaConfig {
     pub base_url: String,
     pub model_name: String,
     pub poll_interval_sec: u64,
+    /// Live in-game / champ select coaching cards.
+    #[serde(default = "default_true")]
+    pub live_coach: bool,
+    #[serde(default = "default_true")]
+    pub insights_match_history: bool,
+    #[serde(default = "default_true")]
+    pub insights_scout: bool,
+    #[serde(default = "default_true")]
+    pub insights_rune: bool,
+    #[serde(default = "default_true")]
+    pub insights_lobby: bool,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -105,6 +120,11 @@ impl Default for OllamaConfig {
             base_url: "http://127.0.0.1:11434".to_string(),
             model_name: "wingbot-lol".to_string(),
             poll_interval_sec: 30,
+            live_coach: true,
+            insights_match_history: true,
+            insights_scout: true,
+            insights_rune: true,
+            insights_lobby: true,
         }
     }
 }

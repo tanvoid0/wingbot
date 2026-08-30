@@ -75,7 +75,10 @@
   });
 </script>
 
-<div class="relative {className}" style="width: {width}px; height: {height}px;">
+<div
+  class="relative {className}"
+  style={width != null && height != null ? `width: ${width}px; height: ${height}px;` : undefined}
+>
   {#if src && !imageError}
     <img
       bind:this={imgElement}

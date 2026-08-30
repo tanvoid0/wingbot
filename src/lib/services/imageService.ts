@@ -163,7 +163,35 @@ const SUMMONER_SPELL_MAPPING: Record<string, string> = {
   // Trinkets
   'Farsight Alteration': 'SummonerOdinRecall',
   'Oracle Lens': 'SummonerOdinRecall',
-  'Stealth Ward': 'SummonerOdinRecall'
+  'Stealth Ward': 'SummonerOdinRecall',
+  // Riot internal / spectator API display names
+  'Summoner Boost': 'SummonerBoost',
+  'Summoner Exhaust': 'SummonerExhaust',
+  'Summoner Flash': 'SummonerFlash',
+  'Summoner Haste': 'SummonerHaste',
+  'Summoner Heal': 'SummonerHeal',
+  'Summoner Smite': 'SummonerSmite',
+  'Summoner Teleport': 'SummonerTeleport',
+  'Summoner Mana': 'SummonerMana',
+  'Summoner Ignite': 'SummonerDot',
+  'Summoner Barrier': 'SummonerBarrier',
+  'Summoner Snowball': 'SummonerSnowball',
+  Mark: 'SummonerSnowball',
+};
+
+/** LCU / champ-select spell IDs → Data Dragon asset keys. */
+const SUMMONER_SPELL_ID_TO_KEY: Record<number, string> = {
+  1: 'SummonerBoost',
+  3: 'SummonerExhaust',
+  4: 'SummonerFlash',
+  6: 'SummonerHaste',
+  7: 'SummonerHeal',
+  11: 'SummonerSmite',
+  12: 'SummonerTeleport',
+  13: 'SummonerMana',
+  14: 'SummonerDot',
+  21: 'SummonerBarrier',
+  32: 'SummonerSnowball',
 };
 
 // Role to icon mapping (using reliable emoji icons)
@@ -262,8 +290,6 @@ export function getChampionImageUrlSync(championName: string | null | undefined)
 
 const COMMUNITY_DRAGON_CHAMPION_ICON =
   'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons';
-const COMMUNITY_DRAGON_SPELL_ICON =
-  'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/summoner-spell-icons';
 
 /** Champion square icon by numeric Riot champion ID (LCU format). */
 export function getChampionImageUrlByIdSync(
@@ -278,7 +304,9 @@ export function getSummonerSpellImageUrlByIdSync(
   spellId: number | null | undefined,
 ): string | null {
   if (!spellId || spellId <= 0) return null;
-  return `${COMMUNITY_DRAGON_SPELL_ICON}/${spellId}.png`;
+  const spellKey = SUMMONER_SPELL_ID_TO_KEY[spellId];
+  if (!spellKey) return null;
+  return `${DATA_DRAGON_BASE}/15.13.1/img/spell/${spellKey}.png`;
 }
 
 /**

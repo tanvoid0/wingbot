@@ -47,11 +47,15 @@ impl RiotApiClient {
         platform_to_routing(&self.config.platform)
     }
 
-    fn base_url(&self) -> String {
+    fn routing_base_url(&self) -> String {
         RIOT_API_BASE.replace("{routing}", self.routing_region())
     }
 
-    async fn get(&self, path: &str) -> Result<Value, String> {
+    fn platform_base_url(&self) -> String {
+        RIOT_API_BASE.replace("{routing}", &self.config.platform)
+    }
+
+    async fn get_on(&self, base_url: &str, path: &str) -> Result<Value, String> {
         let api_key = self
             .api_key()
             .ok_or("Riot API key not configured — add it in Settings")?;
@@ -63,7 +67,7 @@ impl RiotApiClient {
             );
         }
 
-        let url = format!("{}{}", self.base_url(), path);
+        let url = format!("{}{}", base_url, path);
 
         let mut headers = HeaderMap::new();
         headers.insert(
@@ -93,13 +97,21 @@ impl RiotApiClient {
             .map_err(|e| format!("Failed to parse Riot API response: {}", e))
     }
 
+    async fn get_routing(&self, path: &str) -> Result<Value, String> {
+        self.get_on(&self.routing_base_url(), path).await
+    }
+
+    async fn get_platform(&self, path: &str) -> Result<Value, String> {
+        self.get_on(&self.platform_base_url(), path).await
+    }
+
     /// Step 1 from https://www.itero.gg/articles/riot-api — list recent match IDs.
     pub async fn get_match_ids(&self, puuid: &str, start: u32, count: u32) -> Result<Vec<String>, String> {
         let path = format!(
             "/lol/match/v5/matches/by-puuid/{}/ids?start={}&count={}",
             puuid, start, count
         );
-        let ids = self.get(&path).await?;
+        let ids = self.get_routing(&path).await?;
         let list = ids
             .as_array()
             .ok_or("Unexpected match ID list format")?
@@ -111,8 +123,44 @@ impl RiotApiClient {
 
     /// Step 2 — fetch full match detail for a single match ID.
     pub async fn get_match(&self, match_id: &str) -> Result<Value, String> {
-        self.get(&format!("/lol/match/v5/matches/{}", match_id))
+        self.get_routing(&format!("/lol/match/v5/matches/{}", match_id))
             .await
+    }
+
+    /// account-v1 — resolve Riot ID to PUUID.
+    pub async fn get_account_by_riot_id(
+        &self,
+        game_name: &str,
+        tag_line: &str,
+    ) -> Result<Value, String> {
+        let game_name = urlencoding::encode(game_name);
+        let tag_line = urlencoding::encode(tag_line);
+        let path = format!(
+            "/riot/account/v1/accounts/by-riot-id/{}/{}",
+            game_name, tag_line
+        );
+        self.get_routing(&path).await
+    }
+
+    /// league-v4 — ranked entries for a player.
+    pub async fn get_league_entries_by_puuid(&self, puuid: &str) -> Result<Value, String> {
+        let path = format!("/lol/league/v4/entries/by-puuid/{}", puuid);
+        self.get_platform(&path).await
+    }
+
+    /// champion-mastery-v4 — all champion masteries for a player.
+    pub async fn get_champion_masteries_by_puuid(&self, puuid: &str) -> Result<Value, String> {
+        let path = format!(
+            "/lol/champion-mastery/v4/champion-masteries/by-puuid/{}",
+            puuid
+        );
+        self.get_platform(&path).await
+    }
+
+    /// spectator-v5 — active game for a player (platform routing).
+    pub async fn get_active_spectator_game(&self, puuid: &str) -> Result<Value, String> {
+        let path = format!("/lol/spectator/v5/active-games/by-puuid/{}", puuid);
+        self.get_platform(&path).await
     }
 
     /// Fetch match IDs then load each match document.

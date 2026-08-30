@@ -13,6 +13,7 @@ pub struct GameSnapshot {
     pub live_game: Option<Value>,
     pub live_stats: Option<Value>,
     pub player_scores: Option<Value>,
+    pub spectator_game: Option<Value>,
     pub timestamp: u64,
 }
 
@@ -28,6 +29,7 @@ impl GameSnapshot {
             live_game: None,
             live_stats: None,
             player_scores: None,
+            spectator_game: None,
             timestamp: chrono::Utc::now().timestamp_millis() as u64,
         }
     }

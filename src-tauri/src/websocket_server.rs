@@ -15,10 +15,15 @@ pub enum WebSocketMessage {
     // Client to Server messages
     Subscribe { topics: Vec<String> },
     Unsubscribe { topics: Vec<String> },
-    Ping,
-    
+    // Struct-shaped so these serialize as {"Ping":{}} like every other variant.
+    // As unit variants they became the bare strings "Ping"/"Pong", which the
+    // client's object dispatch cannot read and which reject the client's own
+    // {"Ping":{}} heartbeat — so last_ping never refreshed and ping_clients
+    // evicted every client 60s after connecting.
+    Ping {},
+
     // Server to Client messages
-    Pong,
+    Pong {},
     GameStateUpdate { data: serde_json::Value },
     GameStateDelta { changes: serde_json::Value },
     LCUConnectionUpdate { connected: bool, status: String },
@@ -1290,12 +1295,12 @@ impl WebSocketServerTask {
                                         client.topics.retain(|t| !topics.contains(t));
                                     }
                                 }
-                                WebSocketMessage::Ping => {
+                                WebSocketMessage::Ping {} => {
                                     let mut clients = clients_clone.write().await;
                                     if let Some(client) = clients.get_mut(&client_id) {
                                         client.last_ping = std::time::Instant::now();
                                     }
-                                    let pong = WebSocketMessage::Pong;
+                                    let pong = WebSocketMessage::Pong {};
                                     if let Ok(msg) = serde_json::to_string(&pong) {
                                         let _ = tx_clone.send(Message::Text(msg)).await;
                                     }
@@ -1333,7 +1338,18 @@ impl WebSocketServerTask {
         let clients_clone = Arc::clone(&self.clients);
         let tx_clone = tx.clone();
         tokio::spawn(async move {
-            while let Ok(msg) = broadcast_rx.recv().await {
+            loop {
+                let msg = match broadcast_rx.recv().await {
+                    Ok(msg) => msg,
+                    // Lagged means this client fell behind and missed n messages.
+                    // It is recoverable — keep serving the next ones. Treating it
+                    // as fatal killed the client's stream on one slow tick.
+                    Err(broadcast::error::RecvError::Lagged(n)) => {
+                        eprintln!("[WebSocket] Client {} lagged, dropped {} messages", client_id, n);
+                        continue;
+                    }
+                    Err(broadcast::error::RecvError::Closed) => break,
+                };
                 // Check if client is subscribed to this message type
                 let should_send = {
                     let clients = clients_clone.read().await;

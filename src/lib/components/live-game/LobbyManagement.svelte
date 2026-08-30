@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Users, Clock, CheckCircle, AlertCircle, Play, X, Info, Target, Crown } from '@lucide/svelte';
+  import { Users, Clock, CheckCircle, AlertCircle, Play, X, Info, Target, Crown, KeyRound } from '@lucide/svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
@@ -12,20 +12,71 @@
     lobbyActions,
     lobbySummary,
     lobbyInsights,
-    lobbyMembers
+    lobbyMembers,
+    lobbyAiInsightsLoading,
+    lobbyAiInsightsError,
   } from '$lib/stores/lobbyStore';
-  import { onMount } from 'svelte';
+  import { ollamaEnabled, ollamaFeatureFlags } from '$lib/stores/ollamaStatusStore';
+  import MatchHistoryInsights from './match-history/MatchHistoryInsights.svelte';
+  import { scoutProfiles, scoutApiRequired, scoutActions } from '$lib/stores/scoutStore';
+  import { scoutEnemyKey } from '$lib/utils/championSelectParser';
+  import { getRankTierColor } from '$lib/utils/scout';
 
   // Local state
   let selectedTab = $state<'overview' | 'members' | 'ready'>('overview');
   let showInsights = $state(true);
   let isAcceptingReady = $state(false);
   let isDecliningReady = $state(false);
+  let lastLobbyScoutKey = $state('');
 
   // Derived values from stores
   let summary = $derived($lobbySummary);
   let insights = $derived($lobbyInsights);
   let members = $derived($lobbyMembers);
+
+  function retryLobbyAi() {
+    if ($lobbyAnalysis) {
+      void lobbyActions.fetchAiInsights($lobbyAnalysis, { force: true });
+    }
+  }
+
+  $effect(() => {
+    if ($ollamaEnabled && $ollamaFeatureFlags.lobby && $lobbyAnalysis) {
+      void lobbyActions.fetchAiInsights($lobbyAnalysis);
+    }
+  });
+
+  function memberScoutSlot(member: Record<string, unknown>) {
+    const gameName = (member.game_name ?? member.gameName ?? member.summonerName) as string | undefined;
+    const tagLine = (member.tag_line ?? member.tagLine) as string | undefined;
+    return {
+      puuid: member.puuid as string | undefined,
+      gameName,
+      tagLine,
+      championId: 0,
+      isLocked: false,
+      isHovered: false,
+    };
+  }
+
+  function memberRankSummary(member: Record<string, unknown>): string | null {
+    const profile = $scoutProfiles[scoutEnemyKey(memberScoutSlot(member))];
+    const rank = profile?.primary_rank ?? profile?.solo_rank;
+    return rank?.summary ?? null;
+  }
+
+  $effect(() => {
+    if (!summary.isInLobby) {
+      lastLobbyScoutKey = '';
+      return;
+    }
+    const source = ($lobbyAnalysis ?? $lobbyData) as Record<string, unknown> | null;
+    if (!source) return;
+    const key = JSON.stringify(source.members ?? source);
+    if (key === lastLobbyScoutKey) return;
+    lastLobbyScoutKey = key;
+    void scoutActions.scoutLobbyMembers(source);
+  });
 
   function getInsightIcon(type: string) {
     switch (type) {
@@ -170,45 +221,12 @@
               </div>
             </div>
 
-            <!-- Lobby Insights -->
-            {#if showInsights && insights.length > 0}
-              <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-sm font-medium">Lobby Insights:</h4>
-                  <button
-                    onclick={() => showInsights = !showInsights}
-                    class="text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    Hide
-                  </button>
-                </div>
-                <div class="space-y-2">
-                  {#each insights as insight}
-                    {@const IconComponent = getInsightIcon(insight.type)}
-                    <div class="p-3 bg-muted/30 rounded-lg">
-                      <div class="flex items-start gap-2">
-                        <IconComponent class="w-4 h-4 mt-0.5 {getInsightColor(insight.type)}" />
-                        <div class="flex-1">
-                          <div class="text-sm font-medium {getInsightColor(insight.type)}">
-                            {insight.title}
-                          </div>
-                          <div class="text-xs text-muted-foreground mt-1">
-                            {insight.message}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  {/each}
-                </div>
-              </div>
-            {:else if !showInsights}
-              <button
-                onclick={() => showInsights = true}
-                class="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Show Lobby Insights
-              </button>
-            {/if}
+            <MatchHistoryInsights
+              {insights}
+              aiLoading={$lobbyAiInsightsLoading}
+              aiError={$lobbyAiInsightsError}
+              onRetryAi={retryLobbyAi}
+            />
           </div>
         {/if}
 
@@ -216,18 +234,32 @@
         {#if selectedTab === 'members'}
           <div class="space-y-4">
             <h4 class="text-sm font-medium">Team Members:</h4>
+            {#if $scoutApiRequired}
+              <div class="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2.5 text-sm">
+                <KeyRound class="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+                <p class="text-muted-foreground text-xs">
+                  Add a Riot API key in Settings to show teammate ranks.
+                </p>
+              </div>
+            {/if}
             {#if members.length > 0}
               <div class="space-y-3">
                 {#each members as member}
+                  {@const rankSummary = memberRankSummary(member)}
                   <div class="p-3 bg-muted/30 rounded-lg">
                     <div class="flex items-center justify-between">
                       <div class="flex items-center gap-3">
                         <div class="text-lg">{member.roleIcon}</div>
                         <div>
-                          <div class="font-medium">{member.summonerName || 'Unknown'}</div>
+                          <div class="font-medium">{member.summonerName || member.riot_id || 'Unknown'}</div>
                           <div class="text-xs text-muted-foreground">
                             {member.roleName} • Champion {member.championId || 'Not Selected'}
                           </div>
+                          {#if rankSummary}
+                            <div class="text-xs mt-0.5 {getRankTierColor(rankSummary.split(' ')[0])}">
+                              {rankSummary}
+                            </div>
+                          {/if}
                         </div>
                       </div>
                       <div class="flex items-center gap-2">

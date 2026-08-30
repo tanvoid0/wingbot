@@ -3,6 +3,9 @@ use crate::types::GameSnapshot;
 use serde_json::{json, Map, Value};
 use std::collections::HashMap;
 
+/// Fallbacks only — the live values come from the client (see
+/// `LCUAPI::get_patch_version` / `get_current_queue`). A hardcoded patch
+/// silently feeds the model stale meta on every request.
 const DEFAULT_PATCH: &str = "15.12";
 const DEFAULT_QUEUE: &str = "ranked_solo";
 
@@ -153,35 +156,49 @@ fn from_champion_select(
     Some(state)
 }
 
+/// Identity fields the Live Client API uses for a player, most specific first.
+const PLAYER_NAME_KEYS: [&str; 3] = ["riotId", "summonerName", "riotIdGameName"];
+
 fn from_live_game(
     live: &Value,
     lookup: &HashMap<u64, String>,
 ) -> Option<Map<String, Value>> {
     let active = live.get("activePlayer")?;
-    let my_champ = active
+    let all_players = live.get("allPlayers")?.as_array()?;
+
+    // `activePlayer` carries no `championName` and no `team` — those exist only
+    // on the per-player entries in `allPlayers`, keyed by Riot ID. Reading them
+    // off `activePlayer` yields None for every live game.
+    let active_name = active
+        .get("riotId")
+        .or_else(|| active.get("summonerName"))
+        .or_else(|| active.get("riotIdGameName"))
+        .and_then(|v| v.as_str());
+
+    let me = active_name.and_then(|name| {
+        all_players.iter().find(|player| {
+            PLAYER_NAME_KEYS
+                .iter()
+                .any(|key| player.get(*key).and_then(|v| v.as_str()) == Some(name))
+        })
+    })?;
+
+    let my_champ = me
         .get("championName")
         .and_then(|v| v.as_str())
+        .filter(|s| !s.is_empty())
         .map(|s| s.to_string())
         .or_else(|| {
-            active
-                .get("championName")
+            me.get("championId")
                 .and_then(|v| resolve_champion_id(v, lookup))
         })?;
 
-    let my_team = active.get("team").and_then(|v| v.as_str());
-    let all_players = live.get("allPlayers")?.as_array()?;
+    let my_team = me.get("team").and_then(|v| v.as_str());
 
     let mut allies: Vec<Value> = Vec::new();
     let mut enemies: Vec<Value> = Vec::new();
     let mut my_role = "mid".to_string();
     let mut my_items: Vec<Value> = Vec::new();
-    let mut ally_gold = 0i64;
-    let mut enemy_gold = 0i64;
-
-    let active_name = active
-        .get("summonerName")
-        .or_else(|| active.get("riotIdGameName"))
-        .and_then(|v| v.as_str());
 
     for player in all_players {
         let champ = player
@@ -192,11 +209,9 @@ fn from_live_game(
         let is_ally = my_team.map(|t| team == Some(t)).unwrap_or(false);
         let is_me = active_name
             .map(|n| {
-                player
-                    .get("summonerName")
-                    .and_then(|v| v.as_str())
-                    .map(|sn| sn == n)
-                    .unwrap_or(false)
+                PLAYER_NAME_KEYS
+                    .iter()
+                    .any(|key| player.get(*key).and_then(|v| v.as_str()) == Some(n))
             })
             .unwrap_or(false);
 
@@ -229,13 +244,9 @@ fn from_live_game(
         .map(|t| t as i64)
         .unwrap_or(0);
 
-    // Approximate gold diff from active player gold vs average enemy (when team gold unavailable)
-    if let Some(my_gold) = active.get("currentGold").and_then(|v| v.as_i64()) {
-        ally_gold = my_gold;
-        let enemy_count = enemies.len().max(1) as i64;
-        enemy_gold = my_gold.saturating_sub(500) * enemy_count / enemy_count;
-    }
-    let gold_diff = ally_gold - enemy_gold;
+    // No gold_diff: the Live Client payload exposes only the active player's
+    // unspent gold, which cannot express a team gold lead. The field is
+    // optional in game_state.schema.json — omitting it beats guessing.
 
     let mut state = Map::new();
     state.insert("phase".to_string(), Value::String("in_game".to_string()));
@@ -251,9 +262,6 @@ fn from_live_game(
     if game_time_sec > 0 {
         state.insert("game_time_sec".to_string(), json!(game_time_sec));
     }
-    if gold_diff != 0 {
-        state.insert("gold_diff".to_string(), json!(gold_diff));
-    }
     if !my_items.is_empty() {
         state.insert("my_items".to_string(), Value::Array(my_items));
     }
@@ -261,6 +269,15 @@ fn from_live_game(
     state.insert("patch".to_string(), Value::String(DEFAULT_PATCH.to_string()));
 
     Some(state)
+}
+
+async fn attach_scout_intel(mut state: Map<String, Value>) -> Map<String, Value> {
+    if let Some(intel) = crate::scout_cache::get_session_enemy_intel().await {
+        if intel.as_array().is_some_and(|a| !a.is_empty()) {
+            state.insert("enemy_intel".to_string(), intel);
+        }
+    }
+    state
 }
 
 fn from_post_game(snapshot: &GameSnapshot, lookup: &HashMap<u64, String>) -> Option<Map<String, Value>> {
@@ -291,21 +308,42 @@ pub async fn build_compact_game_state(
         "PreEndOfGame",
     ];
 
-    if post_game_phases.contains(&snapshot.game_phase.as_str()) {
-        return from_post_game(snapshot, &lookup).map(Value::Object);
-    }
-
-    if let Some(cs) = snapshot.champion_select.as_ref() {
-        if let Some(state) = from_champion_select(cs, &lookup) {
-            return Some(Value::Object(state));
+    let mut state = if post_game_phases.contains(&snapshot.game_phase.as_str()) {
+        match from_post_game(snapshot, &lookup) {
+            Some(state) => state,
+            None => return None,
         }
-    }
-
-    if let Some(live) = snapshot.live_game.as_ref() {
-        if let Some(state) = from_live_game(live, &lookup) {
-            return Some(Value::Object(state));
+    } else {
+        let from_cs = snapshot
+            .champion_select
+            .as_ref()
+            .and_then(|cs| from_champion_select(cs, &lookup));
+        let from_live = || {
+            snapshot
+                .live_game
+                .as_ref()
+                .and_then(|live| from_live_game(live, &lookup))
+        };
+        match from_cs.or_else(from_live) {
+            Some(state) => state,
+            None => return None,
         }
-    }
+    };
 
-    None
+    apply_live_context(&mut state, lcu_api).await;
+
+    Some(Value::Object(attach_scout_intel(state).await))
+}
+
+/// Replaces the compiled-in patch and queue with what the client reports.
+async fn apply_live_context(state: &mut Map<String, Value>, lcu_api: &LCUAPI) {
+    if let Some(patch) = lcu_api.get_patch_version().await {
+        state.insert("patch".to_string(), Value::String(patch));
+    }
+    if let Some((id, slug)) = lcu_api.get_current_queue().await {
+        if slug != "unknown" {
+            state.insert("queue".to_string(), Value::String(slug));
+        }
+        state.insert("queue_id".to_string(), json!(id));
+    }
 }

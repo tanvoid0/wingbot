@@ -10,7 +10,6 @@ import yaml
 
 LLM_ROOT = Path(__file__).resolve().parent.parent
 PROJECTS_DIR = LLM_ROOT / "projects"
-REGISTRY_PATH = LLM_ROOT / "registry.json"
 DEFAULTS_PATH = LLM_ROOT / "defaults.yaml"
 
 _defaults_cache: dict[str, Any] | None = None
@@ -101,27 +100,3 @@ def load_input_schema(project: str) -> dict[str, Any]:
     schema_path = project_path(project, schema_rel)
     with schema_path.open(encoding="utf-8") as f:
         return json.load(f)
-
-
-def load_registry() -> dict[str, Any]:
-    if not REGISTRY_PATH.exists():
-        return {"models": [], "active": {}}
-    with REGISTRY_PATH.open(encoding="utf-8") as f:
-        return json.load(f)
-
-
-def save_registry(data: dict[str, Any]) -> None:
-    with REGISTRY_PATH.open("w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-        f.write("\n")
-
-
-def register_model(entry: dict[str, Any], set_active: bool = True) -> None:
-    registry = load_registry()
-    tag = entry["ollama_tag"]
-    registry["models"] = [m for m in registry["models"] if m.get("ollama_tag") != tag]
-    registry["models"].append(entry)
-    if set_active:
-        project = entry.get("project", entry["ollama_tag"])
-        registry.setdefault("active", {})[project] = tag
-    save_registry(registry)

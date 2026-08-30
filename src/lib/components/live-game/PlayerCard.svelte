@@ -10,18 +10,28 @@
     getSummonerSpellFallback,
     getRoleIcon,
     getKeystoneImageUrlSync,
-    getKeystoneFallback
+    getKeystoneFallback,
+    getRankEmblemUrl
   } from '$lib/services/imageService';
   import { onMount, onDestroy } from 'svelte';
   import type { Player, Item } from '$lib/types/game';
   import { wsGamePhase } from '$lib/stores/websocketStore';
+  import { playerToScoutSlot, scoutEnemyKey } from '$lib/utils/championSelectParser';
+  import { getRankTierColor, getThreatLabel, type ScoutPlayerProfile } from '$lib/utils/scout';
 
   interface Props {
     player: Player;
     teamColor: 'blue' | 'red';
+    scoutProfile?: Record<string, ScoutPlayerProfile>;
   }
 
-  let { player, teamColor }: Props = $props();
+  let { player, teamColor, scoutProfile = {} }: Props = $props();
+
+  const scout = $derived(
+    scoutProfile[scoutEnemyKey(playerToScoutSlot(player as unknown as Record<string, unknown>))],
+  );
+  const rank = $derived(scout?.primary_rank ?? scout?.solo_rank);
+  const threat = $derived(scout ? getThreatLabel(scout) : null);
 
   // Respawn timer state
   let respawnTimer = $state(player.respawnTimer || 0);
@@ -182,7 +192,27 @@
         
         <!-- Player Name and Skin -->
         <div class="text-xs text-muted-foreground mt-1">
-          <div>{player.riotIdGameName || player.summonerName || 'Unknown Player'}</div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span>{player.riotIdGameName || player.summonerName || 'Unknown Player'}</span>
+            {#if rank}
+              <span class="inline-flex items-center gap-0.5 rounded-full bg-muted px-1.5 py-0.5 text-[10px] {getRankTierColor(rank.tier)}">
+                {#if getRankEmblemUrl(rank.tier)}
+                  <ImageWithFallback
+                    src={getRankEmblemUrl(rank.tier)}
+                    alt={rank.tier}
+                    class="w-3 h-3 object-contain"
+                    fallback={rank.tier.charAt(0)}
+                    width={12}
+                    height={12}
+                  />
+                {/if}
+                {rank.summary}
+              </span>
+            {/if}
+            {#if threat}
+              <Badge variant="outline" class="text-[9px] h-4 px-1">{threat}</Badge>
+            {/if}
+          </div>
           {#if player.skinName && player.skinName !== ''}
             <div class="text-xs text-muted-foreground/80 italic">{player.skinName}</div>
           {/if}

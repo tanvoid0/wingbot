@@ -36,9 +36,30 @@ impl GameDataShaper {
         Ok(Value::Object(shaped))
     }
 
-    /// Extract CS tracker data from active player
-    pub fn extract_cs_data(active_player: &Value, game_time: f64) -> Value {
-        let cs = active_player.get("scores")
+    /// Find the local player's entry in allPlayers.
+    /// creepScore and wardScore live there, not on activePlayer, so anything
+    /// reading a score has to join back by riot id.
+    pub fn active_player_entry(live_data: &Value) -> Option<&Value> {
+        let me = live_data.get("activePlayer")?;
+        let id = me
+            .get("riotId")
+            .and_then(|v| v.as_str())
+            .or_else(|| me.get("summonerName").and_then(|v| v.as_str()))?;
+        live_data
+            .get("allPlayers")?
+            .as_array()?
+            .iter()
+            .find(|p| {
+                p.get("riotId").and_then(|v| v.as_str()) == Some(id)
+                    || p.get("summonerName").and_then(|v| v.as_str()) == Some(id)
+            })
+    }
+
+    /// Extract CS tracker data. Takes the whole live payload because the
+    /// active player's creep score is only on their allPlayers entry.
+    pub fn extract_cs_data(live_data: &Value, game_time: f64) -> Value {
+        let cs = Self::active_player_entry(live_data)
+            .and_then(|p| p.get("scores"))
             .and_then(|s| s.get("creepScore"))
             .and_then(|cs| cs.as_u64())
             .unwrap_or(0);
@@ -189,8 +210,14 @@ impl GameDataShaper {
         };
         let mut player_info = Map::new();
         
-        // Basic player info
+        // Basic player info. Riot does not put championName or team on
+        // activePlayer — they live only on the matching allPlayers entry — so
+        // the identity fields must survive shaping or the two cannot be joined.
         Self::add_string_field(active_player, "championName", &mut player_info);
+        Self::add_string_field(active_player, "riotId", &mut player_info);
+        Self::add_string_field(active_player, "summonerName", &mut player_info);
+        Self::add_string_field(active_player, "riotIdGameName", &mut player_info);
+        Self::add_string_field(active_player, "riotIdTagLine", &mut player_info);
         Self::add_number_field(active_player, "level", &mut player_info);
         Self::add_number_field(active_player, "currentGold", &mut player_info);
         
@@ -292,13 +319,25 @@ impl GameDataShaper {
         
         Self::add_string_field(player, "championName", &mut player_info);
         Self::add_string_field(player, "team", &mut player_info);
+        // Identity is what joins this entry to activePlayer; position and items
+        // are what the AI coach reads for role and build context.
+        Self::add_string_field(player, "riotId", &mut player_info);
+        Self::add_string_field(player, "summonerName", &mut player_info);
+        Self::add_string_field(player, "riotIdGameName", &mut player_info);
+        Self::add_string_field(player, "position", &mut player_info);
         Self::add_number_field(player, "level", &mut player_info);
         Self::add_bool_field(player, "isDead", &mut player_info);
+        // Seconds until respawn — the input for enemy death timers.
+        Self::add_number_field(player, "respawnTimer", &mut player_info);
+
+        if let Some(items) = Self::extract_items(player)? {
+            player_info.insert("items".to_string(), items);
+        }
         
         // Scores
         if let Some(scores) = player.get("scores") {
             let mut score_info = Map::new();
-            let score_fields = ["kills", "deaths", "assists"];
+            let score_fields = ["kills", "deaths", "assists", "creepScore", "wardScore"];
             for field in &score_fields {
                 Self::add_number_field(scores, field, &mut score_info);
             }
@@ -308,14 +347,14 @@ impl GameDataShaper {
         Ok(Value::Object(player_info))
     }
     
-    /// Simplify an event object
+    /// Pass an event through intact.
+    ///
+    /// Riot's events are already small, and the interesting parts are the
+    /// participants and subjects — KillerName, VictimName, Assisters,
+    /// DragonType, Stolen. Whitelisting name and time discards all of it and
+    /// leaves nothing to build a kill feed or objective timeline from.
     fn simplify_event(event: &Value) -> Result<Value, String> {
-        let mut event_info = Map::new();
-        
-        Self::add_string_field(event, "EventName", &mut event_info);
-        Self::add_number_field(event, "EventTime", &mut event_info);
-        
-        Ok(Value::Object(event_info))
+        Ok(event.clone())
     }
     
     /// Simplify an item object

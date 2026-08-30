@@ -56,7 +56,10 @@ mod mock_tests {
         // Verify the structure matches what we expect
         assert!(state.lcu_connected);
         assert!(state.champion_select.is_none());
-        assert!(state.live_game.is_none());
+        // Live game data comes from the Live Client API on 2999, independent of
+        // this fake LCU connection, so assert consistency rather than absence:
+        // a real game may well be running on the machine executing the test.
+        assert_eq!(state.live_game.is_some(), state.live_client_available);
     }
 
     // Test error handling for network issues

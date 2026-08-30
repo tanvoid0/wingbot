@@ -1,10 +1,17 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
+import { invoke } from '@tauri-apps/api/core';
+import { isOllamaFeatureEnabled } from './ollamaStatusStore';
 
 // Rune Analysis State
 export const allPlayersRunes = writable<Record<string, any>>({});
 export const runeAnalysisData = writable<Record<string, any>>({});
 export const runeRecommendations = writable<Record<string, any[]>>({});
 export const currentPlayerRunes = writable<any>(null);
+export const runeAiInsights = writable<any[]>([]);
+export const runeAiInsightsLoading = writable(false);
+export const runeAiInsightsError = writable<string | null>(null);
+
+let runeAiCacheKey = '';
 
 // Rune Analysis Actions
 export const runeAnalysisActions = {
@@ -20,9 +27,65 @@ export const runeAnalysisActions = {
       [playerId]: analysis
     }));
 
-    // Update current player if this is the current player
     if (playerId === 'current' || playerId === 'me') {
       currentPlayerRunes.set(analysis);
+      void runeAnalysisActions.fetchAiInsights(analysis);
+    }
+  },
+
+  buildAiCacheKey: (analysis: any) => {
+    return [
+      analysis?.primary_tree,
+      analysis?.secondary_tree,
+      analysis?.keystone,
+      analysis?.total_runes,
+    ].join(':');
+  },
+
+  fetchAiInsights: async (analysis?: any, options?: { force?: boolean }) => {
+    const runeAnalysis = analysis ?? get(currentPlayerRunes);
+    if (!runeAnalysis || !isOllamaFeatureEnabled('rune')) {
+      runeAiInsights.set([]);
+      runeAiInsightsError.set(null);
+      return [];
+    }
+
+    const cacheKey = runeAnalysisActions.buildAiCacheKey(runeAnalysis);
+    const force = options?.force ?? false;
+    if (!force && cacheKey === runeAiCacheKey && get(runeAiInsights).length > 0) {
+      return get(runeAiInsights);
+    }
+
+    const allRunes = get(allPlayersRunes);
+    const teamTrees = Object.values(allRunes)
+      .map((r: any) => r?.primary_tree)
+      .filter(Boolean);
+
+    const quality = runeAnalysisActions.analyzeRuneQuality(runeAnalysis);
+    const payload = {
+      analysis: {
+        ...runeAnalysis,
+        quality_score: quality.score,
+        issues: quality.issues,
+      },
+      team_trees: teamTrees,
+    };
+
+    runeAiInsightsLoading.set(true);
+    runeAiInsightsError.set(null);
+
+    try {
+      const insights = await invoke<any[]>('get_rune_ai_insights', { payload });
+      runeAiCacheKey = cacheKey;
+      runeAiInsights.set(Array.isArray(insights) ? insights : []);
+      return get(runeAiInsights);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      runeAiInsightsError.set(message);
+      if (force) runeAiInsights.set([]);
+      return get(runeAiInsights);
+    } finally {
+      runeAiInsightsLoading.set(false);
     }
   },
 
@@ -191,70 +254,46 @@ export const runeAnalysisSummary = derived(
   }
 );
 
-// Current player rune insights
+// Current player rune insights (core rules + optional AI)
 export const runeInsights = derived(
-  [currentPlayerRunes, runeAnalysisData],
-  ([currentRunes, analysisData]) => {
+  [currentPlayerRunes, runeAnalysisData, runeAiInsights],
+  ([currentRunes, analysisData, aiInsights]) => {
     const analysis = currentRunes || analysisData['current'] || analysisData['me'];
     if (!analysis) return [];
 
-    const insights = [];
+    const core: Array<{ type: string; title: string; message: string; source?: string }> = [];
     const quality = runeAnalysisActions.analyzeRuneQuality(analysis);
 
-    // Quality insight
     if (quality.quality === 'excellent') {
-      insights.push({
+      core.push({
         type: 'success',
         title: 'Excellent Rune Setup',
-        message: `Your rune setup is well-optimized with a score of ${quality.score}/100.`
+        message: `Well-optimized setup (${quality.score}/100).`,
       });
     } else if (quality.quality === 'critical') {
-      insights.push({
+      core.push({
         type: 'error',
         title: 'Critical Rune Issues',
-        message: `Your rune setup needs immediate attention. Score: ${quality.score}/100.`
+        message: `Fix runes before loading — score ${quality.score}/100.`,
       });
     }
 
-    // Tree synergy insight
-    if (analysis.primary_tree && analysis.secondary_tree && analysis.primary_tree !== analysis.secondary_tree) {
-      insights.push({
-        type: 'info',
-        title: 'Good Tree Diversity',
-        message: `Using ${analysis.primary_tree} primary with ${analysis.secondary_tree} secondary provides good synergy.`
-      });
-    }
-
-    // Keystone insight
-    if (analysis.keystone && analysis.keystone !== 0) {
-      insights.push({
-        type: 'info',
-        title: 'Keystone Selected',
-        message: 'You have a keystone rune selected, which is essential for your build.'
-      });
-    } else {
-      insights.push({
+    if (!analysis.keystone || analysis.keystone === 0) {
+      core.push({
         type: 'error',
         title: 'Missing Keystone',
-        message: 'No keystone rune detected. This significantly impacts your effectiveness.'
+        message: 'No keystone detected — pick one before the game starts.',
       });
     }
 
-    // Rune count insight
-    if (analysis.total_runes >= 6) {
-      insights.push({
-        type: 'success',
-        title: 'Complete Rune Setup',
-        message: `You have ${analysis.total_runes} runes selected, which is optimal.`
-      });
-    } else if (analysis.total_runes < 4) {
-      insights.push({
+    if (analysis.total_runes < 4) {
+      core.push({
         type: 'warning',
         title: 'Incomplete Setup',
-        message: `Only ${analysis.total_runes} runes selected. Consider completing your rune page.`
+        message: `Only ${analysis.total_runes} runes selected.`,
       });
     }
 
-    return insights;
+    return [...core, ...(Array.isArray(aiInsights) ? aiInsights : [])];
   }
 );

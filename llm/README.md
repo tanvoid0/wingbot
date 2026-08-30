@@ -1,53 +1,54 @@
 # WingBot LLM Pipeline
 
-Reusable local LLM tooling for domain-specific models. First experiment: **League of Legends coaching** (`projects/wingbot-lol/`).
+League of Legends coaching model (`wingbot-lol`). **Local:** LoL knowledge ingest and dataset build. **Remote:** train, export, and eval via [agent-platform](https://github.com/) model-ops API (`/api/v1/model-ops/*`).
 
-**Full guide:** [docs/CUSTOM_LLM_PLAYBOOK.md](../docs/CUSTOM_LLM_PLAYBOOK.md)  
-**Status & checklist:** [docs/LLM_PIPELINE.md](../docs/LLM_PIPELINE.md)
-
-## Quick Start (wingbot-lol)
+## Quick start
 
 ```bash
-cd llm/core
-python -m venv .venv
-.venv\Scripts\activate          # Windows
-pip install -r requirements.txt
+# 1. Ingest-only Python deps (no CUDA torch in wingbot)
+npm run llm:setup
 
-# 1. Extract knowledge
-python ../projects/wingbot-lol/scripts/extract_ddragon.py
-python ../projects/wingbot-lol/scripts/export_wingbot_rules.py
+# 2. Build knowledge + train.jsonl locally
+npm run llm:prepare
 
-# 2. Merge + build dataset
-python merge_knowledge.py --project wingbot-lol
-python build_dataset.py --project wingbot-lol
+# 3. Ensure agent-platform is running (Docker :18410) and set token
+#    AGENT_PLATFORM_MASTER_KEY=...  AGENT_PLATFORM_BASE_URL=http://127.0.0.1:18410
 
-# 3. Train (requires GPU + HuggingFace token)
-python train_lora.py --project wingbot-lol
-
-# 4. Export to Ollama
-python export_ollama.py --project wingbot-lol
-
-# 5. Evaluate
-python eval.py --project wingbot-lol
+# 4. Sync artifacts + train (Docker GPU worker recommended)
+npm run llm:sync
+npm run llm:train
 ```
 
-## New Project
+With agent-platform train profile running, `llm:train` runs LoRA + export in `agent-platform-train-1` and eval via API. Set `HF_TOKEN` in agent-platform `.env` for gated base models.
 
-Repo defaults live in [`defaults.yaml`](defaults.yaml) (`base_model`, `ollama_base_model`). Each project must set `base_model` in its `project.yaml`; training scripts fail with fix instructions if it is missing.
+Full pipeline (prepare → sync → train):
 
 ```bash
-cp -r projects/_template projects/my-app
-# Edit projects/my-app/project.yaml (base_model required) and schemas/
-python merge_knowledge.py --project my-app
-python build_dataset.py --project my-app
+npm run llm:wingbot-lol
 ```
+
+## Commands
+
+| npm script | Action |
+|------------|--------|
+| `llm:prepare` | Data Dragon, rules, matchups, Riot/HF ingest, `build_dataset.py` |
+| `llm:sync` | Upload `project.yaml`, schemas, datasets, knowledge to agent-platform |
+| `llm:train` | Sync + remote job: `train` → `export` → `eval` |
+| `llm:eval` | Remote eval only |
+| `llm:fetch-riot` | Bulk Riot match fetch + ingest |
 
 ## Layout
 
 ```
 llm/
-├── core/           # Shared scripts (--project <name>)
-├── projects/       # Per-domain configs and data
-├── registry.json   # Model versions and active tags
+├── core/              # LoL ingest + build_dataset (domain-specific)
+├── projects/wingbot-lol/
+├── scripts/
+│   ├── run-pipeline.mjs
+│   └── agent-platform-client.mjs
 └── README.md
 ```
+
+Removed from wingbot (now on agent-platform): `train_lora.py`, `export_ollama.py`, `eval.py`, GPU deps.
+
+Runtime inference still uses Ollama from the Tauri app (`ollama.model_name` → `wingbot-lol`).

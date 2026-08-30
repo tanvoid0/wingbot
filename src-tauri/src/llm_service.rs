@@ -5,14 +5,69 @@ use std::sync::OnceLock;
 use std::time::{Duration, Instant};
 
 static LAST_QUERY: OnceLock<Mutex<Option<Instant>>> = OnceLock::new();
+static LAST_MATCH_HISTORY_QUERY: OnceLock<Mutex<Option<Instant>>> = OnceLock::new();
+static LAST_SCOUT_QUERY: OnceLock<Mutex<Option<Instant>>> = OnceLock::new();
+static LAST_RUNE_QUERY: OnceLock<Mutex<Option<Instant>>> = OnceLock::new();
+static LAST_LOBBY_QUERY: OnceLock<Mutex<Option<Instant>>> = OnceLock::new();
 
 fn last_query_mutex() -> &'static Mutex<Option<Instant>> {
     LAST_QUERY.get_or_init(|| Mutex::new(None))
 }
 
-pub fn check_rate_limit(config: &OllamaConfig) -> Result<(), String> {
-    let interval = Duration::from_secs(config.poll_interval_sec.max(5));
-    let mut guard = last_query_mutex()
+fn last_match_history_query_mutex() -> &'static Mutex<Option<Instant>> {
+    LAST_MATCH_HISTORY_QUERY.get_or_init(|| Mutex::new(None))
+}
+
+fn last_scout_query_mutex() -> &'static Mutex<Option<Instant>> {
+    LAST_SCOUT_QUERY.get_or_init(|| Mutex::new(None))
+}
+
+fn last_rune_query_mutex() -> &'static Mutex<Option<Instant>> {
+    LAST_RUNE_QUERY.get_or_init(|| Mutex::new(None))
+}
+
+fn last_lobby_query_mutex() -> &'static Mutex<Option<Instant>> {
+    LAST_LOBBY_QUERY.get_or_init(|| Mutex::new(None))
+}
+
+/// A held slot in a rate-limited window.
+///
+/// Dropping without calling [`Self::commit`] restores the previous timestamp,
+/// so a request that fails does not burn the caller's cooldown. Without this,
+/// one failure hides the real error behind "Please wait Ns" for a full
+/// interval, and `?` on any intermediate step is enough to trigger it.
+#[must_use = "the reservation rolls back unless committed"]
+pub struct RateLimitGuard {
+    mutex: &'static Mutex<Option<Instant>>,
+    previous: Option<Instant>,
+    committed: bool,
+}
+
+impl RateLimitGuard {
+    /// Keeps the reservation — call once the request has actually succeeded.
+    pub fn commit(mut self) {
+        self.committed = true;
+    }
+}
+
+impl Drop for RateLimitGuard {
+    fn drop(&mut self) {
+        if self.committed {
+            return;
+        }
+        if let Ok(mut guard) = self.mutex.lock() {
+            *guard = self.previous;
+        }
+    }
+}
+
+fn check_rate_limit_on(
+    mutex: &'static Mutex<Option<Instant>>,
+    interval_secs: u64,
+    label: &str,
+) -> Result<RateLimitGuard, String> {
+    let interval = Duration::from_secs(interval_secs.max(5));
+    let mut guard = mutex
         .lock()
         .map_err(|e| format!("Rate limit lock error: {}", e))?;
 
@@ -21,14 +76,99 @@ pub fn check_rate_limit(config: &OllamaConfig) -> Result<(), String> {
         if elapsed < interval {
             let wait = (interval - elapsed).as_secs();
             return Err(format!(
-                "Please wait {}s before requesting new AI recommendations",
-                wait.max(1)
+                "Please wait {}s before requesting new {}",
+                wait.max(1),
+                label
             ));
         }
     }
 
+    let previous = *guard;
     *guard = Some(Instant::now());
-    Ok(())
+
+    Ok(RateLimitGuard {
+        mutex,
+        previous,
+        committed: false,
+    })
+}
+
+pub fn check_rate_limit(config: &OllamaConfig) -> Result<RateLimitGuard, String> {
+    check_rate_limit_on(
+        last_query_mutex(),
+        config.poll_interval_sec,
+        "AI recommendations",
+    )
+}
+
+pub fn check_match_history_rate_limit(config: &OllamaConfig) -> Result<RateLimitGuard, String> {
+    // Match history changes less often — allow a longer cooldown than live game advice.
+    let interval = config.poll_interval_sec.max(60);
+    check_rate_limit_on(
+        last_match_history_query_mutex(),
+        interval,
+        "match history insights",
+    )
+}
+
+pub fn check_scout_rate_limit(config: &OllamaConfig) -> Result<RateLimitGuard, String> {
+    let interval = config.poll_interval_sec.max(45);
+    check_rate_limit_on(
+        last_scout_query_mutex(),
+        interval,
+        "scout insights",
+    )
+}
+
+pub fn check_rune_rate_limit(config: &OllamaConfig) -> Result<RateLimitGuard, String> {
+    let interval = config.poll_interval_sec.max(45);
+    check_rate_limit_on(last_rune_query_mutex(), interval, "rune insights")
+}
+
+pub fn check_lobby_rate_limit(config: &OllamaConfig) -> Result<RateLimitGuard, String> {
+    let interval = config.poll_interval_sec.max(45);
+    check_rate_limit_on(last_lobby_query_mutex(), interval, "lobby insights")
+}
+
+pub fn normalize_insight_entry(entry: &Value) -> Option<Value> {
+    let title = entry.get("title")?.as_str()?.trim();
+    let message = entry.get("message")?.as_str()?.trim();
+    if title.is_empty() || message.is_empty() {
+        return None;
+    }
+
+    let insight_type = entry
+        .get("type")
+        .and_then(|v| v.as_str())
+        .map(|t| match t {
+            "positive" | "negative" | "warning" | "neutral" => t,
+            _ => "neutral",
+        })
+        .unwrap_or("neutral");
+
+    Some(json!({
+        "type": insight_type,
+        "title": title,
+        "message": message,
+        "source": "ai",
+    }))
+}
+
+pub fn collect_insights(raw: &str, max: usize) -> Result<Value, String> {
+    let parsed = parse_json_array(raw)?;
+    let insights: Vec<Value> = parsed
+        .as_array()
+        .ok_or("Model insight response was not a JSON array")?
+        .iter()
+        .filter_map(normalize_insight_entry)
+        .take(max)
+        .collect();
+
+    if insights.is_empty() {
+        return Err("Model returned no usable insights".to_string());
+    }
+
+    Ok(Value::Array(insights))
 }
 
 fn normalize_base_url(base_url: &str) -> String {
@@ -66,15 +206,27 @@ fn http_client(timeout_secs: u64) -> Result<reqwest::Client, String> {
 }
 
 pub async fn query(config: &OllamaConfig, user_content: &str) -> Result<String, String> {
+    query_with_system(config, None, user_content).await
+}
+
+pub async fn query_with_system(
+    config: &OllamaConfig,
+    system_content: Option<&str>,
+    user_content: &str,
+) -> Result<String, String> {
     let base = normalize_base_url(&config.base_url);
     let url = format!("{}/v1/chat/completions", base);
+
+    let mut messages = Vec::new();
+    if let Some(system) = system_content.filter(|s| !s.trim().is_empty()) {
+        messages.push(json!({ "role": "system", "content": system }));
+    }
+    messages.push(json!({ "role": "user", "content": user_content }));
 
     let body = json!({
         "model": config.model_name,
         "stream": false,
-        "messages": [
-            { "role": "user", "content": user_content }
-        ]
+        "messages": messages,
     });
 
     let client = http_client(120)?;
@@ -113,6 +265,23 @@ pub async fn query(config: &OllamaConfig, user_content: &str) -> Result<String, 
         .map(|s| s.trim().to_string())
         .filter(|s| !s.is_empty())
         .ok_or_else(|| "Ollama returned an empty response".to_string())
+}
+
+/// Extract a JSON array from model output (handles optional markdown fences).
+pub fn parse_json_array(text: &str) -> Result<Value, String> {
+    let trimmed = text.trim();
+    if let Ok(value) = serde_json::from_str::<Value>(trimmed) {
+        if value.is_array() {
+            return Ok(value);
+        }
+    }
+
+    let start = trimmed.find('[').ok_or("Model did not return a JSON array")?;
+    let end = trimmed
+        .rfind(']')
+        .ok_or("Model did not return a JSON array")?;
+    let slice = &trimmed[start..=end];
+    serde_json::from_str(slice).map_err(|e| format!("Failed to parse insight JSON: {}", e))
 }
 
 pub async fn test_connection(config: &OllamaConfig) -> Result<Value, String> {
@@ -189,5 +358,29 @@ mod tests {
             normalize_base_url("http://localhost:11434/"),
             "http://127.0.0.1:11434"
         );
+    }
+
+    static TEST_SLOT: OnceLock<Mutex<Option<Instant>>> = OnceLock::new();
+
+    fn test_slot() -> &'static Mutex<Option<Instant>> {
+        TEST_SLOT.get_or_init(|| Mutex::new(None))
+    }
+
+    /// A failed request must not burn the cooldown — otherwise the real error
+    /// is hidden behind "Please wait Ns" for a full interval.
+    #[test]
+    fn rolled_back_reservation_frees_the_slot() {
+        // Dropped without commit, as happens when `?` bails on a later step.
+        drop(check_rate_limit_on(test_slot(), 60, "test").expect("first reservation"));
+
+        let second = check_rate_limit_on(test_slot(), 60, "test")
+            .expect("a rolled-back reservation must leave the slot free");
+
+        // Committing marks the request as having actually happened.
+        second.commit();
+
+        let third = check_rate_limit_on(test_slot(), 60, "test");
+        let err = third.err().expect("committed reservation must hold the slot");
+        assert!(err.contains("Please wait"), "unexpected message: {err}");
     }
 }

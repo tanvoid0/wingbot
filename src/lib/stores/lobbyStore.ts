@@ -1,10 +1,17 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
+import { invoke } from '@tauri-apps/api/core';
+import { isOllamaFeatureEnabled } from './ollamaStatusStore';
 
 // Lobby Management State
 export const lobbyData = writable<any>(null);
 export const lobbyAnalysis = writable<any>(null);
 export const readyCheckData = writable<any>(null);
 export const lobbyStatus = writable<any>(null);
+export const lobbyAiInsights = writable<any[]>([]);
+export const lobbyAiInsightsLoading = writable(false);
+export const lobbyAiInsightsError = writable<string | null>(null);
+
+let lobbyAiCacheKey = '';
 
 // Lobby Management Actions
 export const lobbyActions = {
@@ -16,6 +23,7 @@ export const lobbyActions = {
   // Update lobby analysis
   updateLobbyAnalysis: (analysis: any) => {
     lobbyAnalysis.set(analysis);
+    void lobbyActions.fetchAiInsights(analysis);
   },
 
   // Update ready check data
@@ -176,7 +184,49 @@ export const lobbyActions = {
     }
 
     return insights;
-  }
+  },
+
+  buildAiCacheKey: (analysis: any) => {
+    const team = analysis?.team_analysis;
+    return [
+      team?.total_members,
+      team?.ready_members,
+      team?.ready_percentage,
+      analysis?.queue_id,
+    ].join(':');
+  },
+
+  fetchAiInsights: async (analysis?: any, options?: { force?: boolean }) => {
+    const lobby = analysis ?? get(lobbyAnalysis);
+    if (!lobby?.team_analysis || !isOllamaFeatureEnabled('lobby')) {
+      lobbyAiInsights.set([]);
+      lobbyAiInsightsError.set(null);
+      return [];
+    }
+
+    const cacheKey = lobbyActions.buildAiCacheKey(lobby);
+    const force = options?.force ?? false;
+    if (!force && cacheKey === lobbyAiCacheKey && get(lobbyAiInsights).length > 0) {
+      return get(lobbyAiInsights);
+    }
+
+    lobbyAiInsightsLoading.set(true);
+    lobbyAiInsightsError.set(null);
+
+    try {
+      const insights = await invoke<any[]>('get_lobby_ai_insights', { analysis: lobby });
+      lobbyAiCacheKey = cacheKey;
+      lobbyAiInsights.set(Array.isArray(insights) ? insights : []);
+      return get(lobbyAiInsights);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      lobbyAiInsightsError.set(message);
+      if (force) lobbyAiInsights.set([]);
+      return get(lobbyAiInsights);
+    } finally {
+      lobbyAiInsightsLoading.set(false);
+    }
+  },
 };
 
 // Derived stores
@@ -213,25 +263,37 @@ export const lobbySummary = derived(
   }
 );
 
-// Current lobby insights
+// Current lobby insights (core rules + optional AI)
 export const lobbyInsights = derived(
-  [lobbyAnalysis],
-  ([analysis]) => {
-    return lobbyActions.getLobbyInsights(analysis);
+  [lobbyAnalysis, lobbyAiInsights],
+  ([analysis, aiInsights]) => {
+    const core = lobbyActions.getLobbyInsights(analysis);
+    const trimmed = core.filter(
+      (i) => i.title === 'Not All Ready' || i.title === 'All Ready' || i.title === 'Incomplete Team',
+    );
+    return [...trimmed, ...(Array.isArray(aiInsights) ? aiInsights : [])];
   }
 );
 
 // Lobby members with enhanced data
 export const lobbyMembers = derived(
-  [lobbyData, lobbyStatus],
-  ([lobby, status]) => {
+  [lobbyData, lobbyStatus, lobbyAnalysis],
+  ([lobby, status, analysis]) => {
     const lobbyInfo = status?.lobby_data || lobby;
-    const members = lobbyInfo?.members || [];
+    const members = (analysis?.members ?? lobbyInfo?.members) || [];
     
     return members.map((member: any) => ({
       ...member,
-      roleIcon: lobbyActions.getRoleIcon(member.position),
-      roleName: lobbyActions.getRoleName(member.position),
+      summonerName:
+        member.summonerName ||
+        member.riot_id ||
+        (member.game_name && member.tag_line
+          ? `${member.game_name}#${member.tag_line}`
+          : member.gameName && member.tagLine
+            ? `${member.gameName}#${member.tagLine}`
+            : undefined),
+      roleIcon: lobbyActions.getRoleIcon(member.position ?? member.firstPositionPreference),
+      roleName: lobbyActions.getRoleName(member.position ?? member.firstPositionPreference),
       statusColor: lobbyActions.getMemberStatusColor(member.ready),
       statusText: lobbyActions.getMemberStatusText(member.ready)
     }));

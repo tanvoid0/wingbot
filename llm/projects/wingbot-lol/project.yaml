@@ -13,6 +13,10 @@ knowledge_packs:
 system_prompt: export/system.txt
 shared_datasets:
   - ../_shared/decision_patterns.jsonl
+  - knowledge/decision_patterns.jsonl
+external_datasets:
+  - datasets/external/hf_emerald.jsonl
+  - datasets/external/riot_matches.jsonl
 train:
   lora_rank: 16
   lora_alpha: 32

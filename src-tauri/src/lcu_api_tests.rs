@@ -2,7 +2,7 @@
 mod tests {
     use crate::lcu_api::{LCUAPI, LCUConnection};
     use std::fs;
-    use std::path::Path;
+    use std::path::{Path, PathBuf};
     use tempfile::tempdir;
     use tokio_test;
 
@@ -158,10 +158,12 @@ mod tests {
         assert_eq!(api.get_connection_status(), "Connected");
     }
 
+    /// The Live Client Data API only answers over TLS; plain HTTP on 2999
+    /// never responds, so every live-game feature silently stalls.
     #[test]
-    fn test_live_client_uses_http() {
+    fn test_live_client_uses_https() {
         use crate::lcu_api::LIVE_CLIENT_BASE_URL;
-        assert!(LIVE_CLIENT_BASE_URL.starts_with("http://"));
+        assert!(LIVE_CLIENT_BASE_URL.starts_with("https://"));
         assert!(LIVE_CLIENT_BASE_URL.contains(":2999"));
     }
 
@@ -360,5 +362,53 @@ mod tests {
         assert_eq!(state["live_game"], serde_json::Value::Null);
         assert_eq!(state["game_mode"], "Unknown");
         assert_eq!(state["timestamp"], 1234567890);
+    }
+
+    /// Riot writes install paths with forward slashes and a trailing separator;
+    /// a non-default drive is only discoverable through these files.
+    #[test]
+    fn test_parse_install_dirs_from_riot_metadata() {
+        let installs_json = r#"{
+            "associated_client": {
+                "E:/Games/Riot Games/League of Legends/": "E:/Games/Riot Games/Riot Client/RiotClientServices.exe"
+            },
+            "rc_default": "E:/Games/Riot Games/Riot Client/RiotClientServices.exe"
+        }"#;
+        let product_settings = "patching_policy: \"manual\"\nproduct_install_full_path: \"E:/Games/Riot Games/League of Legends\"\nshould_repair: false\n";
+
+        let dirs = LCUAPI::parse_install_dirs(Some(installs_json), Some(product_settings));
+
+        // Both sources name the same install, normalized and de-duplicated.
+        assert_eq!(dirs, vec![PathBuf::from(r"E:\Games\Riot Games\League of Legends")]);
+    }
+
+    #[test]
+    fn test_parse_install_dirs_tolerates_missing_sources() {
+        assert!(LCUAPI::parse_install_dirs(None, None).is_empty());
+        assert!(LCUAPI::parse_install_dirs(Some("not json"), None).is_empty());
+        assert!(LCUAPI::parse_install_dirs(Some("{}"), Some("no path here")).is_empty());
+    }
+
+    /// The Live Client API has no "all players" items/runes endpoint; both are
+    /// read out of the player list, keyed by Riot ID.
+    #[test]
+    fn test_collect_from_player_list() {
+        let players = serde_json::json!([
+            { "riotId": "Tan#void", "items": [{ "itemID": 1055 }], "runes": { "keystone": "Conqueror" } },
+            { "riotId": "Fish in Sea#daddy", "items": [], "runes": { "keystone": "Electrocute" } }
+        ]);
+
+        let items = LCUAPI::collect_from_player_list(&players, "items");
+        assert_eq!(items["Tan#void"], serde_json::json!([{ "itemID": 1055 }]));
+        assert_eq!(items["Fish in Sea#daddy"], serde_json::json!([]));
+
+        let runes = LCUAPI::collect_from_player_list(&players, "runes");
+        assert_eq!(runes["Tan#void"]["keystone"], "Conqueror");
+
+        // A non-array payload yields an empty map rather than an error.
+        assert_eq!(
+            LCUAPI::collect_from_player_list(&serde_json::json!(null), "items"),
+            serde_json::json!({})
+        );
     }
 }
